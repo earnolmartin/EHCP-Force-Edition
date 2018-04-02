@@ -1630,6 +1630,8 @@ function getinputs(){
 	if(!$unattended){
 		if($emptypass){
 			$rootpass="1234";
+			$rootpass=getVerifiedInput("MySQL root user account desired PASSWORD","1234");
+			
 			if(hasValue($mysql_root_pass)){
 				$rootpass = $mysql_root_pass;
 			}
