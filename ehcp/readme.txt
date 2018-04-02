@@ -42,7 +42,7 @@ Run the following commands to install the latest version of EHCP [FoRcE Edition]
 
 sudo apt-get install subversion
 cd ~/Downloads
-svn checkout svn://svn.code.sf.net/p/ehcpforce/code/trunk/ehcpforce/ ./
+svn checkout https://github.com/earnolmartin/EHCP-Force-Edition/trunk/ehcp ./ehcp
 rm -Rf .svn
 cd ehcp
 sudo bash install.sh

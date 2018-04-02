@@ -195,7 +195,7 @@ function getLatestEHCPFiles(){
 			if [ "$svnCount" -gt "0" ]; then
 				echo -e "Unable to download the EHCP files from SVN!  Please make sure you are connected to the internet.  Trying again..."
 			fi
-			svn checkout svn://svn.code.sf.net/p/ehcpforce/code/trunk/ehcpforce/ ./
+			svn checkout https://github.com/earnolmartin/EHCP-Force-Edition/trunk/ehcp ./ehcp
 			svnCount=$((svnCount+1))
 		done
 		rm -Rf .svn
