@@ -1,0 +1,47 @@
+# START OF CUSTOM GLOBAL PANEL URLS Template
+<VirtualHost *:80>
+	ServerName   {domainname}
+	ServerAlias  {domainname_alias}
+    RewriteEngine On
+	RewriteCond %{HTTPS} off
+	RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
+</VirtualHost>
+
+<VirtualHost *:443>
+	ServerName  {domainname}
+	ServerAlias  {domainname_alias}
+
+	DocumentRoot {ehcpdir}
+
+	LogFormat "%v:%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" vhost_combined
+	LogFormat "%v:%p %h %l %u %t \"%{Host}i\" \"%r\" %>s %O \"%{Referer}i\" \"%{User-Agent}i\"" vhost_combined_host
+	CustomLog  /var/log/apache2/access_log_multi.log vhost_combined_host
+
+	php_admin_value open_basedir {ehcpdir}
+
+	<Files  ~ "\.conf$">
+		Order allow,deny
+		Deny from all
+	</Files>
+		
+	<Files  ~ "\.txt$">
+		Order allow,deny
+		Deny from all
+	</Files>
+	
+	<Files  ~ "\.log$">
+		Order allow,deny
+		Deny from all
+	</Files>
+	
+	<Files  ~ "\.sh$">
+		Order allow,deny
+		Deny from all
+	</Files>
+
+	SSLEngine on
+	SSLCertificateFile {ssl_cert_path}
+	SSLCertificateKeyFile {ssl_cert_key_path}
+	{ssl_cert_chain_setting_with_path}
+</VirtualHost>
+# END OF CUSTOM GLOBAL PANEL URLS Template

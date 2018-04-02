@@ -1,0 +1,235 @@
+body, html, #main {
+	height: 100%;
+	margin: 0; padding: 0; overflow: hidden;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+}
+#top1 {
+	overflow-y: auto; overflow-x: hidden; height: 100%;	margin-top: 50px;vertical-align:top;
+}
+p {
+	margin: 0; padding: 0;
+}
+ul, li { /* remove all indentation, whether li margins or ul padding */
+    margin:  0;
+    padding: 0;
+}
+
+li {  /* restore a bit of indentation on the left */
+    margin-left: .25em; /* also consider ul { padding-left: .25em; } */
+}
+#top2 {
+	overflow-y: auto; overflow-x: hidden; height: 100%;
+	margin-top: 50px; vertical-align:top; 
+}
+#header{
+	width: 100%; height: 50px; position: fixed; top: 0px; margin-top: 0px; clear: both; 
+	background: url(../images/top_bg.jpg) repeat-x fixed;
+}
+#logo { float: left; border: 0; margin-left: 5px; padding: 0;
+}
+#topTxtLogout a{
+  padding-left: 20px;
+  color: #fff;
+}
+
+#topTxtLogout {
+  background-image: url('../images/nav_logout.gif');background-repeat: no-repeat;
+}
+#divCopy {
+	bottom: 0;
+	display: block;
+	margin-bottom: 0px;
+	padding-bottom: 10px;
+	padding-left: 20px;
+	line-height: 10px;
+	padding-top: 20px;
+}
+body, div {
+	margin:0;
+	padding: 0;
+}
+
+#sidebar {
+	width: 240px;
+	height: 100%;
+	float: left;
+	clear: left;
+	background: #8f4626 url(../images/ubuntu_sidebar.jpg) no-repeat fixed;
+}
+#sidebar-inner{
+	padding: 10px; 
+}
+#divMenuLinks {
+	padding-left: 20px;
+}
+#loadingLayer{
+z-index:10000; position:absolute;top:0px;left:0px;width:100%;height:100%;background:#fff;
+}
+#loadingImg{
+position:absolute;margin-left:auto;margin-bottom:auto;top:40%;left:49%;
+}
+#divMenuSearch {
+	height: 55px;
+}
+#search_txt {
+line-height: 24px;float: left; padding-left: 5px; height: 24px; width: 160px; background: none; border: 0;
+}
+#username {
+float: right; color: #FFF; height: 50px; line-height: 50px; padding-right: 20px;
+}
+#select_search {
+width: 200px; float: left; height: 24px; line-height: 24px; padding:2px;
+background: url('../images/search_input_bg.gif') 100% 0 no-repeat;; border:0;
+}
+#select_search option{
+background:#eae3dd;
+}
+#inputMenuSearch {
+  width: 200px;
+  color: #8a8a8a;
+margin-bottom: 3px;
+  padding: 0;
+  height: 24px;
+  line-height: 24px;
+  background: url('../images/search_input_bg.gif') 100% 0 no-repeat;
+}
+#inputMenuSearch:hover {
+    background-position: 0 -24px;
+}
+
+
+#submitMenuSearch {
+height: 24px;
+float: right;
+width: 30px;border:0;
+  background: url('../images/submit.png') 100% 0 no-repeat;
+cursor: pointer;
+}
+#divMenuLinks ul {
+	padding-left: 15px;
+}
+#divMenuLinks, #divCopy, #divCopy a:link, #divCopy a:visited, #divMenuLinks a:link, #divMenuLinks a:visited {
+	text-decoration: none; color: #fff; line-height: 26px;
+}
+#divMenuLinks a:hover, #divCopy a:hover {
+	color: #fff;
+	text-decoration: underline;
+}
+#content {
+	height: 100%;
+	background: #FBFBFB;
+}
+#content-inner {
+	margin-left: 7px;
+	height: 100%;
+}
+#splitter {
+	width: 7px;
+	height: 100%;
+	float: left;
+	cursor: pointer;
+	display: block;
+	color: #fff;
+	background: #33060b;
+}
+
+#splitter:hover {
+	background: #561c1c;
+}
+/* clearfix hacks */
+.clearfix:after {
+	content: ".";
+	display: block;
+	height: 0;
+	clear: both;
+	visibility: hidden;
+}
+.clearfix {
+	display: inline-block;
+}
+* html .clearfix {
+	height: 1%;
+}
+.clearfix {
+	display: block;
+}
+
+
+.title, .title_info{
+	vertical-align: middle;
+	color: #535353;
+	padding: 3px;
+}
+.title{
+	font-weight: bold;
+}
+.title_info{
+	border-bottom: 1px solid #cccccc;
+	font-size: 2em;
+	background-color: #EEE;
+}
+.title img, .title_info img {
+	vertical-align: middle;
+}
+.content_block {
+	width: 100%;
+	margin-bottom: 1em;
+	display: block;
+	padding: 0;
+	margin: 0;
+	float: left;
+}
+.content_block_info {
+	width: 100%;
+	padding: 0;
+	margin: 0;
+}
+ul#button{
+	padding: 0;
+	margin: 0;
+	display: inline-block;
+}
+ul#button li {
+	background: url(../images/btn_default-button_bg.gif) no-repeat left;
+	height: 32px;
+	margin: 0;
+	margin-bottom: 10px;
+	margin-top: 10px;
+	width: 33%;
+	min-width: 150px;
+	float:left;
+	list-style-type: none;
+}
+
+ul#button li span {
+}
+ul#button li span a:link,ul#button li span a:hover,ul#button li span a:visited{
+	padding-left: 37px;
+	display: block;
+	margin-right: 10px;
+	height: 32px;
+	text-decoration: none;
+	color: #000;
+}
+a:link,a:visited {color:#000;}
+.info {
+	margin: 20px;
+	margin-top: 0px;
+	border: 1px solid  #CCC;
+	background-color: #fff;
+	padding: 10px;
+}
+.topnavigator {
+	background-color: #EEE;
+	vertical-align: middle;
+	color: #535353;
+	padding-left: 20px;
+	padding-bottom: 5px;
+	padding-right: 20px;
+	padding-top: 5px;
+}
+
+#collapse {
+	float: right;
+}

@@ -1,0 +1,152 @@
+# this file used in Easy Hosting Control Panel (ehcp), www.ehcp.net
+# webserver config file for nginx webserver
+
+server {
+	listen   80;
+	server_name  {domainname} www.{domainname} {wildcarddomain}; # this is changed to *.{domainname} within classapp.php
+
+	root {homedir}/httpdocs;
+
+	# User specific logs and generic logs (have one conglomerate [good for server admins] and one specific to user [good for individual user])
+	access_log  {homedir}/logs/access_log;
+	access_log /var/log/nginx/access_log_multi.log combined_host;
+	error_log  {homedir}/logs/error_log;
+	
+	index  index.html index.htm index.php;
+
+	location / {
+		add_header 'Access-Control-Allow-Origin' '*';
+		add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS';
+		if (-f $document_root/error_page.html ) {
+			error_page 400 401 402 403 404 405 406 407 408 409 410 411 412 413 414 415 416 417 495 496 497 500 501 502 503 504 505 506 507 /error_page.html;
+		}
+		{root_password_protected_dirs}
+	}
+
+	location ~ \.php$ {
+        root {homedir}/httpdocs;
+        include fastcgi_params;
+		try_files $uri = 404;
+		fastcgi_pass   127.0.0.1:9000;
+		fastcgi_index  index.php;
+        fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+		fastcgi_param  PHP_ADMIN_VALUE "open_basedir={homedir}:/usr/share/php:/usr/share/pear \n upload_tmp_dir={homedir}/phptmpdir \n session.save_path={homedir}/phptmpdir \n disable_functions=exec,passthru,shell_exec,system,proc_open,popen";
+		fastcgi_read_timeout 300;
+		limit_req zone=one burst=5;
+	}
+
+	location /phpmyadmin {
+		root /usr/share/;
+		index index.php index.html index.htm;
+		
+		location ~ ^/phpmyadmin/(.+\.php)$ {
+			try_files $uri =404;
+			root /usr/share/;
+			fastcgi_pass 127.0.0.1:9000;
+			fastcgi_index index.php;
+			fastcgi_param SCRIPT_FILENAME $request_filename;
+			fastcgi_param  PHP_ADMIN_VALUE "open_basedir=/usr/share/phpmyadmin:/etc/phpmyadmin:/var/lib/phpmyadmin:/tmp:/usr/share/php:/usr/share/pear:/usr/share:/var/www/php_sessions \n upload_tmp_dir=/tmp \n session.save_path=/var/www/php_sessions";
+			include /etc/nginx/fastcgi_params;
+			limit_req zone=one burst=5;
+			proxy_send_timeout 600;
+			proxy_read_timeout 600;
+		}
+		
+		location ~* ^/phpmyadmin/(.+\.(jpg|jpeg|gif|css|png|js|ico|html|xml|txt))$ {
+			root /usr/share/;
+		}
+	}
+
+	location /phpMyAdmin {
+		rewrite ^/* /phpmyadmin last;
+	}
+
+	location /webmail2 {
+		root {ehcpdir}/;
+		index index.php index.html index.htm;
+		
+		location ~ ^/webmail2/(.+\.php)$ {
+			try_files $uri =404;
+			root {ehcpdir}/;
+			fastcgi_pass 127.0.0.1:9000;
+			fastcgi_index index.php;
+			fastcgi_param SCRIPT_FILENAME $request_filename;
+			fastcgi_param  PHP_ADMIN_VALUE "open_basedir={ehcpdir}/webmail2 \n upload_tmp_dir={ehcpdir}/webmail2/data \n session.save_path={ehcpdir}/webmail2/data";
+			include /etc/nginx/fastcgi_params;	
+			limit_req zone=one burst=5;		   
+		}
+
+		location ~* ^/webmail2/(.+\.(jpg|jpeg|gif|css|png|js|ico|html|xml|txt))$ {
+			root {ehcpdir}/;
+		}
+	}
+	
+	location /webmail {
+		rewrite ^/* /roundcube last;
+	}
+	
+	location /ehcp {
+		root /var/www/new/;
+		index index.php index.html index.htm;
+		
+		location ~ ^/ehcp/(.+\.php)$ {
+			try_files $uri =404;
+			root /var/www/new/;
+			fastcgi_pass 127.0.0.1:9000;
+			fastcgi_index index.php;
+			fastcgi_param SCRIPT_FILENAME $request_filename;
+			fastcgi_param  PHP_ADMIN_VALUE "open_basedir={ehcpdir}/:/var/www/php_sessions:/tmp \n upload_tmp_dir=/tmp \n session.save_path=/var/www/php_sessions";
+			include /etc/nginx/fastcgi_params;	
+			limit_req zone=one burst=5;		   
+		}
+
+		location ~* ^/ehcp/(.+\.(jpg|jpeg|gif|css|png|js|ico|html|xml|txt))$ {
+			root /var/www/new/;
+		}
+	   
+		location ~ ^/ehcp/(.+\.conf)$ {
+			return 403;
+		}
+	   
+		location ~ ^/ehcp/(.+\.txt)$ {
+			return 403;
+		}
+		
+		location ~ ^/ehcp/(.+\.log)$ {
+			return 403;
+		}
+		
+		location ~ ^/ehcp/(.+\.sh)$ {
+			return 403;
+		}
+	}
+
+	location /roundcube {
+		root /usr/share/;
+		index index.php index.html index.htm;
+		
+		location ~ ^/roundcube/(.+\.php)$ {
+			try_files $uri =404;
+			root /usr/share/;
+			fastcgi_pass 127.0.0.1:9000;
+			fastcgi_index index.php;
+			fastcgi_param SCRIPT_FILENAME $request_filename;
+			fastcgi_param  PHP_ADMIN_VALUE "open_basedir=/var/lib/roundcube:/etc/roundcube:/usr/share:/tmp:/var/www/php_sessions:/var/log/roundcube \n upload_tmp_dir=/tmp \n session.save_path=/var/www/php_sessions";
+			include /etc/nginx/fastcgi_params;
+			limit_req zone=one burst=5;
+		}
+	   
+		location ~* ^/roundcube/(.+\.(jpg|jpeg|gif|css|png|js|ico|html|xml|txt))$ {
+			root /usr/share/;
+		}
+	}
+
+	# any files that should be avoided, may be put here:
+	location ~ (apache_subdomain_template|apachetemplate|apachetemplate_ipbased|apachetemplate_passivedomains|/\.conf$|/\.ht|access_log|error_log|access\.log|error\.log) {   
+		deny  all;
+	}
+	
+	{customhttp}
+	{password_protected_dirs}
+	{webstats_password_protection}
+}

@@ -1,0 +1,432 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!--
+@author:	Eric Arnol-Martin (earnolmartin@gmail.com)
+Date:		December 16, 2010
+Template:	ProGreen
+Hand Coded Using Proper HTML
+
+I'm a big fan of tables... divs, not so much...
+-->
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta name="author" content="Thanks to deconectat from www.ehcp.net for this greate template for ehcp">
+	<title>EHCP - Easy Hosting Control Panel - {myip}</title>	
+	<link href="css/test/progreen.css" type="text/css" rel="stylesheet" title="green" id="stylesheet">
+	
+	<script type="text/javascript" src="js/tableCollapse2.js">
+
+	</script>
+</head>
+<body onload="initialStyleSheet()">
+<table class="main" cellspacing="0" cellpadding="0">
+<tr>
+<td class="logo" colspan="5">
+<table border="0" cellspacing="0" cellpadding="0" class="main">
+<tr>
+<td class="logo">
+<img src="images/logo.png" class="logo" alt="EHCP Hosting Control Panel" id="logo">
+</td>
+<td class="logo">
+<p class="mainTitle">Hosting Made Easy</p>
+</td>
+</tr>
+</table>
+
+</td>
+</tr>
+<tr>
+<td class="menu" onclick="document.location.href='index.php';">
+Home
+</td>
+<td class="menu" onclick="document.location.href='#domainOps';">
+Domains
+</td>
+<td class="menu" onclick="document.location.href='http://{myip}/phpmyadmin';">
+PHPMyAdmin
+</td>
+<td class="menu" onclick="document.location.href='webmail';">
+Webmail
+</td>
+<td class="menu" onclick="document.location.href='net2ftp';">
+File Manager
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top" align="left" class="topFunc">
+Welcome, {username}!&nbsp; <a href="?op=logout" title="Log out from ECHP" class="logout">Log Out</a><br>
+</td>
+<td valign="top" align="center">
+<form action="" method="post">
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="templateChange">
+Theme Color: &nbsp;
+</td>
+<td class="templateChangeSelect" id="createSelectHere">
+<span>Green</span>
+</td>
+<td class="templateChange2" id="createButtonHere">
+</td>
+</tr>
+</table>
+</form>
+</td>
+<td colspan="2" valign="top" align="right" class="topFunc2">
+Domaine S&eacute;lectionn&eacute;:&nbsp; {domain} :: <a class="logout" href="?op=listselectdomain">S&eacute;lectionner Un Autre Domaine</a> :: <a class="logout" href="?op=deselectdomain">D&eacute;s&eacute;lectionner Domain</a>
+<br>
+<form method=post action="index.php?op=listdomains">
+			<label for="inputMenuSearch">Recherche:&nbsp; </label>
+			<input type=text name=aranan value='' size="10" id="inputMenuSearch">
+			<select name='arananalan' id="selectMenuSearch">
+				<option value='domainname' >Domaine</option>
+				<option value='panelusername' >Client</option>
+			</select>
+			<input type=submit value="Go" id="submitMenuSearch">
+		</form>	
+</td>
+</tr>
+<tr>
+<td colspan="5" class="textInside">
+<table border=0 cellspacing=0 cellpadding=0 class="startOfInsides">
+<tr>
+<td class="inWidth">
+<br>
+<p>Text on the inside will look like this!</p>
+<!-- Start of Homepagedomain_admin_fr.html -->
+
+<table border="0" cellspacing="0" cellpadding="0" class="submain" id="domain">
+<tr class="display">
+<td class="subText">
+<a name="domainOps"></a>
+<span class="title">Op&eacute;rations Des Domaines</span>
+<img src="images/collapse.gif" alt="collapse" onclick="collapse(this, document.getElementById('domain'))" class="func">
+</td>
+</tr>
+<tr>
+<td class="action">
+<table border="0" cellspacing="0" cellpadding="0" style="width: 100%;">
+<tr>
+<td class="items">
+<p class="title2">Add / Create:</p>
+</td>
+<td class="items">
+<a href="?op=addsubdomain" title="Add SubDomains"><img src="images/addsubdomain.png" alt="Ajouter Un Sous-Domaine" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=addsubdomain" title="Ajouter Un Sous-Domaine">Ajouter Un Sous-Domaine</a>
+</td>
+
+<td class="items">
+<a href="?op=addcustomhttp" title="Personnaliser HTTP"><img src="images/addcustomhttp.png" alt="Personnaliser HTTP" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=addcustomhttp" title="Personnaliser HTTP">Personnaliser HTTP</a>
+</td>
+<td class="items">
+<a href="?op=customdns" title="Personnaliser DNS"><img src="images/addcustomdns.png" alt="Personnaliser DNS" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=customdns" title="Personnaliser DNS">Personnaliser DNS</a>
+</td>
+<td class="items">
+<a href="?op=adddirectory" title="R&eacute;pertoires Prot&eacute;g&eacute;s (par mot de passe)"><img src="images/adddirectory.png" alt="R&eacute;pertoires Prot&eacute;g&eacute;s (par mot de passe)" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=adddirectory" title="R&eacute;pertoires Prot&eacute;g&eacute;s (par mot de passe)">R&eacute;pertoires Prot&eacute;g&eacute;s (par mot de passe)</a>
+</td>
+<td class="items">
+<a href="?op=editdnstemplate" title="Changer Le Mod&egrave;le DNS"><img src="images/editdnstemplate.png" alt="Changer Le Mod&egrave;le DNS" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=editdnstemplate" title="Changer Le Mod&egrave;le DNS">Changer Le Mod&egrave;le DNS</a>
+</td>
+</tr>
+<tr>
+<td class="items">
+
+</td>
+<td class="items">
+<a href="?op=editapachetemplate" title="Changer Le Mod&egrave;le Apache"><img src="images/editapachetemplate.png" alt="Changer Le Mod&egrave;le Apache" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=editapachetemplate" title="Changer Le Mod&egrave;le Apache">Changer Le Mod&egrave;le Apache</a>
+</td>
+<td class="items">
+<a href="?op=editdomainaliases" title="Changer Alias D'un Domaine"><img src="images/editdomainaliases.gif" alt="Changer Alias D'un Domaine" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=editdomainaliases" title="Changer Alias D'un Domaine">Changer Alias D'un Domaine</a>
+</td>
+
+<td class="items">
+
+</td>
+<td class="items">
+
+</td>
+<td class="items">
+
+</td>
+</tr>
+<tr>
+<td class="items">
+<p class="title3">View / List:</p>
+</td>
+<td class="items">
+<a href="?op=subdomains" title="Liste de Mes Sous-Domaines"><img src="images/subdomains.png" alt="Liste de Mes Sous-Domaines" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=subdomains" title="Liste de Mes Sous-Domaines">Liste de Mes Sous-Domaines</a>
+</td>
+<td class="items">
+<a href="?op=customhttp" title="List Custom http"><img src="images/customhttp.png" alt="Show Custom HTTP" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=customhttp" title="List Custom http">Montrer HTTP Personalis&eacute;</a>
+</td>
+<td class="items">
+<a href="?op=customdns" title="Montrer DNS Personalis&eacute;"><img src="images/customdns.png" alt="Montrer DNS Personalis&eacute;" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=customdns" title="Montrer DNS Personalis&eacute;">Montrer DNS Personalis&eacute;</a>
+</td>
+<td class="items">
+
+</td>
+<td class="items">
+
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+
+<br>
+
+<table border="0" cellspacing="0" cellpadding="0" class="submain" id="ftp">
+<tr class="display">
+<td class="subText">
+<span class="title">Op&eacute;rations FTP</span><img src="images/collapse.gif" alt="collapse" onclick="collapse(this, document.getElementById('ftp'))" class="func">
+</td>
+</tr>
+<tr>
+<td class="action">
+<table border="0" cellspacing="0" cellpadding="0" style="width: 100%;">
+<tr>
+<td class="items">
+<p class="title2">Add / Modify:</p>
+</td>
+<td class="items">
+<a href="?op=editftpuser"><img src="images/editftpuser.png" alt="Changer le mot De passe FTP" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=editftpuser">Changer le mot De passe FTP</a>
+</td>
+<td class="items">
+<a href="?op=addftptothispaneluser"><img src="images/addftptothispaneluser.png" alt="Ajouter des Comptes FTP G&eacute;n&eacute;ral" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=addftptothispaneluser">Ajouter des Comptes FTP G&eacute;n&eacute;ral</a>
+</td>
+<td class="items">
+<a href="?op=addsubdomainwithftp"><img src="images/editftpuser.png" alt="Ajouter des acc&egrave;s utilisateurs aux Sous-Domaines" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=addsubdomainwithftp">Ajouter des acc&egrave;s utilisateurs aux Sous-Domaines</a>
+</td>
+<td class="items">
+<a href="?op=addsubdirectorywithftp"><img src="images/addsubdirectorywithftp.png" alt="Ajouter des acc&egrave;s utilisateurs aux autres sous r&eacute;pertoires" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=addsubdirectorywithftp">Ajouter des acc&egrave;s utilisateurs aux autres sous r&eacute;pertoires</a>
+</td>
+<td class="items">
+</td>
+</tr>
+<tr>
+<td class="items">
+<p class="title3">List / View:</p>
+</td>
+<td class="items">
+<a href="?op=listallftpusers"><img src="images/listallftpusers.png" alt="Liste des Comptes FTP" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=listallftpusers">Liste des Comptes FTP</a>
+</td>
+<td class="items">
+<a href="net2ftp"><img src="images/webftp.png" alt="WebFTP" width="32" height="32" class="item"></a>
+<br>
+<a href="net2ftp">Gestionnaire de Fichiers</a>
+</td>
+<td class="items">
+</td>
+<td class="items">
+</td>
+<td class="items">
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+
+<br>
+
+<table border="0" cellspacing="0" cellpadding="0" class="submain" id="mysql">
+<tr class="display">
+<td class="subText">
+<span class="title">Op&eacute;rations MySQL</span><img src="images/collapse.gif" alt="collapse" onclick="collapse(this, document.getElementById('mysql'))" class="func">
+</td>
+</tr>
+<tr>
+<td class="action">
+<table border="0" cellspacing="0" cellpadding="0" style="width: 100%;">
+<tr>
+<td class="items">
+<p class="title2">Create / View:</p>
+</td>
+<td class="items">
+<a href="?op=addmysqldb"><img src="images/addmysqldb.png" alt="Ajouter Comptes MySQL Avec Databases MySQL" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=addmysqldb">Ajouter Comptes MySQL Avec Databases MySQL</a>
+</td>
+<td class="items">
+<a href="?op=domainop&action=listdb"><img src="images/domainop_listdb.png" alt="Liste de Databases MySQL" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=domainop&action=listdb">Liste de Databases MySQL</a>
+</td>
+<td class="items">
+<a href="?op=addmysqldbtouser"><img src="images/addmysqldbtouser.png" alt="Create MySQL Database &amp; Link to User" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=addmysqldbtouser">Create Database &amp; Assign Existing Users</a>
+</td>
+<td class="items">
+<a href="?op=dbadduser"><img src="images/dbadduser.png" alt="Ajouter Database MySQL Et Utilisez Comptes Qui Existent" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=dbadduser">Ajouter Database MySQL Et Utilisez Comptes Qui Existent</a>
+</td>
+<td class="items">
+<a href="http://{myip}/phpmyadmin"><img src="images/phpmyadmin.png" alt="PHPMyAdmin" width="32" height="32" class="item"></a>
+<br>
+<a href="http://{myip}/phpmyadmin">PHPMyAdmin</a>
+</td>
+<td class="items">
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+
+<br>
+
+<table border="0" cellspacing="0" cellpadding="0" class="submain" id="email">
+<tr class="display">
+<td class="subText">
+<span class="title">Op&eacute;rations Messageries</span><img src="images/collapse.gif" alt="collapse" onclick="collapse(this, document.getElementById('email'))" class="func">
+</td>
+</tr>
+<tr>
+<td class="action">
+<table border="0" cellspacing="0" cellpadding="0" style="width: 100%;">
+<tr>
+<td class="items">
+<p class="title2">Create / View:</p>
+</td>
+<td class="items">
+<a href="?op=addemailuser"><img src="images/addemailuser.png" alt="Ajouter Comptes Emails" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=addemailuser">Ajouter Comptes Emails</a>
+</td>
+<td class="items">
+<a href="?op=listallemailusers"><img src="images/listallemailusers.png" alt="Liste des Comptes Emails" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=listallemailusers">Liste des Comptes Emails</a>
+</td>
+<td class="items">
+<a href="?op=addemailforwarding"><img src="images/addemailforwarding.png" alt="Ajouter Exp&eacute;diteur Email" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=addemailforwarding">Ajouter Exp&eacute;diteur Email</a>
+</td>
+<td class="items">
+<a href="?op=emailforwardings"><img src="images/emailforwardings.png" alt="Liste des Exp&eacute;diteurs Email" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=emailforwardings">Liste des Exp&eacute;diteurs Email</a>
+</td>
+<td class="items">
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+
+<br>
+
+<table border="0" cellspacing="0" cellpadding="0" class="submain" id="my">
+<tr class="display">
+<td class="subText">
+<span class="title">Mes Param&egrave;tres</span><img src="images/collapse.gif" alt="collapse" onclick="collapse(this, document.getElementById('my'))" class="func">
+</td>
+</tr>
+<tr>
+<td class="action">
+<table border="0" cellspacing="0" cellpadding="0" style="width: 100%;">
+<tr>
+<td class="items">
+<p class="title2">Create / Modify:</p>
+</td>
+<td class="items">
+<a href="?op=domainsettings"><img src="images/domainsettings.png" alt="Options du Domaine" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=domainsettings">Options du Domaine</a>
+</td>
+<td class="items">
+<a href="?op=editdomain"><img src="images/editdomain.png" alt="Activer ou d&eacute;sactiver un Domaine" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=editdomain">Activer ou d&eacute;sactiver un Domaine</a>
+</td>
+<td class="items">
+<a href="?op=transferdomain"><img src="images/transferdomain.png" alt="Transfert de Domaine A d'Autres utilisateurs" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=transferdomain">Transfert de Domaine A d'Autres utilisateurs</a>
+</td>
+<td class="items">
+<a href="?op=addredirect"><img src="images/addredirect.png" alt="Faire Suivre le Domaine" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=addredirect">Faire Suivre le Domaine</a>
+</td>
+<td class="items">
+<a href="?op=deletedomain"><img src="images/deletedomain.png" alt="Effacez le Domaine" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=deletedomain">Effacez le Domaine</a>
+</td>
+</tr>
+<tr>
+<td class="items">
+</td>
+<td class="items">
+<a href="?op=changemypass"><img src="images/changemypass.png" alt="Changez Mon Mot De Passe" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=changemypass">Changez Mon Mot De Passe</a>
+</td>
+<td class="items">
+<a href="?op=addscript"><img src="images/addscript.png" alt="Installation rapide De Scripts" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=addscript">Installation rapide De Scripts</a>
+</td>
+<td class="items">
+<a href="http://www.{selecteddomain}/webstats"><img src="images/webstats.png" alt="Statistiques De Site Web" width="32" height="32" class="item"></a>
+<br>
+<a href="http://www.{selecteddomain}/webstats">Statistiques De Site Web</a>
+</td>
+<td class="items">
+</td>
+<td class="items">
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+
+<!-- End of Homepagedomain_admin_fr.html -->
+<p class="copy">&copy; <a href="http://www.ehcp.net/" target="_blank" class="copy">EHCP</a>&nbsp; {ehcpversion}&nbsp; 2010</p>
+<p class="copy">Template:&nbsp; &copy; Eric Arnol-Martin&nbsp; 2010</p>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>
+
+	

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+
+	<meta charset="utf-8">
+	
+	
+	<!-- Global stylesheets -->
+	<link href="{templatedir}/css/reset.css" rel="stylesheet" type="text/css">
+	<link href="{templatedir}/css/common.css" rel="stylesheet" type="text/css">
+	<link href="{templatedir}/css/form.css" rel="stylesheet" type="text/css">
+	<link href="{templatedir}/css/standard.css" rel="stylesheet" type="text/css">
+	
+	<!-- Comment/uncomment one of these files to toggle between fixed and fluid layout -->
+	<!--<link href="{templatedir}/css/960.gs.css" rel="stylesheet" type="text/css">-->
+	<link href="{templatedir}/css/960.gs.fluid.css" rel="stylesheet" type="text/css">
+	
+	<!-- Custom styles -->
+	<link href="{templatedir}/css/simple-lists.css" rel="stylesheet" type="text/css">
+	<link href="{templatedir}/css/block-lists.css" rel="stylesheet" type="text/css">
+	
+	
+	
+	
+	<!-- Favicon -->
+	<link rel="shortcut icon" type="image/x-icon" href="{templatedir}/favicon.ico">
+	<link rel="icon" type="image/png" href="{templatedir}/favicon-large.png">
+	
+	<!-- Generic libs -->
+	{extra_js}
+	<script type="text/javascript" src="{templatedir}/js/html5.js"></script>				<!-- this has to be loaded before anything else -->
+	<script type="text/javascript" src="{templatedir}/js/old-browsers.js"></script>		<!-- remove if you do not need older browsers detection -->
+	
+	<!-- Template libs -->
+	<script type="text/javascript" src="{templatedir}/js/jquery.accessibleList.js"></script>
+	<script type="text/javascript" src="{templatedir}/js/searchField.js"></script>
+	<script type="text/javascript" src="{templatedir}/js/common.js"></script>
+	<script type="text/javascript" src="{templatedir}/js/standard.js"></script>
+	<!--[if lte IE 8]><script type="text/javascript" src="{templatedir}/js/standard.ie.js"></script><![endif]-->
+	<script type="text/javascript" src="{templatedir}/js/jquery.tip.js"></script>
+	<script type="text/javascript" src="{templatedir}/js/jquery.hashchange.js"></script>
+	<script type="text/javascript" src="{templatedir}/js/jquery.contextMenu.js"></script>
+	
+	<!-- Custom styles lib -->
+	<script type="text/javascript" src="{templatedir}/js/list.js"></script>
+	
+</head>
+
+<body>
+<!-- The template uses conditional comments to add wrappers div for ie8 and ie7 - just add .ie or .ie7 prefix to your css selectors when needed -->
+<!--[if lt IE 9]><div class="ie"><![endif]-->
+<!--[if lt IE 8]><div class="ie7"><![endif]-->
+	
+	<!-- Header -->
+	
+	<!-- Server status -->
+	<header><div class="container_12">
+		
+		<p id="skin-name"><small>Sky Skin EHCP<br>di 7SKYHOST</small> <strong>1.0</strong></p>
+		<div class="server-info">Server Web: <strong>{webserver}</strong></div>
+		<div class="server-info"><a href="z7/phpinfo.php" target="_blank">PHP Info</a></div>
+		
+	</div></header>
+	<!-- End server status -->
+
+	<!-- Main nav -->
+	<nav id="main-nav">
+		
+		<ul class="container_12">
+			<li class="home current"><a href="index.php" title="Inizio">Inizio</a>
+				<ul>
+					<li><a href="index.php" title="Pannello di Controllo">Pannello</a></li>
+					<li><a href="index.php?op=otheroperations" title="Altre Attività">Altre Attività</a></li>
+					<li><a href="index.php?op=serverstatus" title="Stato del Server">Stato del Server</a></li>
+					<li><a href="index.php?op=options" title="Opzioni">Opzioni</a></li>
+				</ul>
+			
+			</li>
+			<li class="write"><a href="#" title="Conti Email">Email</a>
+				<ul>
+					<li><a href="?op=listallemailusers" title="Lista Tutti gli Utenti Email">Lista Tutti gli Utenti Email</a></li>
+					<li><a href="?op=addemailuser" title="Aggiungi Indirizzo Email">Aggiungi Indirizzo Email</a></li>
+				</ul>
+			</li>
+			<li class="comments"><a href="#" title="Databases MySQL">MySQL</a>
+				<ul>
+					<li><a href="?op=domainop&amp;action=listdb" title="Lista DB MySQL">Lista DB MySQL</a></li>
+					<li><a href="?op=addmysqldb" title="Aggiungi DB ed Utente MySQL">Aggiungi DB ed Utente MySQL</a></li>
+					<li><a href="?op=addmysqldbtouser" title="Aggiungi DB MySQL ad Utente Esistente">Aggiungi DB MySQL ad Utente Esistente</a></li>
+					<li><a href="?op=dbadduser" title="Aggiungi Utente MySQL a DB Esistente">Aggiungi Utente MySQL a DB Esistente</a></li>
+				</ul>
+			</li>
+			<li class="medias"><a href="#" title="Conti FTP">FTP</a>
+				<ul>
+					<li><a href="?op=listallftpusers" title="Lista Tutti gli Utenti FTP">Lista Tutti gli Utenti FTP</a></li>
+					<li><a href="?op=addftpuser" title="Aggiungi Nuovo Utente FTP<br />/var/www/vhosts/<b>utenteftp</b>">Aggiungi Nuovo Utente FTP</a></li>
+					<li><a href="?op=addsubdirectorywithftp" title="Aggiungi FTP a Dominio Specifico">Aggiungi FTP a Dominio Specifico</a></li>
+					<li><a href="?op=addsubdomainwithftp" title="Aggiungi Sottodominio con FTP">Aggiungi Sottodominio con FTP</a></li>
+				</ul>
+			</li>
+			<li class="users"><a href="#" title="Utenti Pannello">Utenti</a>
+				<ul>
+					<li><a href="?op=listpanelusers" title="Lista Utenti Pannello">Lista Utenti Pannello</a></li>
+					<li><a href="?op=addpaneluser" title="Aggiungi Utente Pannello">Aggiungi Utente Pannello</a></li>
+				</ul>
+			</li>
+			<li class="stats"><a href="index.php?op=serverstatus" title="Stato del Server">Stato</a></li>
+			<li class="settings"><a href="index.php?op=options" title="Opzioni">Opzioni</a></li>
+			<li class="backup"><a href="#" title="Salvataggio">Salvataggio</a>
+			<ul>
+			<li><a href="index.php?op=dobackup" title="Crea un Salvataggio di Questo Server">Salvataggio Server</a></li>
+			<li><a href="index.php?op=dorestore" title="Ripristina un Salvataggio">Ripristino Salvataggio</a></li>
+			<li><a href="index.php?op=listbackups" title="Lista Tutti i Salvataggi di Questo Server">Lista Salvataggi</a></li>
+			</ul></li>
+		</ul>
+	</nav>
+	<!-- End main nav -->
+	
+	<!-- Sub nav -->
+	<div id="sub-nav"><div class="container_12">
+		
+		<!-- 
+		<a href="#" title="Help" class="nav-button"><b>Help</b></a> 
+		-->
+	<!--
+		<form method=post action="index.php?op=listdomains">
+		<div id="inputMenuSearch">
+                <input type=text name=aranan value='' id="search_txt">
+                <input type=submit value='' id="submitMenuSearch">
+		</div>
+		
+		<select id="select_search" name='arananalan' >
+                    <option value='domainname' >Domain</option>
+                    <option value='panelusername' >Username</option>
+                    <option value='reseller' >Reseller</option>
+                </select> 
+        </form>
+	-->
+	</div></div>
+	<!-- End sub nav -->
+	
+	<!-- Status bar -->
+	<div id="status-bar"><div class="container_12">
+	
+		<ul id="status-infos">
+			<li class="spaced">Collegato come: <strong>{username}</strong></li>
+			<li><a href="?op=logout" class="button red" title="Esci da EHCP"><span class="smaller">ESCI</span></a></li>
+		</ul>
+		<div align="left">Versione EHCP: <strong>{ehcpversion}</strong></div>
+
+	
+	
+	</div></div>
+	<!-- End status bar -->
+	
+	<div id="header-shadow"></div>
+	<!-- End header -->
+	
+	<!-- Always visible control bar -->
+	<div id="control-bar" class="grey-bg clearfix"><div class="container_12">
+	
+		<div class="float-left">
+			{selecteddomain}
+		</div>
+		
+			
+	</div></div> 
+	<!-- End control bar -->
+	
+	
+	<section class="grid_12">
+			<div class="block-border"><div class="block-content">
+				<h1>EHCP</h1>
+		{ickisim}
+      </div>
+	  </div>
+	</section>
+	
+	
+</body>
+</html>

@@ -1,0 +1,113 @@
+#____________start of {domainname}__paneluser:{panelusername}_reseller:{reseller}_id:{id}____________
+# Comment:  {aciklama}
+# this file used in Easy Hosting Control Panel (ehcp), www.ehcp.net
+
+<VirtualHost *>
+	ServerName  webmail.{domainname}
+	ServerAlias  email.{domainname}
+	ServerAlias  mail.{domainname}
+
+	DocumentRoot {ehcpdir}/webmail
+
+	LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
+	LogFormat "%v:%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" vhost_combined
+	LogFormat "%v:%p %h %l %u %t \"%{Host}i\" \"%r\" %>s %O \"%{Referer}i\" \"%{User-Agent}i\"" vhost_combined_host
+	CustomLog  {homedir}/logs/access_log combined
+	CustomLog  /var/log/apache2/access_log_multi.log vhost_combined_host
+
+	php_admin_value open_basedir "{ehcpdir}/webmail:/tmp:/var/www/php_sessions:/usr/share:/etc/roundcube:/var/lib/roundcube:/var/log/roundcube"
+	php_admin_value upload_tmp_dir "/tmp"
+	php_admin_value session.save_path "/var/www/php_sessions"
+
+</VirtualHost>
+
+<VirtualHost *>
+	ServerName  webmail2.{domainname}
+	ServerAlias  mail2.{domainname}
+	ServerAlias  email2.{domainname}
+
+	DocumentRoot {ehcpdir}/webmail2
+
+	LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
+	LogFormat "%v:%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" vhost_combined
+	LogFormat "%v:%p %h %l %u %t \"%{Host}i\" \"%r\" %>s %O \"%{Referer}i\" \"%{User-Agent}i\"" vhost_combined_host
+	CustomLog  {homedir}/logs/access_log combined
+	CustomLog  /var/log/apache2/access_log_multi.log vhost_combined_host
+	
+	php_admin_value open_basedir "{ehcpdir}/webmail2"
+	php_admin_value upload_tmp_dir "{ehcpdir}/webmail2/data"
+	php_admin_value session.save_path "{ehcpdir}/webmail2/data"
+	
+</VirtualHost>
+
+<VirtualHost *>
+	ServerName  cpanel.{domainname}
+	ServerAlias  panel.{domainname}
+	ServerAlias  ehcp.{domainname}
+	ServerAlias  cp.{domainname}
+
+	DocumentRoot {ehcpdir}
+
+	LogFormat "%v:%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" vhost_combined
+	LogFormat "%v:%p %h %l %u %t \"%{Host}i\" \"%r\" %>s %O \"%{Referer}i\" \"%{User-Agent}i\"" vhost_combined_host
+	CustomLog  /var/log/apache2/access_log_multi.log vhost_combined_host
+
+	php_admin_value open_basedir {ehcpdir}
+	
+	<Files  ~ "\.conf$">
+		Order allow,deny
+		Deny from all
+	</Files>
+	
+	<Files  ~ "\.txt$">
+		Order allow,deny
+		Deny from all
+	</Files>
+	
+	<Files  ~ "\.log$">
+		Order allow,deny
+		Deny from all
+	</Files>
+	
+	<Files  ~ "\.sh$">
+		Order allow,deny
+		Deny from all
+	</Files>
+
+</VirtualHost>
+
+<VirtualHost *>
+	ServerName   {domainname}
+	ServerAlias  www.{domainname} {wildcarddomain} # this is changed to *.{domainname} within classapp.php
+	# buraya aliaslar yazilacak..
+	{aliases}
+		
+	UseCanonicalName Off
+	DocumentRoot {homedir}/httpdocs
+	DirectoryIndex index.htm index.html index.php
+	
+	# this combined log format is understandable by webalizer... some other formats are not recognised by webalizer.. thats why, specified here explicitly.. 
+	LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
+	LogFormat "%v:%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" vhost_combined
+	LogFormat "%v:%p %h %l %u %t \"%{Host}i\" \"%r\" %>s %O \"%{Referer}i\" \"%{User-Agent}i\"" vhost_combined_host
+	CustomLog  {homedir}/logs/access_log combined
+	CustomLog  /var/log/apache2/access_log_multi.log vhost_combined_host
+	
+	# this is pear compatible:
+	php_admin_value open_basedir "{homedir}:/usr/share/php:/usr/share/pear"
+	php_admin_value upload_tmp_dir "{homedir}/phptmpdir"
+	php_admin_value session.save_path "{homedir}/phptmpdir"
+	php_admin_value disable_functions "exec,passthru,shell_exec,system,proc_open,popen"
+
+	AccessFileName .htaccess
+	
+	Header set Access-Control-Allow-Origin "*"
+	Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+
+	{customhttp}
+	{root_password_protected_dirs}
+	{password_protected_dirs}
+	{webstats_password_protection}
+
+</VirtualHost>
+#____________end of {domainname}__paneluser:{panelusername}_reseller:{reseller}_id:{id}____________

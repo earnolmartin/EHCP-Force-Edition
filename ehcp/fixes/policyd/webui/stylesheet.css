@@ -1,0 +1,248 @@
+/*
+ *
+ * Web interfce stylesheet
+ * Copyright (C) 2009-2011, AllWorldIT
+ * Copyright (C) 2008, LinuxRulz
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+
+body{
+	color:#999999;
+	font-family: Arial, Sans-Serif;
+}
+
+
+
+/*
+ * Main table
+ */
+#maintable {
+	width: 100%;
+}
+
+
+/*
+ * Header
+ */
+#header{
+	background: #000000 url('images/bg.jpg') bottom center repeat-x;
+	text-align: center;
+	font-size: 150%;
+	font-weight: bold;
+}
+
+
+
+/*
+ * Left hand menu
+ */
+#menu {
+	background-image: url("images/strips_onside.jpg");
+	background-repeat: repeat-y;
+	vertical-align: top;
+}
+
+#menu img {
+    border: none;
+}
+
+#menu p {
+	padding-right: 10px;
+	margin-left: 5px;
+	color:#888;
+}
+
+#menu a:link, a:visited {
+	color:#888;
+	text-decoration: none;
+}
+
+#menu a:hover, a:active {
+	color:#FF6666;
+}
+
+#menu ul {
+	margin-top: 0px;
+	list-style: url(images/bullet.jpg) disc;
+}
+
+#menu p {
+	font-size: 110%;
+	font-weight: bold;
+	margin-bottom: 0;
+	margin-top: 10px;
+}
+
+
+
+
+/* 
+ * Footer
+ */
+#footer{
+	background: #000000 url('images/bg.jpg') top center repeat-x;
+	text-align: center;
+	font-weight: bold;
+}
+
+#footer a, a:link {
+	color: #999999;
+	text-decoration: none;
+}
+
+#footer a:hover {
+	color: #A5CE77;
+	text-decoration: none;
+}
+
+#footerimages {
+	border: none;
+	text-align: center;
+}
+
+
+/*
+ * Top Menu  (tabs)
+ */
+#topmenu ul {
+	margin: 0;
+	padding: 0 0 0 0;
+	list-style: none;
+}
+#topmenu li {
+	display: inline;
+	margin: 0;
+	padding: 0;
+}
+#topmenu a {
+	float: left;
+	background: url(images/menuleft.gif) no-repeat left top;
+	margin: 0 5px 0 0;
+	padding: 0 0 0 4px;
+	text-decoration: none;
+}
+
+#topmenu a span {
+	float: left;
+	display: block;
+	background: url(images/menuright.gif) no-repeat right top;
+	padding: 5px 15px 4px 6px;
+	color: #000888;
+}
+
+/* Commented Backslash Hack hides rule from IE5-Mac \*/
+#topmenu a span {
+	float: none;
+}
+/* End IE5-Mac hack */
+#topmenu a:hover span {
+	color: #999999;
+}
+#topmenu a:hover {
+	background-position: 0% -42px;
+}
+#topmenu a:hover span {
+	background-position: 100% -42px;
+}
+
+
+/*
+ * Main content
+ */
+.content {
+	width: 100%;
+	vertical-align: top;
+}
+
+/*
+ * Main window content
+ */
+.pageheader {
+	background-color: #999999;
+	color: #000000;
+	width: 100%;
+	border: 1px solid black;
+	text-align: center;
+	font-weight: bold;
+	font-size: 110%;
+}
+
+/* 
+ * Results table 
+ */
+.results {
+	border: none;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.resultstitle td {
+	font-weight: bolder;
+	border: 1px solid black;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+.resultsitem td {
+	border-bottom: 1px dashed black;
+}
+
+
+/* 
+ * Entry tables 
+ */
+.entry {
+	border: solid black 1px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.entrytitle {
+	font-weight: bolder;
+}
+
+.oldval {
+	background-color: #eeeeee;
+}
+
+
+/*
+ * Misc
+ */
+.texttop {
+	vertical-align: top;
+}
+
+.textcenter {
+	text-align: center;
+}
+
+#noborder {
+	border: none;
+}
+
+a.help img {
+	border: none;
+}
+
+#tooltip {
+	position: absolute;
+	z-index: 200;
+}
+
+/* 
+ * vim: ts=4 
+ */

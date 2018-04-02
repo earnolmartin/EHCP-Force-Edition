@@ -1,0 +1,39 @@
+table.main{width: 100%; padding: 0px;}
+td.menu{background: #ff9dfc; border: 4px solid #790096; cursor: pointer; font-family: 'arial'; font-weight: normal; font-size: 18px; color: black; width:20%; height: 60px; text-align: center; padding: 0px; vertical-align: middle; text-decoration: none;}
+td.menu:hover{background: #a808a3; cursor: pointer; color: white; text-decoration: underline;}
+td.logo{background: url('../../images/bg_purple.jpg') #76d32a repeat-x; width: 50%;}
+table.submain{width: 100%; margin-left: auto; margin-right: auto;}
+td.subText{font-family: 'arial'; font-weight: normal; font-size: 17px; color: black; width: 50%; text-align:left; border-bottom: solid 4px black; padding:0px; margin: 0px;}
+td.subTextRight{border-bottom: solid 4px black; padding: 0px; margin: 0px;}
+td.func{text-align: right; vertical-align: middle; background-color: green; width: 50%; border-bottom: solid 6px #26ff01; padding-right: 5px;}
+td.subDesc{font-family: 'arial'; font-weight: normal; font-size: 17px; color: black; background-color: green; width: 17%; text-align:center; border-bottom: solid 4px yellow;}
+/*hr.green{margin-top: 0px; margin-bottom: 0px; padding: 0px; border: 3px solid #00820b; vertical-align: bottom; display: block; width: 100%;}*/
+.title{color: white; font-weight: bold; font-size: 20px; font-family: 'arial'; margin:0px; padding: 3px; background: url('../../images/bar_purple.jpg') ;}
+p.title2{color: black; font-weight: bold; font-size: 16px; font-family: 'arial'; margin:0px; padding: 3px;}
+p.title3{color: black; font-weight: bold; font-size: 16px; font-family: 'arial'; margin:0px; padding: 3px;}
+body{margin: 0px; background-color: #eecbff; text-align: center;}
+p.mainTitle{text-align: center; font-family: 'arial'; font-weight: bold; color: white; font-size: 26px; vertical-align: middle;}
+a, a:active, a:visited{font-weight: bold; font-size: 16px; font-family: 'arial'; color: purple; text-decoration: none;}
+a:hover{color: blue; text-decoration: underline;}
+td.action{font-family: 'arial'; font-weight: normal; font-size: 16px; width: 100%;}
+td.items{width: 17%; text-align: center; padding: 6px;}
+img.item{border: 0px;}
+tr.display{margin:0px;}
+img.func{float: right; vertical-align: middle; cursor: pointer; width: 13px; height: 13px;}
+td.textInside{font-family: 'arial'; font-weight: bold; font-size: 16px; color: black; text-align: left;}
+img.logo{text-align: left; display: block; margin-left: 0px; margin-right: auto;}
+p.copy{font-family: 'arial'; font-weight: bold; font-size: 10px; color: black; text-align:center;}
+a.copy{font-family: 'arial'; font-weight: bold; font-size: 10px; color: purple;}
+a.copy:hover{color: blue;}
+iframe{background-color: #caffc1;}
+td.login{padding: 10px; width: 50%;}
+td.templateChange{width: 60%; text-align: right; font-family: 'arial'; font-size: 14px; font-weight: bold; color: black;} 
+td.templateChange2{width: 20%; text-align: left; font-family: 'arial'; font-size: 14px; font-weight: bold; color: black;}
+td.templateChangeSelect{width: 20%; text-align: left; font-family: 'arial'; font-size: 14px; font-weight: bold; color: black;}
+a.logout{font-family: 'arial'; font-weight: bold; font-size: 15px; text-decoration: none;}
+a.logout:hover{color: blue; text-decoration: underline;}
+td.topFunc{padding-left: 7px; font-family: 'arial'; font-weight: normal; font-size: 15px; color: black;}
+td.topFunc2{padding-right: 7px; font-family: 'arial'; font-weight: normal; font-size: 15px; color: black;}
+table.startOfInsides{width: 98%; margin-right: auto; margin-left: auto;}
+td.inWidth{width: 100%; font-family: 'arial'; font-weight: bold; font-size: 15px;}
+p{font-family: 'arial'; font-weight: bold; font-size: 15px; color: black;}

@@ -1,0 +1,22 @@
+EHCP Change Password plugin for SquirrelMail
+===========================================
+Version 1.0, 31/12/2009 (dd-mm-yyyy)
+
+Authors: Chandra Bhushan <cdbhushan@gmail.com>
+
+
+
+Description
+===========
+
+This plugin allows the user to change their password 
+from the comfort of their webmail interface when it's 
+stored in a MYSQL database. 
+
+This plugin supports passwords that are stored using
+MySQL encrypt() functions.
+
+Requirements
+============
+ * SquirrelMail
+ * EHCP

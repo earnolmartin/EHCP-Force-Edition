@@ -1,0 +1,14 @@
+/etc/courier/authmysqlrc:
+change:
+MYSQL_CRYPT_PWFIELD password
+#MYSQL_CLEAR_PWFIELD password
+
+to
+#MYSQL_CRYPT_PWFIELD password
+MYSQL_CLEAR_PWFIELD password
+
+
+update classapp.php
+
+update tables: mysqldb, mysqldbusers
+add table: scripts, servers,

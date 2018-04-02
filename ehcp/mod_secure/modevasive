@@ -1,0 +1,11 @@
+<ifmodule mod_evasive20.c>
+DOSHashTableSize 3097
+DOSPageCount 30
+DOSSiteCount 250
+DOSPageInterval 1
+DOSSiteInterval 1
+DOSBlockingPeriod 30
+DOSLogDir /var/log/mod_evasive
+DOSEmailNotify changeme@gmail.com
+DOSWhitelist 127.0.0.1
+</ifmodule>

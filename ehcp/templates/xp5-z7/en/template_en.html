@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta name="author" content="Thanks to deconectat from www.ehcp.net for this greate template for ehcp">
+	<title>EHCP - Easy Hosting Control Panel - {myip}</title>	
+	<link href="{stylefile}" type="text/css" rel="stylesheet">
+	{extra_js}
+</head>
+<body>
+
+<!-- left -->
+<div style="height: 100%;" id="divLeft">
+<img src='images/ehcp_logo2.png' width=200 height=100><br>
+	<div id="divMenuSearch">
+		<form method=post action="index.php?op=listdomains">
+			<input type=text name=aranan value='' id="inputMenuSearch">
+			<select name='arananalan' id="selectMenuSearch">
+				<option value='domainname' >Domain</option>
+				<option value='panelusername' >Username</option>
+			</select>
+			<input type=submit value=Search id="submitMenuSearch">
+		</form>
+	</div>
+
+	<div class="divMenu">
+		<div class="InfoPaneHeader">Main Menu</div>
+		<div class="InfoPaneRow">
+			<a href="."><b>Home</b></a> |
+			<a href="?op=otheroperations">old version</a><br>
+			<br>
+			
+			<a href="index.php?op=listpanelusers"><b>All clients</b></a> |
+			<a href="index.php?op=resellers"><b>Resellers</b></a><br>
+			<br>
+			<a href="index.php?op=listselectdomain"><b>DOMAINS</b></a> |
+			<a href="index.php?op=listpassivedomains">Passive domains</a><br>
+			- <a href="index.php?op=addDomainToThisPaneluser"><b>Add</b> (to my FTP user)</a> | 
+			<a href="index.php?op=bulkadddomain"><b>Bulk</b></a><br>
+			- <a href="index.php?op=adddomaineasy"><b>Add</b> new (quick)</a><br>
+			- <a href="index.php?op=adddomain"><b>Add</b> new (custom)</a><br>
+			- <a href="index.php?op=adddnsonlydomain">Add DNS only</a>
+		</div>
+	</div>
+
+	<div class="divMenu">
+		<div class="InfoPaneHeader">Tools</div>
+		<div class="InfoPaneRow">
+			<a target="_blank" href="webmail"><b>Webmail</b> (SquirrelMail)</a><br>
+			<a target="_blank" href="/phpmyadmin"><b>phpMyAdmin</b></a><br>
+			<a target="_blank" href="net2ftp">WebFtp (net2ftp)</a>
+		</div>
+	</div>
+
+	<div class="divMenu">
+		<div class="InfoPaneHeader">System</div>
+		<div class="InfoPaneRow">	
+			<a target="_blank" href="sysinfo">Sys. information</a> | 
+			<a href="index.php?op=serverstatus">Server status</a><br>
+			<a target="_blank" href="z7/phpinfo.php">phpinfo()</a><br>
+			<br>
+			
+			<a href="index.php?op=options"><b>Options</b></a> | 
+			<a href="index.php?op=changetemplate">Templates</a><br>
+			<a href="index.php?op=dobackup"><b>Backup</b></a> | 
+			<a href="index.php?op=listbackups">List</a><br>
+			<br>
+			
+			<a href="?op=logout"><b>Logout</b></a> | 
+			<a href="index.php?op=changemypass">Change my password</a>
+		</div>
+	</div>
+</div>
+
+<!-- right -->
+<div id="divMainRightHeader">
+	<div style="float: right;">Welcome, <b>{username}</b>! <a href="?op=logout">Log Out</a></div>
+	{banner}
+</div>
+<div id="divMainContainer">
+	<div id="divMain" align="left">
+		  {selecteddomain}
+		  {ickisim}
+
+      <br><br>
+<iframe marginwidth="0" marginheight="0" scrollbars="none" src="http://www.ehcp.net/latest/" frameborder="0" height="120" scrolling="no" width="600"></iframe>
+<br>
+<script type="text/javascript"><!--
+google_ad_client = "pub-0768633782379013";
+google_ad_width = 468;
+google_ad_height = 60;
+google_ad_format = "468x60_as";
+google_ad_type = "text_image";
+google_ad_channel = "";
+//-->
+</script>
+<script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+
+
+	</div>
+</div>
+
+<div id="divCopy">
+	Powered by <a href="http://www.ehcp.net/" target="_blank">EHCP</a> {ehcpversion} <br>(xp5-z7 mod)
+</div>
+
+</body>
+</html>

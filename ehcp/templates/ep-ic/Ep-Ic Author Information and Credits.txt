@@ -1,0 +1,30 @@
+Theme Information:!
+!!!!!!!!!!!!!!!!!!!
+
+Author:	 Eric Arnol-Martin (earnolmartin@gmail.com)
+Last Update:		August 19, 2013
+Template:	Ep-Ic
+Hand Coded Using Proper HTML
+
+Tested in latest EHCP version.
+
+To do in the future:
+
+Add more colored themes.
+
+Languages Supported:  English, French, Spanish
+
+!!!!!!!!!!!!!!!!!!!
+Credits:	        !
+!!!!!!!!!!!!!!!!!!!
+
+
+Spanish Theme Translated By:  Ricardo Dlima (mocho_ms13@hotmail.com)
+French Theme Translated By:   Pascale Arnol (pascalearnol@yahoo.com) & Alex Arnol (Alex.Arnol@free.fr)  & Fred Eyer (fredeyer@comcast.net)
+
+!!!!!!!!!!!!!!!!!!!
+Latest Updates:	  !
+!!!!!!!!!!!!!!!!!!!
+New Easier to Use Interface
+Templates Auto Generated from Database
+PHPMyAdmin, Webmail, and Net2FTP now open in a new Window / Tab

@@ -1,0 +1,17 @@
+## QoS module Settings
+<IfModule mod_qos.c>
+# handles connections from up to 100000 different IPs
+QS_ClientEntries 100000
+# will allow only 50 connections per IP
+QS_SrvMaxConnPerIP 50
+# maximum number of active TCP connections is limited to 256
+MaxClients 256
+# disables keep-alive when 70% of the TCP connections are occupied:
+QS_SrvMaxConnClose 180
+# minimum request/response speed (deny slow clients blocking the server,
+# ie. slowloris keeping connections open without requesting anything):
+QS_SrvMinDataRate 150 1200
+# and limit request header and body (carefull, that limits uploads and post requests too):
+# LimitRequestFields 30
+# QS_LimitRequestBody 102400
+</IfModule>

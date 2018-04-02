@@ -1,0 +1,159 @@
+body {
+	background-color: #ffffff;
+	font-family: Tahoma, sans-serif;
+	font-size: 11px;
+	color: #000000;
+	margin: 0;
+	padding: 0;
+}
+
+h1 {
+	color: #535353;
+	font-size: 1.5em;
+}
+
+input, textarea, select {
+    border: 1px solid #cccccc;
+    background-color: #f2f2f2;
+}
+
+table {
+	border: 2px solid #eee;
+	border-collapse: collapse;
+	margin: 1em 0;
+}
+th, td {
+	border: 1px solid #eee;
+	padding: 3px;
+}
+
+.hidethis {
+	display: none;
+}
+
+.topnavigator {
+	border: 1px solid #cccccc;
+	margin: 1em 0;
+	padding: 0 1em;
+	background-color: #f2f2f2;
+}
+.topnavigator img {
+	vertical-align: middle;
+}
+
+.content {
+	width: 100%;
+	border: 1px solid #cccccc;
+	margin-bottom: 1em;
+}
+
+.title {
+	vertical-align: middle;
+	border-bottom: 1px solid #cccccc;
+	background-color: #f2f2f2;
+	color: #535353;
+	font-size: 2em;
+	padding: 3px;
+}
+.title img {
+	vertical-align: middle;
+}
+
+#tblcontent {
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	border: none;
+}
+#tblcontent td {
+	width: 50%;
+	padding: 0;
+	margin: 0;
+	padding: 0 .5em;
+	vertical-align: top;
+	border: none;
+}
+
+#divMenuSearch {
+	width: 175px;
+	border: 1px solid #ffffff;
+	background-color: #F0F1F5;
+	padding: 5px;
+	margin: 10px;
+}
+#inputMenuSearch {
+	width: 173px; 
+	margin-bottom: 5px;
+	background-color: #ffffff;
+}
+#selectMenuSearch {
+	width: 100px;
+	background-color: #ffffff;
+}
+#submitMenuSearch {
+	width: 70px;
+}
+
+#divLeft {
+	position: absolute; 
+	top: 0px;
+	left: 0px;
+	width: 209px;
+	height: 100%;
+	background-color: #C3C7D3;
+	z-index: 100;
+	overflow: hidden;
+}
+.divMenu {
+	margin: 10px;
+	width: 185px;
+}
+
+#divCopy {
+	color: #555555;
+	position: absolute;
+	bottom: 0;
+	padding-bottom: 3px;
+	left: 0px;
+	width: 209px;
+	text-align: center;
+	background-color: #C3C7D3;
+	z-index: 101;
+}
+
+#divMainRightHeader {
+	padding: 1em 1em 1em 220px;
+	background-color: #f2f2f2;
+	border-bottom: 1px solid #cccccc;
+}
+#divMainContainer {
+	margin: 1em 1em 1em 220px;
+}
+
+a{
+	color: #2F4DAA;
+	text-decoration: none;
+}
+a:hover {
+	color: #7E7C9A;
+	text-decoration: underline;
+}
+
+.InfoPaneHeader {
+	background-image: url(InfoPaneHeaderOpen.gif);
+	background-position: top left;
+	background-repeat: no-repeat;
+	font-weight: bold;
+	padding-left: 12px;
+	line-height: 23px;
+}
+.InfoPaneRow {
+	background-color: #F0F1F5;
+	padding-left: 12px;
+	padding-bottom: 1em;
+	padding-top: 0.7em;
+}
+
+.info {
+	padding: 1em;
+}

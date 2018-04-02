@@ -1,0 +1,42 @@
+# this file used in Easy Hosting Control Panel (ehcp), www.ehcp.net
+
+<VirtualHost *>
+	
+	ServerName default
+	DocumentRoot /var/www/new
+	<Directory />
+			Options +FollowSymLinks
+			AllowOverride None
+	</Directory>
+	
+	<Files  ~ "\.conf$">
+		Order allow,deny
+		Deny from all
+	</Files>
+		
+	<Files  ~ "\.txt$">
+		Order allow,deny
+		Deny from all
+	</Files>
+	
+	<Files  ~ "\.log$">
+		Order allow,deny
+		Deny from all
+	</Files>
+	
+	<Files  ~ "\.sh$">
+		Order allow,deny
+		Deny from all
+	</Files>
+
+	AccessFileName .htaccess	
+	
+	ErrorLog /var/log/apache2/default.error.log
+	CustomLog /var/log/apache2/default.access.log vhost_combined
+	
+	php_admin_value open_basedir "/var/www:/tmp:/usr/share:/etc/roundcube:/etc/phpmyadmin:/var/lib/phpmyadmin:/var/lib/roundcube:/var/log/roundcube"
+	php_admin_value upload_tmp_dir "/tmp"
+	php_admin_value session.save_path "/var/www/php_sessions"
+
+</VirtualHost>
+

@@ -1,0 +1,81 @@
+#!/bin/bash
+# By ehcpforce.tk
+### BEGIN INIT INFO
+# Provides:          ehcp
+# Required-Start:    $remote_fs $all
+# Required-Stop:     $remote_fs
+# Should-Start:      $remote_fs
+# Should-Stop:       $remote_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6	
+# Short-Description: starts ehcp
+# Description:       Starts The EHCP Daemon
+### END INIT INFO
+
+echo
+echo
+
+show_ehcp(){
+	ps aux | grep ehcpdaemon2  | grep -v grep
+	ps aux | grep "index.php daemon"  | grep -v grep
+	
+	return 0
+}
+
+ehcp_start(){
+	echo "Your OS info:"
+	cat /etc/*ele*
+	
+	echo "starting ehcp.."
+	cd /var/www/new/ehcp
+	./ehcpdaemon.sh
+	show_ehcp
+		
+	return 0
+}
+
+ehcp_stop(){
+	echo "stopping ehcp.."
+	
+	echo "stopping ehcpdaemon2.sh"
+	ps aux | grep ehcpdaemon2 | grep -v grep | awk '{print $2}' | xargs kill -9  > /dev/null 2>&1
+	
+	echo "stopping index.php daemon"
+	ps aux | grep "index.php daemon" | grep -v grep | awk '{print $2}' | xargs kill -9 > /dev/null 2>&1
+		
+	show_ehcp
+	
+	return 0
+}
+
+
+case $1 in
+	start)
+		ehcp_start
+		RETVAL=$?
+	;;
+
+	stop)
+		ehcp_stop
+		RETVAL=$?
+	;;
+
+	restart)
+		ehcp_stop
+		ehcp_start
+		RETVAL=$?
+	;;
+	
+	status)
+		show_ehcp
+		RETVAL=$?
+	;;
+
+	*)
+		echo "Usage: service ehcp {start|stop|restart|status}"
+		RETVAL=1
+	;;
+esac
+exit $RETVAL
+
+

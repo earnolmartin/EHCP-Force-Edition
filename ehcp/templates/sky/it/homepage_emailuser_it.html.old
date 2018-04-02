@@ -1,0 +1,105 @@
+<!-- Content -->
+	<article class="container_12">
+		
+		<section class="grid_4">
+			<div class="block-border"><div class="block-content">
+				<h1>Operazioni Veloci</h1>
+				
+				<ul class="favorites no-margin with-tip" title="Operazioni Veloci">
+					
+					<li>
+						<img src="{templatedir}/images/icons/web-app/48/chive.png" width="48" height="48">
+						<a href="/ehcp/chive" target="_blank">Chive<br>
+						<small>MySQL &gt; Chive</small></a>
+					</li>
+					
+					<li>
+						<img src="{templatedir}/images/icons/web-app/48/phpmyadmin.png" width="48" height="48">
+						<a href="/phpmyadmin" target="_blank">PHPmyAdmin<br>
+						<small>MySQL &gt; PHPmyAdmin</small></a>
+					</li>
+					
+					<li>
+						<img src="{templatedir}/images/icons/web-app/48/squirrelmail.png" width="48" height="48">
+						<a href="webmail2" target="_blank">Posta Squirrel<br>
+						<small>Email &gt; Posta Squirrel</small></a>
+					</li>
+					
+					<li>
+						<img src="{templatedir}/images/icons/web-app/48/roundcube.png" width="48" height="48">
+						<a href="webmail" target="_blank">Posta Roundcube<br>
+						<small>Email &gt; Posta RoundCube</small></a>
+					</li>
+					
+					<li>
+						<img src="{templatedir}/images/icons/web-app/48/net2ftp.png" width="48" height="48">
+						<a href="net2ftp" target="_blank">Gestore File<br>
+						<small>FTP &gt; Net2FTP/Gestore File</small></a>
+					</li>
+					
+					
+					
+				</ul>
+				
+				
+				
+			</div></div>
+		</section>
+		
+		
+		<section class="grid_8">
+			<div class="block-border"><div class="block-content">
+				<h1>Pannello di Controllo</h1>
+				
+				
+			
+				
+                <h3>Email</h3>
+                <ul class="shortcuts-list">
+                    <li><a href="?op=listallemailusers" title="Lista Tuttli gli Indirizzi Email">
+                        <img src="{templatedir}/images/icons/web-app/48/Modify.png" width="48" height="48">Lista Tuttli gli Indirizzi Email
+                    </a></li>
+                    <li><a href="?op=addemailuser" title="Aggiungi un Indirizzo Email">
+                        <img src="{templatedir}/images/icons/web-app/48/Add.png" width="48" height="48">Aggiungi un Indirizzo Email
+                    </a></li>
+                    <li><a href="?op=bulkaddemail" title="Aggiungi Gruppo di Indirizzi Email">
+                        <img src="{templatedir}/images/icons/web-app/48/Add.png" width="48" height="48">Aggiungi Gruppo di Indirizzi Email
+                    </a></li>
+                    <li><a href="?op=emailforwardings" title="Lista Inoltri Email">
+                        <img src="{templatedir}/images/icons/web-app/48/email_forward.png" width="48" height="48">Lista Inoltri Email
+                    </a></li>
+                    <li><a href="?op=addemailforwarding" title="Aggiungi Inoltro Email">
+                        <img src="{templatedir}/images/icons/web-app/48/emailforward_add.png" width="48" height="48">Aggiungi Inoltro Email
+                    </a></li>
+                    </ul>
+                    <ul class="shortcuts-list">
+                    <li><a href="webmail2" title="Webmail/Posta Squirrel" target="_blank">
+                        <img src="{templatedir}/images/icons/web-app/48/squirrelmail.png" width="48" height="48">Posta Squirrel
+                    </a></li>
+                    <li><a href="webmail" title="Webmail/Posta Roundcube" target="_blank">
+                        <img src="{templatedir}/images/icons/web-app/48/roundcube.png" width="48" height="48">Posta RoundCube
+                    </a></li>
+                </ul>
+			
+			</div></div>
+		</section>
+		
+				
+	
+	<!-- End content -->
+	
+	<footer>
+		<!--
+		<div class="float-left">
+			<a href="#" class="button">Help</a>
+			<a href="#" class="button">About</a>
+		</div>
+		-->
+		<div class="float-right">
+			<a href="#top" class="button"><img src="{templatedir}/images/icons/fugue/navigation-090.png" width="16" height="16"> Inizio pagina</a>
+		</div>
+		
+	</footer>
+
+<!--[if lt IE 8]></div><![endif]-->
+<!--[if lt IE 9]></div><![endif]-->

@@ -1,0 +1,19 @@
+.tooltip {
+	width: 200px;
+	color: #00000;
+	font: 11px Arial, sans-serif;
+	font-weight: bold;
+	text-decoration: none;
+	text-align: center
+}
+
+.tooltip span.top {
+	padding: 30px 8px 0;
+	background: url(bt.gif) no-repeat top;
+}
+
+.tooltip b.bottom {
+	padding:3px 8px 15px;
+	color: #548912;
+	background: url(bt.gif) no-repeat bottom;
+}

@@ -1,0 +1,3 @@
+<ifmodule mod_security2.c>
+Include mod_security_rules/*.conf
+</ifmodule>

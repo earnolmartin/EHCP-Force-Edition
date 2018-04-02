@@ -1,0 +1,65 @@
+table.main{width: 100%; padding: 0px;}
+table.submain{width: 100%; margin-left: auto; margin-right: auto;}
+td.func{text-align: right; vertical-align: middle; background-color: green; width: 50%; border-bottom: solid 6px #26ff01; padding-right: 5px;}
+td.subDesc{font-family: 'arial'; font-weight: normal; font-size: 17px; color: black; background-color: green; width: 17%; text-align:center; border-bottom: solid 4px yellow;}
+p.title2{color: black; font-weight: bold; font-size: 16px; font-family: 'arial'; margin:0px; padding: 3px;}
+p.title3{color: black; font-weight: bold; font-size: 16px; font-family: 'arial'; margin:0px; padding: 3px;}
+body{margin: 0px; background-color: #c1ffd8; text-align: center;}
+p.mainTitle{float: right; margin: 0px 25px 0px 0px; font-family: 'arial'; font-weight: bold; color: white; font-size: 26px; vertical-align: middle; padding: 0px;}
+td.action{font-family: 'arial'; font-weight: normal; font-size: 16px; width: 100%;}
+img.item{border: 0px;}
+tr.display{margin:0px;}
+img.func{float: right; vertical-align: middle; cursor: pointer; width: 13px; height: 13px;}
+td.textInside{font-family: 'arial'; font-weight: bold; font-size: 16px; color: black; text-align: left;}
+p.copy{font-family: 'arial'; font-weight: bold; font-size: 10px; color: black; text-align:center;}
+a.copy{font-family: 'arial'; font-weight: bold; font-size: 10px; color: green;}
+a.copy:hover{color: #088478;}
+iframe{background-color: #caffc1;}
+td.login{padding: 10px; width: 50%;}
+td.templateChange{width: 60%; text-align: right; font-family: 'arial'; font-size: 14px; font-weight: bold; color: black;} 
+td.templateChange2{width: 20%; text-align: left; font-family: 'arial'; font-size: 14px; font-weight: bold; color: black;}
+td.templateChangeSelect{width: 20%; text-align: left; font-family: 'arial'; font-size: 14px; font-weight: bold; color: black;}
+a.logout{font-family: 'arial'; font-weight: bold; font-size: 15px; text-decoration: none;}
+a.logout:hover{color: #088478; text-decoration: underline;}
+table.startOfInsides{width: 98%; margin-right: auto; margin-left: auto;}
+td.inWidth{width: 100%; font-family: 'arial'; font-weight: normal; font-size: 17px;}
+
+/* Added or Changed in Version 1.03 Updates */
+div.items{text-align: center; padding: 6px; background-color: #c1ffd8; cursor: pointer; float: left; margin-left: 10px; margin-right: 10px; color: green; width: 175px; height: 80px;}
+div.items:hover, div.items:hover a, div.items:hover a:active, div.items:hover a:visited{background-color: #0b4710; color: white; text-decoration: underline;}
+a, a:active, a:visited{font-size: 17px; font-family: 'arial'; color: green; text-decoration: underline;}
+a:hover{color: #088478; text-decoration: none;}
+td.menu{background: #005820; border-top: 5px solid black; border-bottom: 5px solid black; cursor: pointer; font-family: 'arial'; font-weight: normal; font-size: 22px; color: white; width:20%; height: 60px; text-align: center; padding: 0px; vertical-align: middle; text-decoration: underline;}
+td.menu:hover{background: #00683e; color: white; cursor: pointer; text-decoration: underline; font-size: 24px;}
+tr.logo{background: url('../images/bg.jpg') #0b4710 repeat-x; width: 100%;}
+.center{margin-right: auto; margin-left: auto;}
+.centerTable{margin-right: auto; margin-left: auto; border: 0px; padding: 0px; vertical-align: top; margin-top: 0px; margin-bottom: 0px;}
+td.sideLogoTD{width: 20%;}
+td.centerLogoTD{width: 60%;}
+td.topFunc{padding-left: 7px; font-family: 'arial'; font-weight: normal; font-size: 17px; color: black; text-align: left; vertical-align: top; width: 40%;}
+td.topFunc2{padding-right: 7px; font-family: 'arial'; font-weight: normal; font-size: 17px; color: black; text-align: right; vertical-align: top; width: 40%;}
+.changeTheme{vertical-align: top; width: 20%;}
+img.logo{border: 0px; float: left;}
+.title{color: white; font-weight: bold; font-size: 20px; font-family: 'arial'; margin:0px; padding: 3px; background: #0b4710;}
+.titleDiv{color: white; font-weight: bold; font-size: 20px; font-family: 'arial'; margin:0px; padding: 5px; background: #0b4710; width: 200px; vertical-align: bottom; float: left;}
+td.subText{font-family: 'arial'; font-weight: normal; font-size: 17px; color: black; width: 50%; text-align:left; border-bottom: solid 4px #0b4710; padding:0px; margin: 0px;}
+td.subTextRight{border-bottom: solid 4px black; padding: 0px; margin: 0px;}
+p{font-family: 'arial'; font-weight: normal; font-size: 17px; color: black;}
+
+div.similarFunctions a{
+	padding: 5px;
+	margin-left: 5px;
+	margin-right: 5px;
+	float: left;
+	margin-top: 10px;
+}
+/* td.logoLeft{background: #0b4710 repeat-x; width: 244px;}
+   td.logoRight{background: #0b4710 repeat-x; width: 244px;}
+*/
+
+/* Removed in Version 1.03 Updates */
+/*
+.contain{border-right: 4px solid #0b4710; border-left: 4px solid #0b4710; border-bottom: 4px solid #0b4710; width: 100%;}
+td.items2{width: 17%; text-align: center; padding: 6px; background-color: #b6d6c2; cursor: pointer;}
+td.items2:hover, td.items2:hover a, td.items2:hover a:active, td.items2:hover a:visited{background-color: #0b4710; color: white; text-decoration: underline;}
+*/

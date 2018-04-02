@@ -1,0 +1,191 @@
+body{
+	voice-family: betty, female;
+	font-family:tahoma;
+	font-size:8pt;
+	font-style:normal;
+	margin: 0px;
+	/*background-color:#005197;*/
+}
+hr{
+	border:1px solid #0C1163;
+}
+ul {
+	list-style-position: outside;
+	list-style-type:square;
+}
+td{
+font-family:tahoma;
+font-style:normal;
+font-size:8pt;
+border:0px solid #ededed;
+
+}
+tr{
+font-family:tahoma;
+font-style:normal;
+font-size:8pt;
+}
+th{
+height:4px;
+}
+.th3{
+height:1px;
+}
+.th4{
+height:3px;
+width:154px;
+background-color:#ff6600;
+}
+.thsiyah{
+height:3px;
+background-color:#000000;
+}
+form{
+	margin: 0px;
+}
+select{
+	border-color:#7DA5C2;
+	background-color:#f2f3f4;
+	color:#FF0000;
+	font-family:tahoma;
+	font-size:8pt;
+}
+.button{
+	font-family:tahoma;
+	font-weight:bold;
+	width:60px;
+	background-color:#014DA2;
+	color:#ffffff;
+	height:20px;
+	border:1px solid #ffffff;
+	font-size:7pt;
+	}
+.logininput{
+	font-family:tahoma;
+	font-size:8pt;
+	font-style:normal;
+	width:150px;
+	height:20px;
+	border:1px solid #CCCCCC;
+	color:#000000;
+	}
+.mailtextarea{
+	font-family:tahoma;
+	font-size:8pt;
+	font-style:normal;
+	width:250px;
+	height:120px;
+	background-color:#ffffff;
+	border:1px solid #CCCCCC;
+	color:#000000;
+}
+.adrestextarea{
+	font-family:tahoma;
+	font-size:8pt;
+	font-style:normal;
+	width:250px;
+	height:60px;
+	background-color:#ffffff;
+	border:1px solid #CCCCCC;
+	color:#000000;
+}
+.mailinput{
+	font-family:tahoma;
+	font-size:8pt;
+	font-style:normal;
+	width:250px;
+	height:20px;
+	border:1px solid #CCCCCC;
+	color:#000000;
+	}
+.mailmiddleinput{
+	font-family:tahoma;
+	font-size:8pt;
+	font-style:normal;
+	width:76px;
+	height:20px;
+	border:1px solid #CCCCCC;
+	color:#000000;
+	}
+.mailsmallinput{
+	font-family:tahoma;
+	font-size:8pt;
+	font-style:normal;
+	width:40px;
+	height:20px;
+	border:1px solid #CCCCCC;
+	color:#000000;
+	}
+.genellink{
+	font-size:8pt;
+	font-weight:bold;
+	color:#005197;
+	text-decoration:none;
+}
+genellink:hover{
+	color:#FF6600;
+	text-decoration:underline;
+
+}
+a {
+	font-size: 8pt;
+	color: #005197;
+	text-decoration: none;
+	font-weight:bold;
+}
+a:hover{
+	color: #ff6600;
+	text-decoration: underline;
+}
+/*BACKGROUNDLAR*/
+.acikmavi{
+	background-color:#C9D9F0;
+}
+.acikgri{
+	background-color:#F1F2F2;
+}
+.turuncubg{
+	background-color:#FF7700;
+}
+.turuncubg_beyaz_yazi{
+	background-color:#FF7700;
+	color:#FFFFFF;
+	font-weight:bold;
+	font-size:8pt;
+	}
+/*kenarliklar*/
+.kenarlik{
+	border:1px solid #ededed;
+}
+.alt_kenarlik{
+	border-bottom:1px solid #ededed;
+}
+
+
+input {
+   color:#050;
+   font-family:'trebuchet ms',helvetica,sans-serif;
+   font-size:7pt;
+   font-weight:bold;
+   background-color:#fed;
+   border:1px solid;
+   border-top-color:#696;
+   border-left-color:#696;
+   border-right-color:#363;
+   border-bottom-color:#363;
+
+}
+
+option {
+   color:#050;
+   font-family:'trebuchet ms',helvetica,sans-serif;
+   font-size:8pt;
+   font-weight:bold;
+   background-color:#fed;
+   border:1px solid;
+   border-top-color:#696;
+   border-left-color:#696;
+   border-right-color:#363;
+   border-bottom-color:#363;
+
+}

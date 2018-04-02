@@ -1,0 +1,421 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!--
+@author:	Eric Arnol-Martin (earnolmartin@gmail.com)
+Date:		December 28, 2010
+Template:	Ep-Ic
+Desc:		Ep-Ic is a multi-colored theme for ECHP that allows users to change the colors of several elements on the page.  If a browser does not support Javascript, the scripting used for the color change process, the template will load its default green color scheme.
+
+Hand Coded Using Proper HTML/CSS/Javascript
+
+<rant>I'm a big fan of tables... divs, not so much...  Though functionality is quite similar.  Don't know why people bang on tables and praise DIVs.  Same stuff </rant>
+
+Version:  1.1
+
+Fixes since last version:
+
+Added ability to manage domains (extremely important)
+Form elements depend on javascript... if disabled, you will not see any form elements which is the way it should be done...
+
+-->
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta name="author" content="Eric Arnol-Martin">
+	<title>EHCP - Easy Hosting Control Panel - {myip}</title>	
+	<link href="templates/ep-ic_v1/general/css/progreen.css" type="text/css" rel="stylesheet" title="green" id="stylesheet">
+	
+	<script type="text/javascript" src="js/tableCollapse2.js">
+
+	</script>
+</head>
+<body onload="initialStyleSheet()">
+<table class="main" cellspacing="0" cellpadding="0">
+<tr>
+<td class="logo" colspan="5">
+<table border="0" cellspacing="0" cellpadding="0" class="main">
+<tr>
+<td class="logo">
+<img src="templates/ep-ic_v1/general/images/logo.png" class="logo" alt="EHCP Hosting Control Panel" id="logo">
+</td>
+<td class="logo">
+<p class="mainTitle">Alohar (Hosting) Acerlo Facil</p>
+</td>
+</tr>
+</table>
+
+</td>
+</tr>
+<tr>
+<td class="menu" onclick="document.location.href='index.php';">
+Pagina de Incio (Home)
+</td>
+<td class="menu" onclick="document.location.href='?op=selectdomain';">
+Dominios
+</td>
+<td class="menu" onclick="document.location.href='http://{myip}/phpmyadmin';">
+PHPMyAdmin
+</td>
+<td class="menu" onclick="document.location.href='webmail';">
+Acceso de Mail
+</td>
+<td class="menu" onclick="document.location.href='net2ftp';">
+Administracion de Archivos
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top" align="left" class="topFunc">
+Vienvenido, {username}!&nbsp; <a href="?op=logout" title="Log out from ECHP" class="logout">Salir Sesion</a><br>
+</td>
+<td valign="top" align="center">
+<form action="" method="post">
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="templateChange">
+Color del Tema: &nbsp;
+</td>
+<td class="templateChangeSelect" id="createSelectHere">
+<span>Green</span>
+</td>
+<td class="templateChange2" id="createButtonHere">
+</td>
+</tr>
+</table>
+</form>
+</td>
+<td colspan="2" valign="top" align="right" class="topFunc2">
+Seleccionados de Dominio:&nbsp; {domain} :: <a class="logout" href="?op=listselectdomain">Cambiar</a> / <a class="logout" href="?op=deselectdomain">Deseleccionar</a>
+<br>
+<form method=post action="index.php?op=listdomains">
+			<label for="inputMenuSearch">Buscador de dominios y usuarios:&nbsp; </label>
+			<input type=text name=aranan value='' size="10" id="inputMenuSearch">
+			<select name='arananalan' id="selectMenuSearch">
+				<option value='domainname'>Dominios</option>
+				<option value='panelusername'>Usuarios</option>
+			</select>
+			<input type=submit value="Buscar" id="submitMenuSearch">
+		</form>
+</td>
+</tr>
+<tr>
+<td colspan="5" class="textInside">
+<table border=0 cellspacing=0 cellpadding=0 class="startOfInsides">
+
+<tr>
+
+<td class="inWidth">
+
+<br>
+<p>Text on the inside will look like this!</p>
+<!-- Start of homepage_serveradmin_en.html -->
+
+<table border="0" cellspacing="0" cellpadding="0" class="submain" id="user">
+<tr class="display">
+<td class="subText">
+<span class="title">Operaciones del Usuario</span><img src="images/collapse.gif" alt="collapse" onclick="collapse(this, document.getElementById('user'))" class="func">
+</td>
+</tr>
+<tr>
+<td class="action">
+<table border="0" cellspacing="0" cellpadding="0" style="width: 100%;">
+<tr>
+<td class="items">
+<p class="title2">Crear / Cambiar:</p>
+</td>
+<td class="items">
+<a href="?op=addpaneluser"><img src="images/addpaneluser.gif" alt="Agregar usuario o cliente" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=addpaneluser">Agregar Usuario o Cliente</a>
+</td>
+<td class="items">
+<a href="?op=addftpuser"><img src="images/addftpuser.png" alt="Agregar cuenta FTP" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=addftpuser">Agregar Cuenta FTP</a>
+</td>
+<td class="items">
+<a href="?op=addsubdomainwithftp"><img src="images/addsubdomainwithftp.png" alt="Agregar usuario FTP subdominio acceso" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=addsubdomainwithftp">Agregar Usuario FTP Subdominio Acceso</a>
+</td>
+<td class="items">
+<a href="?op=addftptothispaneluser"><img src="images/addftptothispaneluser.png" alt="Add User to My FTP" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=addftptothispaneluser">Agregar Usuario a Mi FTP</a>
+</td>
+<td class="items">
+<a href="?op=addsubdirectorywithftp"><img src="images/addftptothispaneluser.png" alt="Agregar El Usuario en el Dominio" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=addsubdirectorywithftp">Agregar El Usuario en el Dominio</a>
+</td>
+
+</tr>
+<tr>
+<td class="items">
+
+</td>
+<td class="items">
+<a href="?op=addemailuser"><img src="images/addemailuser.png" alt="Agregar Usuario Email" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=addemailuser">Agregar Usuario Email</a>
+</td>
+<td class="items">
+<a href="?op=addmysqldb"><img src="images/addmysqldb.png" alt="Crear Bases de Datos y Usuarios" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=addmysqldb">Crear Bases de Datos y Usuarios</a>
+</td>
+<td class="items">
+<a href="?op=addmysqldbtouser"><img src="images/addmysqldbtouser.gif" alt="Crear Base de Datos y Asignar a Usuarios Existentes" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=addmysqldbtouser">Crear Base de Datos y Asignar a Usuarios Existentes</a>
+</td>
+<td class="items">
+<a href="?op=dbadduser"><img src="images/dbadduser.gif" alt="Crear Usuario MySQL" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=dbadduser">Crear Usuario MySQL</a>
+</td>
+
+<td class="items">
+
+</td>
+</tr>
+<tr>
+<td class="items">
+<p class="title3">Lista / Vista:</p>
+</td>
+<td class="items">
+<a href="?op=listpanelusers"><img src="images/listpanelusers.gif" alt="Lista Usuarios o Clientes" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=listpanelusers">Lista Usuarios o Clientes</a>
+</td>
+<td class="items">
+<a href="?op=listallftpusers"><img src="images/listallftpusers.png" alt="Lista Todos Usuarios FTP" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=listallftpusers">Lista Todos Usuarios FTP</a>
+</td>
+<td class="items">
+<a href="?op=listallemailusers"><img src="images/listallemailusers.png" alt="Lista Todos Cuentas Email" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=listallemailusers">Lista Todos Cuentas Email</a>
+</td>
+<td class="items">
+<a href="?op=domainop&action=listdb"><img src="images/domainop_listdb.png" alt="Lista Todos Datos MySQL" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=domainop&action=listdb">Lista Todos Datos MySQL</a>
+</td>
+
+<td class="items">
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+
+<br>
+<a name="domainOps"></a>
+<table border="0" cellspacing="0" cellpadding="0" class="submain" id="domain">
+<tr class="display">
+<td class="subText">
+<span class="title">Operaciones Dominio</span>
+<img src="images/collapse.gif" alt="collapse" onclick="collapse(this, document.getElementById('domain'))" class="func">
+</td>
+</tr>
+<tr>
+<td class="action">
+<table border="0" cellspacing="0" cellpadding="0" style="width: 100%;">
+<tr>
+<td class="items">
+<p class="title2">Agregar / Crear:</p>
+</td>
+<td class="items">
+<a href="?op=adddomain" title="Agregar dominio"><img src="images/adddomain.png" alt="Agregar dominio" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=adddomain" title="Agregar dominio">Agregar Dominio</a>
+</td>
+<td class="items">
+<a href="?op=addDomainToThisPaneluser" title="Agregar Dominio a Mi Cuenta"><img src="images/addDomainToThisPaneluser.gif" alt="Agregar Dominio a Mi Cuenta" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=addDomainToThisPaneluser" title="Agregar Dominio a Mi Cuenta">Agregar Dominio a Mi Cuenta</a>
+</td>
+
+<td class="items">
+<a href="?op=adddomaineasy" title="Simple Adicion de Dominio"><img src="images/adddomaineasy.gif" alt="Simple Adicion de Dominio" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=adddomaineasy" title="Simple Adicion de Dominio">Simple Adicion de Dominio</a>
+</td>
+<td class="items">
+<a href="?op=bulkadddomain" title="Agregar Dominios a Granel"><img src="images/bulkadddomain.gif" alt="Agregar Dominios a Granel" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=bulkadddomain" title="Agregar Dominios a Granel">Agregar Dominios a Granel</a>
+</td>
+<td class="items">
+<a href="?op=adddnsonlydomain" title="Agregar Hosting DNS"><img src="images/adddnsonlydomain.png" alt="Agregar Hosting DNS" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=adddnsonlydomain" title="Agregar Hosting DNS">Agregar Hosting DNS</a>
+</td>
+</tr>
+<tr>
+<td class="items">
+
+</td>
+<td class="items">
+<a href="?op=adddnsonlydomainwithpaneluser" title="Agregar Hosting Para el Usuario"><img src="images/adddnsonlydomainwithpaneluser.gif" alt="Agregar Hosting Para el Usuario" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=adddnsonlydomainwithpaneluser" title="Agregar Hosting Para el Usuario">Agregar Hosting Para el Usuario</a>
+</td>
+
+<td class="items">
+
+</td>
+<td class="items">
+
+</td>
+<td class="items">
+
+</td>
+<td class="items">
+
+</td>
+</tr>
+<tr>
+<td class="items">
+<p class="title3">Vista / Lista:</p>
+</td>
+<td class="items">
+<a href="?op=selectdomain" title="Lista de dominios"><img src="images/listdomains.gif" alt="Lista de dominios" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=selectdomain" title="Lista de dominios">Lista de Dominios</a>
+</td>
+<td class="items">
+<a href="?op=listpassivedomains" title="Lista de dominios pasivos"><img src="images/listpassivedomains.png" alt="Lista de dominios pasivos" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=listpassivedomains" title="Lista de dominios pasivos">Lista de Dominios Pasivos</a>
+</td>
+<td class="items">
+</td>
+<td class="items">
+
+</td>
+<td class="items">
+
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+
+<br>
+
+<table border="0" cellspacing="0" cellpadding="0" class="submain" id="system">
+<tr class="display">
+<td class="subText">
+<span class="title">System Operations</span><img src="images/collapse.gif" alt="collapse" onclick="collapse(this, document.getElementById('system'))" class="func">
+</td>
+</tr>
+<tr>
+<td class="action">
+<table border="0" cellspacing="0" cellpadding="0" style="width: 100%;">
+<tr>
+<td class="items">
+<p class="title2">Cambiar / Modificar:</p>
+</td>
+<td class="items">
+<a href="?op=dosyncdns"><img src="images/dosyncdns.png" alt="Recarga de zonas DNS" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=dosyncdns">Recarga de Zonas DNS</a>
+</td>
+<td class="items">
+<a href="?op=dosyncdomains"><img src="images/dosyncdomains.png" alt="Syncroniza dominios" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=dosyncdomains">Syncroniza Dominios</a>
+</td>
+<td class="items">
+<a href="?op=dobackup"><img src="images/dobackup.png" alt="Crear Copias De Archivos" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=dobackup">Crear Copias De Archivos</a>
+</td>
+<td class="items">
+<a href="?op=dorestore"><img src="images/dorestore.png" alt="Restaurar Copias de los Archivos" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=dorestore">Restaurar Copias de los Archivos</a>
+</td>
+<td class="items">
+<a href="?op=listbackups"><img src="images/listbackups.png" alt="Lista Copias de los Archivos" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=listbackups">Lista Copias de los Archivos</a>
+</td>
+</tr>
+<tr>
+<td class="items">
+
+</td>
+<td class="items">
+<a href="?op=doupdatediskquota"><img src="images/doupdatediskquota.png" alt="Actualisacion de quota(limite del disco duro)" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=doupdatediskquota">Actualisacion de Quota (limite del disco duro)</a>
+</td>
+<td class="items">
+<a href="?op=operations"><img src="images/operations.png" alt="Operaciones Demonio" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=operations">Operaciones Demonio</a>
+</td>
+<td class="items">
+<a href="?op=options"><img src="images/options.png" alt="Opciones" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=options">Opciones</a>
+</td>
+<td class="items">
+<a href="?op=changetemplate"><img src="images/changetemplate.png" alt="Cambiar la Plantilla" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=changetemplate">Cambiar la Plantilla</a>
+</td>
+<td class="items">
+<a href="?op=changemypass"><img src="images/changemypass.png" alt="Cambiar mi Contraseña" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=changemypass">Cambiar mi Contraseña</a>
+</td>
+</tr>
+<tr>
+<td class="items">
+
+</td>
+<td class="items">
+<a href="?op=serverstatus"><img src="images/serverstatus.png" alt="Estado Del Servidor" width="32" height="32" class="item"></a>
+<br>
+<a href="?op=serverstatus">Estado Del Servidor</a>
+</td>
+<td class="items">
+
+</td>
+<td class="items">
+
+</td>
+<td class="items">
+
+</td>
+<td class="items">
+
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+
+<br>
+
+&nbsp; &nbsp; {dynamicinfo}
+<!-- End of homepage_serveradmin_en.html -->
+<p class="copy">&copy; <a href="http://www.ehcp.net/" target="_blank" class="copy">EHCP</a>&nbsp; {ehcpversion}&nbsp; 2010</p>
+<p class="copy">Tema:&nbsp; &copy; <a href="mailto:earnolmartin@gmail.com" class="copy">Eric Arnol-Martin</a>&nbsp; 2010 ::&nbsp; <a href="?op=changetemplate" class="copy">Cambiar el Tema</a></p>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>
+	
+
+	

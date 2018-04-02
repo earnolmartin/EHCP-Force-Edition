@@ -1,0 +1,28 @@
+#____________start of {subdomain}.{domainname}__paneluser:{panelusername}_reseller:{reseller}_id:{id}____________
+# this file used in Easy Hosting Control Panel (ehcp), www.ehcp.net
+
+<VirtualHost *>
+
+	ServerName   {subdomain}.{domainname}
+	ServerAlias  www.{subdomain}.{domainname}
+	UseCanonicalName Off
+	DocumentRoot {homedir}
+	DirectoryIndex index.htm index.html index.php
+	LogFormat "%v:%p %h %l %u %t \"%{Host}i\" \"%r\" %>s %O \"%{Referer}i\" \"%{User-Agent}i\"" vhost_combined_host
+	CustomLog  {homedir}/logs/access_log combined
+	CustomLog  /var/log/apache2/access_log_multi.log vhost_combined_host
+		
+	php_admin_value open_basedir "{homedir}:/usr/share/php:/usr/share/pear"
+	php_admin_value upload_tmp_dir "{homedir}/phptmpdir"
+	php_admin_value session.save_path "{homedir}/phptmpdir"
+	php_admin_value disable_functions "exec,passthru,shell_exec,system,proc_open,popen"
+
+	Header set Access-Control-Allow-Origin "*"
+	Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+
+	{customsubdomainhttp}
+	
+</VirtualHost>
+
+
+

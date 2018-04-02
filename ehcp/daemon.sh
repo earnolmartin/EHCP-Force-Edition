@@ -1,0 +1,1 @@
+nohup ./ehcpdaemon.sh &

@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+	<meta name="description" content="EHCP: An OpenSource, free and easy hosting control panel!" />
+	<meta name="keywords" content="ehcp, opensource, free, control, panel, bvidinli, bahattan" />
+	<head>
+	<link rel="stylesheet" type="text/css" href="{templatedir}/css/login-style.css" />
+	</head>
+<title>Log in to EHCP</title>	
+<body>
+<div id="wrapper">
+<div align="center">
+<div id="login">
+<img src="http://www.ehcp.net/diger/demo/images/logo-x.png" /><br /><br />
+<form method="POST" name="loginForm" >
+  <p>
+    <label>Username</label>  
+  </p>
+  <p>
+    <input name="username" id="user_login" type="text" size="24" maxlength="100" />
+    </p>
+  <p><label>Password</label> </p>
+  <p>
+    <input name="password" type="password" id="user_pass" size="24" maxlength="100" /><br />
+  </p>
+  <div id="hover">
+  <div align="center">
+    <p>
+      <input type="image" src="images/login.png" class="mkbutton" value="Login" name="submit" onmouseover="this.src='images/login-down.png'" onmouseout="this.src='images/login.png'" onclick="this.src='images/loader.gif'" />
+    </p>
+    <input name="op" value="dologin" type="hidden">
+    <a href="?op=applyforaccount">Apply for an Account</a><br>
+<a href="?op=sifrehatirlat">Recover Password</a><br><br>
+<font size=-2>{dynamicinfo2}</font>
+</div>
+</form>
+<script type="text/javascript">
+	document.loginForm.username.focus();
+</script>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>	
+	

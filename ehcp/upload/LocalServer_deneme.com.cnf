@@ -1,0 +1,12 @@
+
+[ req ]
+prompt			= no
+distinguished_name	= server_distinguished_name
+
+[ server_distinguished_name ]
+commonName		= www.deneme.com
+stateOrProvinceName	= df
+countryName		= asdf
+emailAddress		= 
+organizationName	= fsdfsdf
+organizationalUnitName	= fdfd

@@ -1,0 +1,22 @@
+Installing the EHCP Change Password Plugin
+=========================================
+
+1) Start with untaring the file into the plugins directory.
+   Here is a example for the 1.0 version of the Ehcp_change_ pass 
+   plugin.
+
+  $ cd plugins
+  $ tar zxvf ehcp_change_pass.tar.gz
+  
+  change db pass in config.php
+  
+
+2) Then go to your config directory and run conf.pl.  Choose
+   option 8 and move the plugin from the "Available Plugins" 
+   category to the "Installed Plugins" category.  Save and exit.
+
+  $ cd ../../config/
+  $ ./conf.pl
+
+3) Please verify that you have the "compatibility" plugin
+   installed.

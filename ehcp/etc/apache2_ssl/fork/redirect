@@ -1,0 +1,21 @@
+# this file used in Easy Hosting Control Panel (ehcp), www.ehcp.net
+<VirtualHost *:80>
+        ServerName   {domainname}
+        ServerAlias  www.{domainname} *.{domainname} 
+        RewriteEngine On
+		RewriteCond %{HTTPS} off
+		RewriteRule (.*) {domainname_redirect}%{REQUEST_URI}
+</VirtualHost>
+
+# FOR SSL CONFIG
+
+<VirtualHost *:443>
+        ServerName   {domainname}
+        ServerAlias  www.{domainname} *.{domainname} 
+        SSLEngine on
+        SSLCertificateFile /etc/ssl/certs/server.crt
+        SSLCertificateKeyFile /etc/ssl/private/server.key
+        RewriteEngine On
+		RewriteCond %{HTTPS} on
+		RewriteRule (.*) {domainname_redirect}%{REQUEST_URI}
+</VirtualHost>

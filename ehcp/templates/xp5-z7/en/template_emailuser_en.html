@@ -1,0 +1,46 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta name="author" content="Thanks to deconectat from www.ehcp.net for this greate template for ehcp">
+	<title>EHCP - Easy Hosting Control Panel - {myip}</title>	
+	<link href="{stylefile}" type="text/css" rel="stylesheet">
+</head>
+<body>
+
+<!-- left -->
+<div style="height: 100%;" id="divLeft">
+	<div class="divMenu">
+		<div class="InfoPaneHeader">Email User Menu</div>
+		<div class="InfoPaneRow">
+			<p><a href="index.php"><b>Home</b></a></p><br>
+    	    <p><a href="index.php?op=editemailuserpassword">Change my password</a></p><br>
+    	    <p><a href="index.php?op=editemailuserautoreply">Change autoreply</a></p><br>
+            <p><a href="?op=emailforwardingsself">List/Add email forwardings</a></p><br>
+
+			<br>
+			<a href="?op=logout">Log Out</a><br>
+			
+		</div>
+	</div>
+
+</div>
+
+<!-- right -->
+<div id="divMainRightHeader">
+	<div style="float: right;">Welcome, <b>{username}</b>! <a href="?op=logout">Log Out</a></div>
+	{banner}
+</div>
+<div id="divMainContainer">
+	<div id="divMain" align="left">
+		  {selecteddomain}
+		  {ickisim}
+	</div>
+</div>
+
+<div id="divCopy">
+	Powered by <a href="http://www.ehcp.net/" target="_blank">EHCP</a> {ehcpversion} <br>(xp5-z7 mod)
+</div>
+
+</body>
+</html>

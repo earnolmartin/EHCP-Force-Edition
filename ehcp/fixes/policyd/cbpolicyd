@@ -1,0 +1,782 @@
+#!/usr/bin/perl
+# Cluebringer policy daemon
+# Copyright (C) 2009-2011, AllWorldIT
+# Copyright (C) 2008, LinuxRulz
+# Copyright (C) 2007, Nigel Kukard  <nkukard@lbsd.net>
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+
+use strict;
+use warnings;
+
+use lib('/usr/local/lib/cbpolicyd-2.1','/usr/lib/cbpolicyd-2.1',
+		'/usr/lib64/cbpolicyd-2.1','awitpt');
+
+package cbp;
+
+
+use base qw(Net::Server::PreFork);
+use Config::IniFiles;
+use Getopt::Long;
+use Sys::Syslog;
+
+use cbp::version;
+
+use cbp::config;
+use cbp::logging;
+use awitpt::db::dbilayer;
+use awitpt::cache;
+use cbp::tracking;
+use cbp::protocols;
+
+
+
+
+# Override configuration
+sub configure {
+	my $self = shift;
+	my $server = $self->{'server'};
+	my $cfg;
+	my $cmdline;
+	my $inifile;
+
+
+	# We're being called from somewhere else, maybe a protocol?
+	return if (@_);
+
+	# Set defaults
+	$cfg->{'config_file'} = "/etc/cbpolicyd/cluebringer.conf";
+	$cfg->{'cache_file'} = '/var/run/cbpolicyd/cache';
+	$cfg->{'track_sessions'} = 0;
+
+	$server->{'timeout_idle'} = 1015;
+	$server->{'timeout_busy'} = 115;
+	$server->{'background'} = "yes";
+	$server->{'pid_file'} = "/var/run/cbpolicyd/cbpolicyd.pid";
+	$server->{'log_level'} = 2;
+	$server->{'log_file'} = "/var/log/cbpolicyd/cbpolicyd.log";
+
+	$server->{'proto'} = "tcp";
+	$server->{'host'} = "*";
+	$server->{'port'} = 10031;
+			
+	$server->{'min_servers'} = 4;
+	$server->{'min_spare_servers'} = 4;
+	$server->{'max_spare_servers'} = 12;
+	$server->{'max_servers'} = 25;
+	$server->{'max_requests'} = 1000;
+
+	# Parse command line params
+	%{$cmdline} = ();
+	GetOptions(
+			\%{$cmdline},
+			"help",
+			"config:s",
+			"debug",
+			"fg",
+	);
+
+	# Check for some args
+	if ($cmdline->{'help'}) {
+		$self->displayHelp();
+		exit 0;
+	}
+	if (defined($cmdline->{'config'}) && $cmdline->{'config'} ne "") {
+		$cfg->{'config_file'} = $cmdline->{'config'};
+	}
+
+	# Check config file exists
+	if (! -f $cfg->{'config_file'}) {
+		print(STDERR "ERROR: No configuration file '".$cfg->{'config_file'}."' found!\n");
+		exit 1;
+	}
+	
+	# Use config file, ignore case
+	tie my %inifile, 'Config::IniFiles', (
+			-file => $cfg->{'config_file'},
+			-nocase => 1
+	) or die "Failed to open config file '".$cfg->{'config_file'}."': ".join("\n",@Config::IniFiles::errors);
+	# Copy config
+	my %config = %inifile;
+	# FIXME: This now generates a warning as Config::Inifiles doesn't implement UNTIE
+	# untie(%inifile);
+
+	# Pull in params for the server
+	my @server_params = (
+			'log_level','log_file',
+			'proto', 'host', 'port',
+			'cidr_allow', 'cidr_deny',
+			'pid_file', 
+			'user', 'group',
+			'timeout_idle', 'timeout_busy',
+			'background',
+			'min_servers',     
+			'min_spare_servers',
+			'max_spare_servers',
+			'max_servers',
+			'max_requests',
+	);
+	foreach my $param (@server_params) {
+		$server->{$param} = $config{'server'}{$param} if (defined($config{'server'}{$param}));
+	}
+
+	# Fix up these ...
+	if (defined($server->{'cidr_allow'})) {
+		my @lst = split(/[,\s;]+/,$server->{'cidr_allow'});
+		$server->{'cidr_allow'} = \@lst;
+	}
+	if (defined($server->{'cidr_deny'})) {
+		my @lst = split(/[,\s;]+/,$server->{'cidr_deny'});
+		$server->{'cidr_deny'} = \@lst;
+	}
+
+	# Split off modules
+	if (!defined($config{'server'}{'modules'})) {
+		die "Server configuration error: 'modules' not found";
+	}
+	if (!defined($config{'server'}{'protocols'})) {
+		die "Server configuration error: 'protocols' not found";
+	}
+	# Split off modules
+	if (ref($config{'server'}{'modules'}) eq "ARRAY") {
+		foreach my $module (@{$config{'server'}{'modules'}}) {
+			$module =~ s/\s+//g;
+	 		# Skip comments
+	 		next if ($module =~ /^#/);
+	 		$module = "modules/$module";
+			push(@{$cfg->{'module_list'}},$module);
+		}
+	} else {
+		my @moduleList = split(/\s+/,$config{'server'}{'modules'});
+		foreach my $module (@moduleList) {
+			# Skip comments
+			next if ($module =~ /^#/);
+			$module = "modules/$module";
+			push(@{$cfg->{'module_list'}},$module);
+		}
+	}
+	# Split off protocols
+	if (ref($config{'server'}{'protocols'}) eq "ARRAY") {
+		foreach my $module (@{$config{'server'}{'protocols'}}) {
+			$module =~ s/\s+//g;
+ 			# Skip comments
+	 		next if ($module =~ /^#/);
+ 			$module = "protocols/$module";
+			push(@{$cfg->{'module_list'}},$module);
+	 	}
+	} else {
+		my @protocolList = split(/\s+/,$config{'server'}{'protocols'});
+		foreach my $module (@protocolList) {
+			# Skip comments
+			next if ($module =~ /^#/);
+			$module = "protocols/$module";
+			push(@{$cfg->{'module_list'}},$module);
+		}
+	}	
+
+	# Override
+	if ($cmdline->{'debug'}) {
+		$server->{'log_level'} = 4;
+		$cfg->{'debug'} = 1;
+	}
+
+	# If we set on commandline for foreground, keep in foreground
+	if ($cmdline->{'fg'} || (defined($config{'server'}{'background'}) && $config{'server'}{'background'} eq "no" )) {
+		$server->{'background'} = undef;
+		$server->{'log_file'} = undef;
+	} else {
+		$server->{'setsid'} = 1;
+	}
+
+	# Loop with logging detail
+	if (defined($config{'server'}{'log_detail'})) {
+		# Lets see what we have to enable
+		foreach my $detail (split(/[,\s;]/,$config{'server'}{'log_detail'})) {
+			$cfg->{'logging'}{$detail} = 1;
+		}
+	}
+
+	# Check log_mail
+	if (defined($config{'server'}{'log_mail'}) && $config{'server'}{'log_mail'} ne "main") {
+		# COMPATIBILITY
+		if ($config{'server'}{'log_mail'} eq "maillog") {
+			$cfg->{'log_mail'} = 'mail@syslog:native';
+		} else {
+			$cfg->{'log_mail'} = $config{'server'}{'log_mail'};
+		}
+	}
+
+	# Check if the user specified a cache_file in the config
+	if (defined($config{'server'}{'cache_file'})) {
+		$cfg->{'cache_file'} = $config{'server'}{'cache_file'};
+	}
+
+
+	# Save our config and stuff
+	$self->{'config'} = $cfg;
+	$self->{'cmdline'} = $cmdline;
+	$self->{'inifile'} = \%config;
+}
+
+
+
+# Run straight after ->run
+sub post_configure_hook {
+	my $self = shift;
+	my $log_mail = $self->{'config'}{'log_mail'};
+
+	
+	$self->log(LOG_NOTICE,"[CBPOLICYD] Policyd v2 / Cluebringer - v".VERSION);
+
+	$self->log(LOG_NOTICE,"[CBPOLICYD] Initializing system modules.");
+	# Init config
+	cbp::config::Init($self);
+	# Init caching engine
+	awitpt::cache::Init($self,{
+		'cache_file' => $self->{'config'}{'cache_file'},
+		'cache_file_user' => $self->{'server'}->{'user'},
+		'cache_file_group' => $self->{'server'}->{'group'}
+	});
+	$self->log(LOG_NOTICE,"[CBPOLICYD] System modules initialized.");
+
+	$self->log(LOG_NOTICE,"[CBPOLICYD] Module load started...");
+	# Load modules
+	foreach my $module (@{$self->{'config'}{'module_list'}}) {
+		# Split off dir and mod name
+		$module =~ /^(\w+)\/(\w+)$/;
+		my ($mod_dir,$mod_name) = ($1,$2);
+
+		# Load module
+		my $res = eval("
+			use cbp::${mod_dir}::${mod_name};
+			plugin_register(\$self,\"${mod_name}\",\$cbp::${mod_dir}::${mod_name}::pluginInfo);
+		");
+		if ($@ || (defined($res) && $res != 0)) {
+			$self->log(LOG_WARN,"[CBPOLICYD] Error loading plugin $module ($@)");
+		}
+	}
+	$self->log(LOG_NOTICE,"[CBPOLICYD] Module load done.");
+	
+	# Report if session tracking is on
+	if ($self->{'config'}{'track_sessions'}) {
+		$self->log(LOG_NOTICE,"[CBPOLICYD] Session tracking is ENABLED.");
+	} else {
+		$self->log(LOG_NOTICE,"[CBPOLICYD] Session tracking is DISABLED.");
+	}
+
+	# Check if we have some custom logging...
+	if (defined($log_mail)) {
+		# More flexible method to configure logging
+		if ($log_mail =~ /^([^@]+)(?:@([^:]+))?(?:\:(\S+))?$/) {
+			my $facility = $1;
+			my $method = defined($2) ? $2 : 'syslog';
+			my $destination = $3;
+	
+			# Check method of logging
+			if ($method eq "syslog") {
+				$destination = 'native' if (!defined($destination));
+				$facility = 'mail' if (!defined($facility));
+	
+				$self->log(LOG_DEBUG,"[CBPOLICYD] Opening syslog, destination = '$destination', facility = '$facility'.");
+				# We may have some args to pass to setlogsock
+				my @syslogArgs = split(/,/,$destination);
+				if (!Sys::Syslog::setlogsock(@syslogArgs)) {
+					$self->log(LOG_ERR,"[CBPOLICYD] Failed to set log socket: $!");
+				}
+				if (!Sys::Syslog::openlog("cbpolicyd",'pid|ndelay',$facility)) {
+					$self->log(LOG_ERR,"[CBPOLICYD] Failed to open syslog socket: $!");
+				}
+	
+			} else {
+				$self->log(LOG_WARN,"[CBPOLICYD] Value of 'log_mail' not understood. Method '$method' is invalid.");
+			}
+	
+		} else {
+			$self->log(LOG_WARN,"[CBPOLICYD] Value '$log_mail' of 'log_mail' not understood.");
+		}
+	}
+}
+
+
+# Register plugin info
+sub plugin_register {
+	my ($self,$module,$info) = @_;
+
+
+	# If no info, return
+	if (!defined($info)) {
+		$self->log(LOG_WARN,"[CBPOLICYD] Plugin info not found for module => $module");
+		return -1;
+	}
+
+	# Set real module name & save
+	$info->{'Module'} = $module;
+	push(@{$self->{'modules'}},$info);
+
+	# If we should, init the module
+	if (defined($info->{'init'})) {
+		$info->{'init'}($self);
+	}
+
+	return 0;
+}
+
+
+# Initialize child
+sub child_init_hook
+{
+	my $self = shift;
+
+	
+	$self->SUPER::child_init_hook();
+	
+	$self->log(LOG_DEBUG,"[CBPOLICYD] Starting up caching engine");
+	awitpt::cache::connect($self);
+
+	# This is the database connection timestamp, if we connect, it resets to 0
+	# if not its used to check if we must kill the child and try a reconnect
+	$self->{'client'}->{'dbh_status'} = time();
+
+	# Init system stuff
+	$self->{'client'}->{'dbh'} = awitpt::db::dbilayer::Init($self,'cbp');
+	if (defined($self->{'client'}->{'dbh'})) {
+		# Check if we succeeded
+		if (!($self->{'client'}->{'dbh'}->connect())) {
+			# If we succeeded, record OK
+			$self->{'client'}->{'dbh_status'} = 0;
+		} else {
+			$self->log(LOG_WARN,"[CBPOLICYD] Failed to connect to database: ".$self->{'client'}->{'dbh'}->Error()." ($$)");
+		}
+	} else {
+		$self->log(LOG_WARN,"[CBPOLICYD] Failed to Initialize: ".awitpt::db::dbilayer::internalError()." ($$)");
+	}
+}
+
+
+
+
+# Destroy the child
+sub child_finish_hook {
+	my $self = shift;
+	my $server = $self->{'server'};
+	my $log_cache = defined($self->{'config'}{'logging'}{'cache'});
+
+	$self->SUPER::child_finish_hook();
+	
+	$self->log(LOG_DEBUG,"[CBPOLICYD] Caching engine: hits = ".awitpt::cache::getCacheHits().", misses = ".
+			awitpt::cache::getCacheMisses()) if ($log_cache);
+	$self->log(LOG_DEBUG,"[CBPOLICYD] Shutting down caching engine ($$)");
+	awitpt::cache::disconnect($self);
+}
+
+
+# Process requests we get
+sub process_request {
+	my $self = shift;
+	my $server = $self->{'server'};
+	my $log = defined($self->{'config'}{'logging'}{'modules'});
+
+	# Check for unix/tcp peer and set peer_type
+	my $sock = $self->{'server'}->{'client'};
+	if ($sock->NS_proto eq 'UNIX') {
+		$server->{'peer_type'} = "UNIX";
+
+		# Some defaults for debugging, these are undef if UNIX
+		$server->{'peeraddr'} = "";
+		$server->{'peerport'} = $sock->NS_unix_path;
+		$server->{'sockaddr'} = "";
+		$server->{'sockport'} = "";
+	} elsif ($sock->NS_proto eq 'TCP') {
+		$server->{'peer_type'} = "TCP";
+	} else {
+		$self->log(LOG_WARN,"[CBPOLICYD] Unknown peer type, expected UNIX / TCP. Rejecting.");
+		return;
+	}
+
+	# How many times did we pipeline...
+	my $policyRequests = 0;
+
+	#
+	# Loop till we fill up the buffer
+	#
+
+	# Beginning label, we do pipelining ...
+CONN_READ:
+
+	# Found module, set to 1 if found, 0 if otherwize
+	my $found = 0;
+	
+	# Buffer
+	my $buf = "";
+	
+	# Create an FDSET for use in select()
+	my $fdset = "";
+	vec($fdset, fileno(STDIN), 1) = 1;
+	while (1) {
+		# Loop with modules
+		foreach my $module ( sort { $b->{'priority'} <=> $a->{'priority'} }  @{$self->{'modules'}} ) {
+
+			# Skip over if we don't have a check...
+			next if (!defined($module->{'protocol_check'}));
+
+			# Check protocol
+			my $res = $module->{'protocol_check'}($self,$buf);
+			if (defined($res) && $res == 1) {
+				$found = $module;
+			}
+		}
+
+		# Last if found
+		last if ($found);
+
+		# We need to store this cause we use it below a few times
+		my $bufLen = length($buf);
+
+		# Again ... too large
+		if ($bufLen > 16*1024) {
+			$self->log(LOG_WARN,"[CBPOLICYD] Request too large from => Peer: ".$server->{'peeraddr'}.":".$server->{'peerport'}.", Local: ".
+					$server->{'sockaddr'}.":".$server->{'sockport'});
+			return;
+		}
+
+		# Setup timeout
+		my $timeout;
+		# If buffer length > 0, its a busy connection
+		if ($bufLen > 0) {
+			$timeout = $server->{'timeout_busy'};
+		# Else its idle
+		} else {
+			$timeout = $server->{'timeout_idle'};
+		}
+	
+		# Check for timeout....
+		my $n = select($fdset,undef,undef,$timeout);
+		if (!$n) {
+			$self->log(LOG_WARN,"[CBPOLICYD] Timed out after ".$timeout."s from => Peer: ".$server->{'peeraddr'}.":".
+					$server->{'peerport'}.", Local: ".$server->{'sockaddr'}.":".$server->{'sockport'});
+			return;
+		}
+		
+		# Read in 8kb
+		$n = sysread(STDIN,$buf,8192,$bufLen);
+		if (!$n) {
+			my $reason = defined($n) ? "Client closed connection" : "sysread[$!]";
+			$self->log(LOG_WARN,"[CBPOLICYD] $reason => Peer: ".$server->{'peeraddr'}.":".$server->{'peerport'}.", Local: ".
+					$server->{'sockaddr'}.":".$server->{'sockport'});
+			return;
+		}
+	}
+	# Check if a protocol handler wasn't found...
+	if (!$found) {
+		$self->log(LOG_ERR,"[CBPOLICYD] Request not understood => Peer: ".$server->{'peeraddr'}.":".$server->{'peerport'}.", Local: ".
+			$server->{'sockaddr'}.":".$server->{'sockport'});
+		return;
+	}
+
+	# Set protocol handler
+	$server->{'_protocol_handler'} = $found;
+
+	# If we have a init function, call it before processing...
+	$server->{'_protocol_handler'}->{'protocol_init'}($self) if (defined($server->{'_protocol_handler'}->{'protocol_init'}));
+	
+	# Process buffer
+	my $request = $server->{'_protocol_handler'}->{'protocol_parse'}($self,$buf);
+
+	# Check data is ok...
+	if ((my $res = $server->{'_protocol_handler'}->{'protocol_validate'}($self,$request))) {
+		$self->log(LOG_ERR,"[CBPOLICYD] Protocol data validation error, $res");
+		$self->protocol_response(PROTO_ERROR);
+		print($self->protocol_getresponse());
+		return;
+	}
+
+	# Data mangling...
+	$request->{'sender'} = lc($request->{'sender'});
+	$request->{'recipient'} = lc($request->{'recipient'}) if (defined($request->{'recipient'}));
+	$request->{'sasl_username'} = lc($request->{'sasl_username'}) if (defined($request->{'sasl_username'}));
+
+	# Internal data
+	$request->{'_timestamp'} = time();
+
+	# If this is a TCP peer type then it has a peer address
+	if ($server->{'peer_type'} eq "TCP") {
+		$request->{'_peer_address'} = $server->{'peeraddr'};
+	}
+	
+	
+	# Check if we got connected, if not ... bypass
+	if ($self->{'client'}->{'dbh_status'} > 0) {
+		my $action;
+
+		$self->log(LOG_WARN,"[CBPOLICYD] Client in BYPASS mode due to DB connection failure!");
+		# Check bypass mode
+		if (!defined($self->{'inifile'}{'database'}{'bypass_mode'})) {
+			$self->log(LOG_ERR,"[CBPOLICYD] No bypass_mode specified for failed database connections, defaulting to tempfail");
+			$self->protocol_response(PROTO_DB_ERROR);
+			$action = "tempfail";
+		# Check for "tempfail"
+		} elsif (lc($self->{'inifile'}{'database'}{'bypass_mode'}) eq "tempfail") {
+			$self->protocol_response(PROTO_DB_ERROR);
+			$action = "tempfail";
+		# And for "bypass"
+		} elsif (lc($self->{'inifile'}{'database'}{'bypass_mode'}) eq "pass") {
+			$self->protocol_response(PROTO_PASS);
+			$action = "pass";
+		# Lasty for invalid
+		} else {
+			$self->log(LOG_ERR,"[CBPOLICYD] bypass_mode is invalid, defaulting to tempfail");
+			$self->protocol_response(PROTO_DB_ERROR);
+			$action = "tempfail";
+		}
+		
+		$self->maillog("module=Core, action=$action, host=%s, from=%s, to=%s, reason=db_failure_bypass",
+				$request->{'client_address'} ? $request->{'client_address'} : "unknown",
+				$request->{'helo_name'} ? $request->{'helo_name'} : "",
+				$request->{'sender'} ? $request->{'sender'} : "unknown",
+				$request->{'recipient'} ? $request->{'recipient'} : "unknown");
+
+		print($self->protocol_getresponse());
+
+		# Check if we need to reconnect or not
+		my $timeout = $self->{'inifile'}{'database'}{'bypass_timeout'};
+		if (!defined($timeout)) {
+			$self->log(LOG_ERR,"[CBPOLICYD] No bypass_timeout specified for failed database connections, defaulting to 120s");
+			$timeout = 120;
+		}
+		# Get time left
+		my $timepassed = $request->{'_timestamp'} - $self->{'client'}->{'dbh_status'};
+		# Then check...
+		if ($timepassed >= $timeout) {
+			$self->log(LOG_NOTICE,"[CBPOLICYD] Client BYPASS timeout exceeded, reconnecting...");
+			exit 0;
+		} else {
+			$self->log(LOG_NOTICE,"[CBPOLICYD] Client still in BYPASS mode, ".( $timeout - $timepassed )."s left till next reconnect");
+			return;
+		}
+	}
+
+	# Setup database handle
+	awitpt::db::dblayer::setHandle($self->{'client'}->{'dbh'});
+
+	# Grab session data
+	my $sessionData = getSessionDataFromRequest($self,$request);
+	if (ref $sessionData ne "HASH") {
+		$self->log(LOG_DEBUG,"[CBPOLICYD:$$] Error getting session data");
+		$self->protocol_response(PROTO_ERROR);
+		print($self->protocol_getresponse());
+		return;
+	}
+
+	# Increment counter
+	$policyRequests++;
+
+	$self->log(LOG_INFO,"[CBPOLICYD] Got request #$policyRequests" . ($policyRequests > 1 ? " (pipelined)" : ""));
+
+	# Loop with modules
+	foreach my $module ( sort { $b->{'priority'} <=> $a->{'priority'} }  @{$self->{'modules'}} ) {
+
+		# Skip over if we don't have a check...
+		next if (!defined($module->{'request_process'}));
+
+		$self->log(LOG_DEBUG,"[CBPOLICYD] Running module: ".$module->{'name'}) if ($log);
+		
+		# Run request in eval
+		my $res;
+		eval {
+			$res = $module->{'request_process'}($self,$sessionData);
+		};
+		# Check results
+		if ($@) {
+			$self->log(LOG_ERR,"[CBPOLICYD] Error running module request_process(): $@");
+			$res = $self->protocol_response(PROTO_ERROR);
+		}
+
+		# Check responses
+		if (!defined($res)) {
+			$res = $self->protocol_response(PROTO_ERROR);
+			last;
+
+		} elsif ($res == CBP_SKIP) {
+			$self->log(LOG_DEBUG,"[CBPOLICYD] Module '".$module->{'name'}."' returned CBP_SKIP") if ($log);
+			next;
+
+		} elsif ($res == CBP_CONTINUE) {
+			$self->log(LOG_DEBUG,"[CBPOLICYD] Module '".$module->{'name'}."' returned CBP_CONTINUE") if ($log);
+			next;
+
+		} elsif ($res == CBP_STOP) {
+			$self->log(LOG_DEBUG,"[CBPOLICYD] Module '".$module->{'name'}."' returned CBP_STOP") if ($log);
+			last;
+
+		} elsif ($res == CBP_ERROR) {
+			$self->log(LOG_ERR,"[CBPOLICYD] Error returned from module '".$module->{'name'}."'");
+			last;
+		}
+	}
+	
+	$self->log(LOG_DEBUG,"[CBPOLICYD] Done with modules") if ($log);
+
+	# Update session data
+	my $res = updateSessionData($self,$sessionData);
+	if ($res) {
+		$self->log(LOG_ERR,"[CBPOLICYD] Error updating session data");
+		$self->protocol_response(PROTO_ERROR);
+	}
+
+	# Grab and return response
+	my $response = $self->protocol_getresponse();
+	print($response);
+
+	# Carry on with pipelining?
+	goto CONN_READ;
+}
+
+
+# Initialize child
+sub server_exit
+{
+	my $self = shift;
+	my $log_mail = $self->{'config'}{'log_mail'};
+
+	
+	$self->log(LOG_DEBUG,"Destroying system modules.");
+	# Destroy cache
+	awitpt::cache::Destroy($self);
+	$self->log(LOG_DEBUG,"System modules destroyed.");
+
+	# Check if we using syslog
+	if (defined($log_mail)) {
+		$self->log(LOG_DEBUG,"Closing syslog.");
+		Sys::Syslog::closelog();
+		$self->log(LOG_DEBUG,"Syslog closed.");
+	};
+
+	# Parent exit
+	$self->SUPER::server_exit();
+}
+
+
+
+# Slightly better logging
+sub log
+{
+	my ($self,$level,$msg,@args) = @_;
+
+	# Check log level and set text
+	my $logtxt = "UNKNOWN";
+	if ($level == LOG_DEBUG) {
+		$logtxt = "DEBUG";
+	} elsif ($level == LOG_INFO) {
+		$logtxt = "INFO";
+	} elsif ($level == LOG_NOTICE) {
+		$logtxt = "NOTICE";
+	} elsif ($level == LOG_WARN) {
+		$logtxt = "WARNING";
+	} elsif ($level == LOG_ERR) {
+		$logtxt = "ERROR";
+	} 
+
+	# Parse message nicely
+	if ($msg =~ /^(\[[^\]]+\]) (.*)/s) {
+		$msg = "$1 $logtxt: $2";
+	} else {
+		$msg = "[CORE] $logtxt: $msg";
+	}
+
+	# If we have args, this is more than likely a format string & args
+	if (@args > 0) {
+		$msg = sprintf($msg,@args);
+	}
+	$self->SUPER::log($level,"[".$self->log_time." - $$] $msg");
+}
+
+
+# Syslog logging
+sub maillog
+{
+	my ($self,$msg,@args) = @_;
+	my $log_mail = $self->{'config'}{'log_mail'};
+
+
+	# Log to syslog
+	if (defined($log_mail)) {
+		# If we have args use printf style
+		if (@args) {
+			Sys::Syslog::syslog('info',$msg,@args);
+		} else {
+			Sys::Syslog::syslog('info','%s',$msg);
+		}
+
+	# Or log to main mechanism
+	} else {
+		$self->log(LOG_INFO,sprintf($msg,@args));
+	}
+}
+
+
+# Protocol response setting...
+sub protocol_response
+{
+	my $self = shift;
+	my $server = $self->{'server'};
+
+	# Make sure the response handler exists
+	if (!defined($server->{'_protocol_handler'}->{'protocol_response'})) {
+		$self->log(LOG_ERR,"[CBPOLICYD] No protocol response handler available");
+		return -1;
+	}
+
+	return $server->{'_protocol_handler'}->{'protocol_response'}($self,@_);
+}
+
+
+# Get protocol response
+sub protocol_getresponse
+{
+	my $self = shift;
+	my $server = $self->{'server'};
+
+	# Make sure the response handler exists
+	if (!defined($server->{'_protocol_handler'}->{'protocol_getresponse'})) {
+		$self->log(LOG_ERR,"[CBPOLICYD] No protocol getresponse handler available");
+		return -1;
+	}
+
+	return $server->{'_protocol_handler'}->{'protocol_getresponse'}($self);
+}
+
+
+# Display help
+sub displayHelp {
+	print(STDERR "Policyd (ClueBringer) v".VERSION." - Copyright (c) 2007-2009 AllWorldIT\n");
+
+	print(STDERR<<EOF);
+
+Usage: $0 [args]
+    --config=<file>        Configuration file
+    --debug                Put into debug mode
+    --fg                   Don't go into background
+
+EOF
+}
+
+
+
+__PACKAGE__->run;
+
+
+1;
+# vim: ts=4

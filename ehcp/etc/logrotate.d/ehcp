@@ -1,0 +1,6 @@
+/var/www/vhosts/bvidinli/deneme.com/logs/access_log /var/www/vhosts/bvidinli/deneme.com/logs/error_log /var/www/vhosts/bvidinli/ffff.com/logs/access_log /var/www/vhosts/bvidinli/ffff.com/logs/error_log /var/www/vhosts/bvidinli/ppppp.com/logs/access_log /var/www/vhosts/bvidinli/ppppp.com/logs/error_log /var/www/vhosts/bvidinli/ff/logs/access_log /var/www/vhosts/bvidinli/ff/logs/error_log  /var/log/ehcp.log /var/log/apache_common_access_log {
+		daily
+		missingok
+		compress
+		delaycompress		
+}

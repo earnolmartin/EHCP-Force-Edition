@@ -1,0 +1,64 @@
+May, 2013:
+by earnolmartin@gmail.com; some fixes; some fixes changed by ehcpdeveloper
+Updated Installer:  http://pastebin.com/YMRy5X3v
+Changes in classapp.php: http://pastebin.com/uWQCeuKA  (Starts at: /* Log Failed Authentication For Use with Fail2Ban */)
+Changes in install_2.php:  http://pastebin.com/4ZhQw5u5 (Bug with nginx install in Ubuntu 12.10... could not find a patch or any way to fix it... only apache installs in 12.10... nginx and apache install fine on both 13.04 and 12.04)
+Added fail2ban directory: (Used in Fail2Ban configuration if user wants to install Fail2Ban)
+Added log directory: (unsuccessful logins are added to a file... which is used by Fail2Ban filter)
+Allowed user input to decide if they want to allow BIND transfers during install (for slave DNS configurations, something I might need your help on integrating later... first I'll try myself.)
+
+What's new in the installer:
+
+Correct permissions after installing
+VSFTPD fixed and working out of the box
+Can install and configure fail2ban automatically for use with EHCP
+Fixes log directory permissions
+Correctly identifies distribution and version number
+
+
+
+---
+new features in 0.29.13:
+* email change pass in webmail/squirrelmail
+* dynamic dns support directly in ehcp
+* example ehcp api
+* bulk add email
+* email auto-reply directly in ehcp, no 3rd party software
+* new default Ubuntu theme, by razvan
+* new ftp and subdomain options
+* a few bugfix, code cleanup
+* add ftp under my ftp,
+* add ftp with subdomain
+* show similar functions under each operation.
+
+
+new features with version 0.29:
+installer improved,
+Bulk domain add - Add all domains in single step,
+Add multiple domains to an ftp account,
+Add domain to existing ftp account,
+Add mysql db to existing mysql user and vise versa,
+Domain redirect to an url
+Advanced: Intro to multi-server concept, support for separate mysql server for users
+Many minor bug-fixes and enhancements,
+improvement to easy script installs, with 27 scripts/programs listed at http://www.ehcp.net/?q=node/249
+English, Spanish and Turkish files for default template included
+
+new features for 0.27:
+* Easy Script installs (one-click installs)
+* custom http
+* custom dns
+* subdomains
+* password protected domains
+* email forwardings
+* domain transfer to another user
+* webftp (net2ftp)
+* multiple templates
+* security, installer improved
+
+Existing features:
+
+* Mangement of :domains, dns, email, ftp, mysql, phpmyadmin, webmail (squirrelmail), resellers, panelusers,
+* Opensource, GPL, full php, object oriented, modular, easily modifiable/extendable design..
+* server backup/restore,
+* Different Menus for Server Admin, Reseller, domain admin

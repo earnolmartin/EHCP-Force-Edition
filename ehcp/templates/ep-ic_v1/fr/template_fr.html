@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!--
+@author:	Eric Arnol-Martin (earnolmartin@gmail.com)
+Date:		December 28, 2010
+Template:	Ep-Ic
+Desc:		Ep-Ic is a multi-colored theme for ECHP that allows users to change the colors of several elements on the page.  If a browser does not support Javascript, the scripting used for the color change process, the template will load its default green color scheme.
+
+Hand Coded Using Proper HTML/CSS/Javascript
+
+<rant>I'm a big fan of tables... divs, not so much...  Though functionality is quite similar.  Don't know why people bang on tables and praise DIVs.  Same stuff </rant>
+
+Version:  1.1
+
+Fixes since last version:
+
+Added ability to manage domains (extremely important)
+Form elements depend on javascript... if disabled, you will not see any form elements which is the way it should be done...
+
+-->
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta name="author" content="Eric Arnol-Martin">
+	<title>EHCP - Easy Hosting Control Panel - {myip}</title>	
+	<link href="templates/ep-ic_v1/general/css/progreen.css" type="text/css" rel="stylesheet" title="green" id="stylesheet">
+	{extra_js}
+	<script type="text/javascript" src="templates/ep-ic_v1/general/js/tableCollapse.js"></script>
+</head>
+<body onload="initialStyleSheet()">
+<table class="main" cellspacing="0" cellpadding="0">
+<tr>
+<td class="logo" colspan="5">
+<table border="0" cellspacing="0" cellpadding="0" class="main">
+<tr>
+<td class="logo">
+<img src="templates/ep-ic_v1/general/images/logo.png" class="logo" alt="EHCP Hosting Control Panel" id="logo">
+</td>
+<td class="logo">
+<p class="mainTitle">Hosting Made Easy</p>
+</td>
+</tr>
+</table>
+
+</td>
+</tr>
+<tr>
+<td class="menu" onclick="document.location.href='index.php';">
+Accueil
+</td>
+<td class="menu" onclick="document.location.href='?op=selectdomain';">
+Domaines
+</td>
+<td class="menu" onclick="window.open('http://{myip}/phpmyadmin');">
+PHPMyAdmin
+</td>
+<td class="menu" onclick="window.open('webmail');">
+Messagerie
+</td>
+<td class="menu" onclick="window.open('net2ftp');">
+Gestionnaire de Fichiers
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top" align="left" class="topFunc">
+Bienvenue, {username}!&nbsp; <a href="?op=logout" title="Log out from ECHP" class="logout">D&eacute;connexion</a><br>
+</td>
+<td valign="top" align="center">
+<form action="" method="post">
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="templateChange">
+Style Couleur De La Page: &nbsp;
+</td>
+<td class="templateChangeSelect" id="createSelectHere">
+<span>Green</span>
+</td>
+<td class="templateChange2" id="createButtonHere">
+</td>
+</tr>
+</table>
+</form>
+</td>
+<td colspan="2" valign="top" align="right" class="topFunc2">
+Domaine S&eacute;lectionn&eacute;:&nbsp; {domain} :: <a class="logout" href="?op=listselectdomain">S&eacute;lectionner Un Autre Domaine</a> :: <a class="logout" href="?op=deselectdomain">D&eacute;s&eacute;lectionner Domain</a>
+<br>
+<form method=post action="index.php?op=listdomains">
+			<label for="inputMenuSearch">Recherche:&nbsp; </label>
+			<input type=text name=aranan value='' size="10" id="inputMenuSearch">
+			<select name='arananalan' id="selectMenuSearch">
+				<option value='domainname' >Domaine</option>
+				<option value='panelusername' >Client</option>
+			</select>
+			<input type=submit value="Go" id="submitMenuSearch">
+		</form>
+</td>
+</tr>
+<tr>
+<td colspan="5" class="textInside">
+<table border=0 cellspacing=0 cellpadding=0 class="startOfInsides">
+
+<tr>
+
+<td class="inWidth">
+
+<br>
+
+
+
+<!-- included here: 'header.html' -->
+
+{ickisim}
+<br>
+<!-- included here: 'footer.html' -->
+
+<p class="copy">&copy; <a href="http://www.ehcp.net/" target="_blank" class="copy">EHCP</a>&nbsp; {ehcpversion}&nbsp; 2010</p>
+<p class="copy">Template:&nbsp; &copy; <a href="mailto:earnolmartin@gmail.com" class="copy">Eric Arnol-Martin</a>&nbsp; 2010 ::&nbsp; <a href="?op=changetemplate" class="copy">Changer La Style De La Page</a></p>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>
+	
+	

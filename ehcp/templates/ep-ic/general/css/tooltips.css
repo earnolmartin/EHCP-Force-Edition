@@ -1,0 +1,38 @@
+/* ----- tool tip specific styles ----- */
+#theToolTip{
+position: absolute;
+left: -300px;
+width: 210px;
+border: 1px solid #C0C09F;
+padding: 6px 6px 6px 10px;
+background-color: #000;
+visibility: hidden;
+color: #fff;
+filter:alpha(opacity=80); -moz-opacity:0.8;opacity: 0.8;
+z-index: 100;
+/*Remove below line to remove shadow. Below line should always appear last within this CSS*/
+filter: progid:DXImageTransform.Microsoft.Shadow(color=gray,direction=135,strength=4);
+}
+
+#ToolTipPointer{
+position:absolute;
+left: -300px;
+filter:alpha(opacity=80); -moz-opacity:0.8;opacity: 0.8;
+z-index: 101;
+visibility: hidden;
+}
+
+#theToolTip p{
+font-size: 1.1em;
+color: #fff;
+line-height:1.4em;
+margin-right:10px;
+margin-top:0;
+}
+
+#ToolTipTextWrap {
+font-weight:bold;
+font-size: 1.2em;
+color: #fff;
+margin-right:10px;
+}

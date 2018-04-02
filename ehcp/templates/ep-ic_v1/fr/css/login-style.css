@@ -1,0 +1,113 @@
+* { margin: 0; padding: 0 }
+
+html,body  {
+   	background: #010101;
+	width: 100%; height: 100%;
+  
+}
+#wrapper{
+	width: 100%; height: 100%; position: absolute;
+   	background: #000 url('../images/xsplash-3.jpg') top no-repeat;
+}
+.form { 
+	padding: 100px 0px 0px 0px; 
+}
+
+a {
+	text-decoration: none;
+	color: #333;
+	font:Arial, Helvetica, sans-serif;
+	font-size:12px
+}
+
+form {
+	margin-left: 8px;
+	padding: 16px 16px 40px 16px;
+	font-weight: normal;
+	-moz-border-radius: 11px;
+	-khtml-border-radius: 11px;
+	-webkit-border-radius: 11px;
+	border-radius: 5px;
+	background: #fff;
+	border: 1px solid #e5e5e5;
+	-moz-box-shadow: rgba(200,200,200,1) 0 4px 18px;
+	-webkit-box-shadow: rgba(200,200,200,1) 0 4px 18px;
+	-khtml-box-shadow: rgba(200,200,200,1) 0 4px 18px;
+	box-shadow: rgba(200,200,200,1) 0 4px 18px;
+}
+
+#login form .submit input {
+	font-family: "Lucida Grande", Verdana, Arial, "Bitstream Vera Sans", sans-serif;
+	padding: 3px 10px;
+	border: none;
+	font-size: 12px;
+	border-width: 1px;
+	border-style: solid;
+	-moz-border-radius: 11px;
+	-khtml-border-radius: 11px;
+	-webkit-border-radius: 11px;
+	border-radius: 11px;
+	cursor: pointer;
+	text-decoration: none;
+	margin-top: -3px;
+	text-shadow: rgba(0,0,0,0.3) 0 -1px 0;
+}
+
+#login { width: 400px; margin: 4em auto; }
+
+#user_pass, #user_login, #user_email {
+	font-size: 24px;
+	width: 97%;
+	padding: 3px;
+	margin-top: 2px;
+	margin-right: 6px;
+	margin-bottom: 16px;
+	border: 1px solid #e5e5e5;
+	background: #fbfbfb;
+}
+
+label {
+	color: #777;
+	font-size: 13px;
+	float: left;
+	font: "Palatino Linotype", "Book Antiqua", Palatino, serif
+}
+
+#login form p {
+	margin-bottom: 0;
+}
+
+form p { margin-bottom: 24px; }
+
+#login form .submit input {
+	font-family: "Lucida Grande", Verdana, Arial, "Bitstream Vera Sans", sans-serif;
+	padding: 3px 10px;
+	border: none;
+	font-size: 12px;
+	border-width: 1px;
+	border-style: solid;
+	-moz-border-radius: 11px;
+	-khtml-border-radius: 11px;
+	-webkit-border-radius: 11px;
+	border-radius: 11px;
+	cursor: pointer;
+	text-decoration: none;
+	margin-top: -3px;
+	text-shadow: rgba(0,0,0,0.3) 0 -1px 0;
+}
+
+.button, .submit input, .button-secondary {
+	-moz-background-clip:border;
+	-moz-background-inline-policy:continuous;
+	-moz-background-origin:padding;	
+background:#F2F2F2 url(../images/login.png) repeat-x scroll left top;
+}
+
+.button, .button-secondary, .submit input, input[type="button"], input[type="submit"] {
+	border-color:#BBBBBB;
+	color:#464646;
+}
+
+textarea, input, select {
+border-color:#DFDFDF;
+}

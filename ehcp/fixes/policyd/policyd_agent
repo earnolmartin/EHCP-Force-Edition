@@ -1,0 +1,86 @@
+#!/bin/bash
+#
+### BEGIN INIT INFO
+# Provides:          policyd_agent
+# Required-Start:    $remote_fs $all
+# Required-Stop:     $remote_fs
+# Should-Start:      $remote_fs
+# Should-Stop:       $remote_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start and stop the policyd agent
+# Description:       Start and stop the policyd agent
+### END INIT INFO
+#
+set -e
+set -u
+. /lib/lsb/init-functions
+pidFile="/var/run/cbpolicyd/cbpolicyd.pid"
+mkdir -p "/var/run/cbpolicyd"
+chown cbpolicyd:cbpolicyd -R "/var/run/cbpolicyd"
+#
+# main()
+#
+
+if [ "X`whoami`" != "Xroot" ]
+then
+	log_failure_msg "Permission denied."
+	exit 1
+fi
+
+start() {
+	# Check to see if it's already running
+	if [ -e "$pidFile" ]
+	then
+		if [ "X$(ps -A | grep -o `cat $pidFile`)" != "X" ]
+		then
+			log_failure_msg "PolicyD Agent is already running."
+			return 1
+		fi
+	fi
+	
+	# Start the process...
+	nohup /etc/cbpolicyd/run_policyd_async.sh >> /dev/null 2>&1 &
+	log_success_msg "PolicyD Agent started successfully."
+	
+	return 0
+}
+
+stop() {
+	
+	if [ -e "$pidFile" ]
+	then
+		if [ "X$(ps -A | grep -o `cat $pidFile`)" == "X" ]
+		then
+			log_failure_msg "PolicyD Agent not running."
+		else
+			kill `cat $pidFile` >/dev/null 2>&1
+			log_success_msg "PolicyD Agent stopped successfully."
+		fi
+	else
+		log_failure_msg "PID file not found ($pidFile)"
+	fi
+	return 0
+}
+
+case "${1:-''}" in
+	start)
+	start
+	RETVAL=$?
+	;;
+	stop)
+	stop
+	RETVAL=$?
+	;;
+	restart)
+	stop
+	sleep 1
+	start
+	RETVAL=$?
+	;;
+ 	*)
+	echo "Usage: service policyd_agent start|stop|restart"
+	RETVAL=1
+	;;
+esac
+exit $RETVAL

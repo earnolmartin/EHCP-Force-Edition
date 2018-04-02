@@ -1,0 +1,13 @@
+# PolicyD Agent systemd Script
+# By Eric Arnol-Martin <earnolmartin@gmail.com>
+[Unit]
+Description=PolicyD Agent (works with EHCP Force www.ehcpforce.tk)
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c "nohup /var/www/new/ehcp/scripts/start_policyd.sh >> /dev/null 2>&1 &"
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

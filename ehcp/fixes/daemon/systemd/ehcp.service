@@ -1,0 +1,14 @@
+# EHCP Force systemd Service Script
+# By Eric Arnol-Martin <earnolmartin@gmail.com>
+[Unit]
+Description=Easy Hosting Control Panel (EHCP Force) Daemon www.ehcpforce.tk
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c "/var/www/new/ehcp/ehcpdaemon.sh"
+ExecStop=-/bin/sh -c "/var/www/new/ehcp/ehcpdaemon_stop.sh"
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

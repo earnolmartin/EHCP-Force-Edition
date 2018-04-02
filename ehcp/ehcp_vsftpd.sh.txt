@@ -1,0 +1,78 @@
+# This file is no longer used in ehcp, left here for historical purposes.
+
+log_ftp_protocol=YES
+listen=YES
+anonymous_enable=NO
+local_enable=YES
+write_enable=YES
+local_umask=022
+dirmessage_enable=YES
+xferlog_enable=YES
+connect_from_port_20=YES
+nopriv_user=vsftpd
+chroot_local_user=YES
+secure_chroot_dir=/var/run/vsftpd
+pam_service_name=vsftpd
+rsa_cert_file=/etc/ssl/certs/vsftpd.pem
+guest_enable=YES
+guest_username=vsftpd
+local_root=/home/vsftpd/$USER
+user_sub_token=$USER
+virtual_use_local_privs=YES
+user_config_dir=/etc/vsftpd_user_conf
+
+
+
+auth required pam_mysql.so user=vsftpd passwd=ftpdpass host=localhost db=vsftpd table=accounts usercolumn=username passwdcolumn=pass crypt=2
+account required pam_mysql.so user=vsftpd passwd=ftpdpass host=localhost db=vsftpd table=accounts usercolumn=username passwdcolumn=pass crypt=2
+
+
+auth required pam_mysql.so user=ehcp passwd=12345 host=localhost db=ehcp table=accounts usercolumn=username passwdcolumn=pass crypt=2
+account required pam_mysql.so user=ehcp passwd=12345 host=localhost db=ehcp table=accounts usercolumn=username passwdcolumn=pass crypt=2
+ok.
+
+auth required pam_mysql.so user=ehcp passwd=12345 host=localhost db=ehcp table=ftpaccounts usercolumn=ftpusername passwdcolumn=password crypt=2
+account required pam_mysql.so user=ehcp passwd=12345 host=localhost db=ehcp table=ftpaccounts usercolumn=ftpusername passwdcolumn=password crypt=2
+ok.
+
+
+CREATE TABLE `ftpaccounts` (
+  `id` int(11) NOT NULL auto_increment,
+  `ftpusername` varchar(30) NOT NULL,
+  `password` varchar(50) NOT NULL,
+  `domainname` varchar(40) default NULL,
+  `panelusername` varchar(30) default NULL,
+  `reseller` varchar(30) default NULL,
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `username` (`ftpusername`)
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
+
+-- 
+-- Tablo d�k�m verisi `ftpaccounts`
+-- 
+
+INSERT INTO `ftpaccounts` (`id`, `ftpusername`, `password`, `domainname`, `panelusername`, `reseller`) VALUES (1, 'test', '*676243218923905CF94CB52A3C9D3EB30CE8E20D', NULL, NULL, NULL);
+
+
+ok. bu haliyle calisti.
+
+
+bu da calisti:
+CREATE TABLE `ftpaccounts` (
+  `id` int(11) NOT NULL auto_increment,
+  `ftpusername` varchar(30) NOT NULL,
+  `password` varchar(50) NOT NULL,
+  `domainname` varchar(40) default NULL,
+  `panelusername` varchar(30) default NULL,
+  `reseller` varchar(30) default NULL,
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `ftpusername` (`ftpusername`)
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
+
+-- 
+-- Tablo d�k�m verisi `ftpaccounts`
+-- 
+
+INSERT INTO `ftpaccounts` (`id`, `ftpusername`, `password`, `domainname`, `panelusername`, `reseller`) VALUES (1, 'test', '*676243218923905CF94CB52A3C9D3EB30CE8E20D', NULL, NULL, NULL);
+
+

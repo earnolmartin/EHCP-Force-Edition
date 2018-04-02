@@ -1,0 +1,8 @@
+# this file used in Easy Hosting Control Panel (ehcp), www.ehcp.net
+<VirtualHost *>
+        ServerName   {domainname}
+        ServerAlias  www.{domainname} *.{domainname} 
+        RewriteEngine On
+		RewriteCond %{HTTPS} off
+		RewriteRule (.*) {domainname_redirect}%{REQUEST_URI}
+</VirtualHost>

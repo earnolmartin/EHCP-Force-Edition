@@ -1,0 +1,92 @@
+<!-- <h1>Server Admin Main Menu</h1> -->
+<!--
+Icons:
+http://www.iconspedia.com/pack/nx10-1-6/
+http://www.iconspedia.com/pack/devcom-network-347/
+http://www.iconspedia.com/pack/crystal-clear-actions-1303/
+http://www.iconspedia.com/pack/soft-17-0/
+-->
+<table id="tblcontent"><tr>
+<td>
+<div class="content">
+<div class="title"><img alt="" src="{templatedir}/domain.png"> Domain Operations</div>
+      <ul>
+        <li>Custom http: <a href='?op=customhttp'>List</a> - <a href='?op=addcustomhttp'>Add</a></li>
+        <li>Custom dns: <a href='?op=customdns'>List</a> - <a href='?op=addcustomdns'>Add</a></li>
+		<li>SubDomains: <a href='?op=subdomains'>List</a> - <a href='?op=addsubdomain'>Add</a></li>
+		<li><ul>
+			<li><a href='?op=addsubdomainwithftp'>Add subdomain with ftp</a></li>
+			<li><a href='?op=addsubdirectorywithftp'>Add subdirectory with ftp (Under domainname)</a></li>
+			<li><a href='?op=addftptothispaneluser'>Add extra Ftp Under my ftp space freely</a></li>
+		</ul>		
+		</li>
+		<li><a href="?op=addscript">Install CMS or Scripts</a></li>
+		
+		<li>Password Protected Directories: <a href='?op=directories'>List</a> - <a href='?op=adddirectory'>Add</a></li></li>
+		<li><a href='?op=editdnstemplate'>Edit dns template for this domain </a></li>
+		<li><a href='?op=editapachetemplate'>Edit apache template for this domain </a></li>
+		<li><a href='?op=editdomainaliases'>Edit Aliases for this domain </a></li>
+      </ul>
+
+</div>
+</td><td>
+<div class="content">
+<div class="title"><img alt="" src="{templatedir}/ftp.png"> FTP</div>
+      <ul>
+        <li><a href="?op=editftpuser">Change FTP Password / Settings</a></li>
+		<li><a href="?op=addsubdomainwithftp">Add subdomain with ftp</a></li>
+		<li><a href="?op=addsubdirectorywithftp">Add subdirectory with ftp (Under domainname)</a></li>
+		<li><a href="?op=addftptothispaneluser">Add extra Ftp Under my ftp space freely</a></li>
+		<li><a href="?op=listallftpusers">List Ftp Users</a></li>	
+        <li><a href="net2ftp" target="_blank">WebFTP</a></li>
+      </ul>
+</div>
+</td></tr><tr><td>
+<div class="content">
+<div class="title"><img alt="" src="{templatedir}/email.png"> Email</div>
+      <ul>
+        <li>Email Users / autoreply: <a href="?op=listemailusers">List/Change</a> - <a href="?op=addemailuser">Add</a> - <a href="?op=bulkaddemail">Bulk Add Email</a> </li>        
+        <li>Email Forwardings/Catch all: <a href="?op=emailforwardings">List</a> - <a href="?op=addemailforwarding">Add</a></li>
+
+      </ul>
+<br />
+</div>
+</td><td>
+<div class="content">
+<div class="title"><img alt="" src="{templatedir}/mysql.png"> MySQL</div>
+<ul>
+        <li><a href="?op=addmysqldb">Add Mysql Db&amp;dbuser</a></li>
+        <li><a href="?op=addmysqldbtouser">Add Mysql db to existing dbuser</a></li>
+        <li><a href="?op=dbadduser">Add Mysql user to existing db</a></li>
+        <li><a href="?op=domainop&amp;action=listdb">List / Delete Mysql Db's</a></li>
+        <li><a href="/phpmyadmin">phpMyadmin</a></li>
+
+</ul>
+</div>
+</td></tr>
+<tr><td>
+<div class="content">
+<div class="title"><img alt="" src="{templatedir}/other.png"> Other</div>
+      <ul>
+        <li><a href="?op=addscript">Easy install scripts</a></li>
+        <li><a target="_blank" href="http://www.{selecteddomain}/webstats/index.html">Webstats</a></li>
+		<li><a href='?op=setdefaultdomain'>Set as my default domain</a></li>
+      </ul>
+<br /><br /><br />
+
+</div>
+</td><td>
+<div class="content">
+<div class="title"><img alt="" src="{templatedir}/settings.png"> Domain Settings</div>
+<ul>
+        <li><a href="?op=domainsettings">Change Settings for this domain</a></li>
+        <li><a href="?op=editdomain">Activate / De-activate domain</a></li>
+        <li><a href="?op=transferdomain">Transfer domain/hosting to another user in this server</a></li>
+        <li><a href="?op=addredirect">Redirect To Another domain/url</a></li>
+        <li><a href="?op=deletedomain">DELETE DOMAIN/HOSTING</a></li>
+
+</ul>
+</div>
+</td></tr>
+</table>
+

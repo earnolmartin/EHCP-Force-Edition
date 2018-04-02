@@ -1,0 +1,160 @@
+/* Main Style Sheet Styling*/
+body{background-color: #404040; margin:0px; padding:0px;}
+html, body {
+    border: 0 none;
+    height: 100%;
+}
+div.main{width: 100%; height: 100%;}
+div.header{width:100%; height: 150px; cursor: pointer;}
+div.logo{width: 100%; margin-left: auto; margin-right: auto; height: 150px; display: table; background: url('../images/ehcp_force_bg2.jpg') #000000 repeat-x;}
+div.textLogo{width: 100%; height: 150px; display: table-cell; vertical-align: middle; text-align:center; text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black; font-family: 'arial'; font-size: 72px; color: white;}
+div.menu{width: 100%; margin-left: auto; margin-right: auto; height: 50px; border-bottom: 8px solid #000000; border-top: 8px solid #000000;}
+div.menuItem{width: 20%; vertical-align: middle; text-align: center; height: 50px; float: left; font-family: 'arial'; font-size: 20px; font-weight: bold; color: white; cursor: pointer; line-height: 50px; text-decoration: underline;}
+div.menuItem:hover{text-decoration: none;}
+div.sessionBar{width: 100%; margin-left: auto; margin-right: auto; height: 50px;}
+	.username{float: left; width: 20%; text-align: left; vertical-align: middle; height: 50px;}
+	.changeColor{width: 60%; float:left; text-align: center; vertical-align: middle; height: 50px;}
+	.logout{float: left; width: 20%; text-align: left; vertical-align: middle; height: 50px; text-align: right;}
+	#colorpicker{width: 20px; height: 20px; background-color: black; cursor: pointer; display: inline-block; border: 2px solid black; vertical-align: middle; margin-top: 4px;}
+div.ehcp_content{width: 100%; margin-left: auto; margin-right: auto; background-color: white; min-height: 100%;}
+div.footer{width: 100%; margin-left: auto; margin-right: auto; background-color: black; height: 50px; text-align: center; color: white; line-height: 25px;}
+.footer a{color: white;}
+.divBorder{border-right: 10px solid black; border-left: 10px solid black;}
+.cpright{font-size: 10px; font-family: 'arial'; color: white;}
+.cpright a {font-size: 10px; font-family: 'arial'; color: white !important;}
+div.footer p{margin: 0px;}
+p.leftPadding{padding-left: 5px;}
+p.rightPadding{padding-right: 5px;}
+.sessionBar p{margin: 0px;}
+.whiteBG{background-color: white;}
+
+/* Content Ickism Replacement Styling */
+table.startOfInsides{width: 98%; margin-right: auto; margin-left: auto;}
+	table.submain{width: 100%; margin-left: auto; margin-right: auto; border-collapse: collapse; border-spacing: 0px;}
+		tr.display{margin:0px;}
+				.titleDiv{color: white; font-weight: bold; font-size: 20px; font-family: 'arial'; margin:0px; padding: 5px; width: 200px; vertical-align: bottom; float: left;}
+				img.func{float: right; vertical-align: middle; cursor: pointer; width: 13px; height: 13px;}
+		td.action{font-family: 'arial'; font-weight: normal; font-size: 16px; width: 100%; padding: 0px;}
+			div.items{text-align: center; padding: 6px; cursor: pointer; float: left; margin-left: 10px; margin-right: 10px; width: 175px; height: 80px;}
+			div.items:hover, div.items:hover a, div.items:hover a:active, div.items:hover a:visited{background-color: #0b4710; color: white; text-decoration: underline;}
+
+a, a:active, a:visited{font-size: 17px; font-family: 'arial'; color: green; text-decoration: underline;}
+a:hover{color: #088478; text-decoration: none;}
+/* td.inputform{text-transform:capitalize;} */
+p {font-family: 'arial'; font-weight: normal; font-size: 17px; color: black;}
+
+td.inWidth{width: 100%; font-family: 'arial'; font-weight: normal; font-size: 17px;}
+td.inWidth form{margin-top: 2em;}
+table.main{width: 100%; padding: 0px;}
+a.copy{font-family: 'arial'; font-weight: bold; font-size: 10px; color: white;}
+a.copy:hover{color: cyan;}
+
+.display td{
+	padding: 0px;
+	margin: 0px;
+}
+
+.success{color: green;}
+.error{color: red;}
+
+td.category{
+	vertical-align: middle;
+	text-align: center;
+	font-family: 'arial';
+	font-size: 18px;
+	font-style: italic;
+	color: black;
+	width: 100px;
+}
+
+tr.itemRow{
+	background-color: white;
+}
+
+tr.itemRow:hover{
+	background-color: #c5ffbb;
+}
+
+div.similarFunctions a{
+	padding: 5px;
+	margin-left: 5px;
+	margin-right: 5px;
+	float: left;
+	margin-top: 10px;
+}
+
+div.similarFunctions{
+	height: 200px;
+	overflow: auto;
+}
+
+textarea{
+	margin-bottom: 15px;
+}
+
+input[type=text] {
+   border: 2px solid black;
+   border-radius: 7px;
+   padding-left: 3px;
+   padding-right: 3px;
+}
+
+input[type=submit], button, input[type=button] {
+   cursor: pointer;
+}
+
+input[type=text]:focus { 
+    outline: none;
+    border-color: #9ecaed;
+    box-shadow: 0 0 10px #9ecaed;
+} 
+
+input[type=password] {
+   border: 2px solid black;
+   border-radius: 7px;
+}
+
+input[type=password]:focus { 
+    outline: none;
+    border-color: #9ecaed;
+    box-shadow: 0 0 10px #9ecaed;
+} 
+
+/* Color Picker Initial Styling */
+.darkBG{background-color: #001458;}
+.superDarkBG{background-color: #001458;}
+.lightBG{background-color: #bbe4ff;}
+.colorBG{background-color: #0f4bff;}
+.darkText{color: #001458;}
+.lightText{color: #bbe4ff;}
+.colorText{color: #0f4bff;}
+.darkBorderBottom{border-bottom: solid 4px #0b4710;}
+hr{border: 4px solid black;}
+
+/* float bar */
+
+.floatRightMiddleAlign{vertical-align: middle; float: right; margin-right: 5px;}
+.floatRightMiddleAlign:hover{outline: 1px solid white;}
+img.fixedNavBarLinkIcon{vertical-align: middle; margin-right: 5px;}
+img.fixedNavBarLinkIcon:hover{outline: 1px solid white;}
+div.topRightDiv{position: absolute; top: 0px; right: 0px; background-color: black; color: white; opacity: 0.9; display: none;}
+.inlineBlockItem{display: inline-block; vertical-align: middle;}
+.chooseDomain{padding-left: 10px; color: white !important; margin: 0;}
+.chooseDomain select{max-width: 200px; text-overflow: ellipses;}
+div.fixedNavBarLinkIconsSide{padding-left: 1em; text-align: right;}
+div.fixedNavBarLinkIconsSide a {display: inline-block;}
+
+/* drop down menus */
+.dropDownMenuContainer{cursor: default !important;}
+.ddMenu{display: none; list-style-type: none; width: 400px; padding: 0px; margin: 0px; position: absolute; float: right; max-height: 50%; overflow-y: auto; overflow-x: hidden;}
+.ddMenu li.ddMenuLink{font-family: 'arial'; font-size: 18px; color: black; background-color: #63c5ff; text-decoration: none; outline: 2px solid black; border-collapse: collapse; float: left; cursor: pointer; width: 100%; text-align: left; padding-left: 28px;} 
+.ddMenu li.ddMenuLink:hover{color: white; background-color: #006800; text-decoration: underline;} 
+.ddMenu li.ddMenuLink a{color: inherit; display: inline-block; width: 270px;} 
+.fakeLink{text-decoration: none;}
+.dropDownIcon{background-image: url('../images/dd.png'); background-position: 95% 50%; background-repeat: no-repeat;} 
+.homeBackgroundIcon{background-image: url('../images/picante_home.png'); background-position: center center; background-repeat: no-repeat;}
+table.list{border-collapse: collapse;}
+table.list td.list, table.list th.list{padding-left: 5px; padding-right: 5px; border: 1px solid black;}
+table.genericList{border-collapse: collapse;}
+table.genericList td, table.genericList th{padding-left: 5px; padding-right: 5px; border: 1px solid black;}
+.uncheckAll, .checkAll{cursor: pointer;}

@@ -1,0 +1,119 @@
+# START OF CUSTOM GLOBAL PANEL URLS Template
+server {
+        listen 443 ssl;
+        server_name {domainname};
+
+		ssl_certificate     {ssl_cert_path};
+		ssl_certificate_key {ssl_cert_key_path};
+		ssl_protocols       SSLv3 TLSv1 TLSv1.1 TLSv1.2;
+		ssl_ciphers         HIGH:!aNULL:!MD5;
+
+        access_log /var/log/nginx/default.access.log;
+        error_log  /var/log/nginx/default.error.log;
+        
+        root   {ehcpdir};
+        index  index.php;
+
+        location ~ \.php$ {
+			root {ehcpdir};
+			include fastcgi_params;
+			try_files $uri = 404;
+			fastcgi_pass   127.0.0.1:9000;
+			fastcgi_index  index.php;
+			fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+            fastcgi_param PHP_ADMIN_VALUE "open_basedir={ehcpdir}:/tmp:/usr/share:/etc/roundcube:/var/lib/roundcube:/var/log/roundcube \n upload_tmp_dir=/tmp \n session.save_path=/var/www/php_sessions";
+			fastcgi_read_timeout 300;
+			limit_req zone=one burst=5;
+        }
+
+        # deny access to .htaccess files, if Apache's document root concurs with nginx's one
+        #
+        location ~ (apache_subdomain_template|apachetemplate$|apachetemplate_ipbased|apachetemplate_passivedomains|/\.conf$|/\.ht|access_log|error_log|access\.log|error\.log) {   
+                deny  all;
+        }
+        
+        location / {
+			location ~ ^/(.+\.conf)$ {
+				return 403;
+			}
+			location ~ ^/(.+\.txt)$ {
+				return 403;
+			}
+			location ~ ^/(.+\.log)$ {
+				return 403;
+			}
+			location ~ ^/(.+\.sh)$ {
+				return 403;
+			}
+		}
+        
+        location /phpmyadmin {
+			root /usr/share/;
+			index index.php index.html index.htm;
+			location ~ ^/phpmyadmin/(.+\.php)$ {
+			   try_files $uri =404;
+			   root /usr/share/;
+			   fastcgi_pass 127.0.0.1:9000;
+			   fastcgi_index index.php;
+			   fastcgi_param SCRIPT_FILENAME $request_filename;
+			   fastcgi_param  PHP_ADMIN_VALUE "open_basedir=/usr/share/phpmyadmin:/etc/phpmyadmin:/var/lib/phpmyadmin:/tmp:/usr/share/php:/usr/share/pear:/usr/share:/var/www/php_sessions \n upload_tmp_dir=/tmp \n session.save_path=/var/www/php_sessions";
+			   include /etc/nginx/fastcgi_params;
+			   limit_req zone=one burst=5;
+			   proxy_send_timeout 600;
+			   proxy_read_timeout 600;
+			}
+			location ~* ^/phpmyadmin/(.+\.(jpg|jpeg|gif|css|png|js|ico|html|xml|txt))$ {
+				   root /usr/share/;
+			}
+		}
+		
+		location /phpMyAdmin {
+		rewrite ^/* /phpmyadmin last;
+	}
+
+	location /webmail2 {
+		root {ehcpdir}/;
+		index index.php index.html index.htm;
+		
+		location ~ ^/webmail2/(.+\.php)$ {
+			try_files $uri =404;
+			root {ehcpdir}/;
+			fastcgi_pass 127.0.0.1:9000;
+			fastcgi_index index.php;
+			fastcgi_param SCRIPT_FILENAME $request_filename;
+			fastcgi_param  PHP_ADMIN_VALUE "open_basedir={ehcpdir}/webmail2 \n upload_tmp_dir={ehcpdir}/webmail2/data \n session.save_path={ehcpdir}/webmail2/data";
+			include /etc/nginx/fastcgi_params;	
+			limit_req zone=one burst=5;		   
+		}
+
+		location ~* ^/webmail2/(.+\.(jpg|jpeg|gif|css|png|js|ico|html|xml|txt))$ {
+			root {ehcpdir}/;
+		}
+	}
+	
+	location /webmail {
+		rewrite ^/* /roundcube last;
+	}
+
+	location /roundcube {
+		root /usr/share/;
+		index index.php index.html index.htm;
+		
+		location ~ ^/roundcube/(.+\.php)$ {
+			try_files $uri =404;
+			root /usr/share/;
+			fastcgi_pass 127.0.0.1:9000;
+			fastcgi_index index.php;
+			fastcgi_param SCRIPT_FILENAME $request_filename;
+			fastcgi_param  PHP_ADMIN_VALUE "open_basedir=/var/lib/roundcube:/etc/roundcube:/usr/share:/tmp:/var/www/php_sessions:/var/log/roundcube \n upload_tmp_dir=/tmp \n session.save_path=/var/www/php_sessions";
+			include /etc/nginx/fastcgi_params;
+			limit_req zone=one burst=5;
+		}
+		
+		location ~* ^/roundcube/(.+\.(jpg|jpeg|gif|css|png|js|ico|html|xml|txt))$ {
+			root /usr/share/;
+		}
+	}
+}
+# END OF CUSTOM GLOBAL PANEL URLS Template
+

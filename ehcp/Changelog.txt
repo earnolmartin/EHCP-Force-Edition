@@ -1,0 +1,22 @@
+This changelog file may be out of date.. check www.ehcp.net site for more info.
+
+0.29.15.3:
+many things changed. 
+directory structure changed. security improved.
+multi server added... etc.. this file out of date I think..
+
+0.29.10.2:
+Added initial ssl support, apache can switch to non-ssl only, or ssl+non-ssl mode from ehcp options menu, (29.8.2009)
+
+
+
+Changelog for version 0.29.10: 
+
+Added following functions: (13.6.2009, dd.mm.yyyy)
+Add subdomain with ftp
+Add subdirectory with ftp (Under domainname)
+Add extra Ftp Under my ftp space freely
+Edit Aliases for this domain
+
+Added new templte z7, default now.
+

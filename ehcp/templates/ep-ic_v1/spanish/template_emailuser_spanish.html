@@ -1,0 +1,68 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<link href="{templatedir}/css/style.css" type="text/css" rel="stylesheet">
+<link href="{templatedir}/css/style_icons.css" type="text/css" rel="stylesheet">
+<link href="{templatedir}/css/tooltips.css" type="text/css" rel="stylesheet">
+<script type="text/javascript" src="{templatedir}/js/jquery-1.2.6.js"></script>
+<script type="text/javascript" src="{templatedir}/js/scripts.js"></script>
+<!--[if lte IE 7]>
+<style type="text/css">
+body {
+}
+
+#top1,#top2,#splitter {
+	margin-top: 0px;
+}
+
+#header{
+position: static;
+}
+</style>
+<![endif]-->
+</head>
+<body style="overflow: hidden;" onload="hideLoadLayer();setHeight()">
+<!--<div id="loadingLayer" style="z-index:10000; position:absolute;top:0px;left:0px;width:100%;height:100%;background:#fff;">
+  <div style="position:absolute;margin-left:auto;margin-bottom:auto;top:40%;left:49%;">
+   <img src="{templatedir}/images/loading-bar.gif" />
+  </div>
+</div>-->
+<div id="main" class="clearfix">
+<div id="header" class="clearfix" >
+<a href="index.php"><img id="logo" src="{templatedir}/images/ehcp_logo2.jpg" /></a>
+<div style="float: right; color: #FFF; height: 50px; line-height: 50px; padding-right: 20px;">Welcome, <b>{username}</b>! <span id="topTxtLogout"><a href="?op=logout" class="addToolTip" title="Log out from ECHP">Log Out</a></span></div>
+</div>
+  <div id="sidebar">
+  	<div id="top1" style="width: 240px;">
+    	<div id="sidebar-inner">
+        <div id="divMenuLinks">
+          <p><strong>Main Menu</strong></p>
+    	  <p><a href="index.php">Home</a><br>
+    	    <p><a href="index.php?op=editemailuserpassword">Change my password</a></p>
+    	    <p><a href="index.php?op=editemailuserautoreply">Change autoreply</a></p>
+            <p><a href="?op=emailforwardingsself">List/Add email forwardings</a></p>
+          <p><a href="?op=logout">Logout</a></p>
+</div>
+          <div id="divCopy">
+            <p>&copy; <a href="http://www.ehcp.net/" target="_blank">EHCP</a> {ehcpversion}.</p>
+            <p>All rights reserved</p>
+          </div>
+    	</div>
+  	</div>
+  </div>
+  <div id="content">
+    	<a id="splitter"><span>&laquo;</span></a>
+    <div id="content-inner">
+      <div id="top2">
+        {selecteddomain}
+		{ickisim}
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript" >
+var imagePath = "{templatedir}/images/tooltiparrow.gif";
+</script>
+<script type="text/javascript" src="{templatedir}/js/tooltips.js"></script>
+</body>
+</html>

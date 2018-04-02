@@ -1,0 +1,12 @@
+/*
+domain id:{id}
+domainname:{domainname}
+panelusername:{panelusername}
+reseller:{reseller}
+aciklama-explanation:{aciklama}
+*/
+zone "{domainname}" {
+        type master;
+        file "{namedbase}/{domainname}";
+};
+

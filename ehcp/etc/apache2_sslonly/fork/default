@@ -1,0 +1,69 @@
+# this file used in Easy Hosting Control Panel (ehcp), www.ehcp.net
+
+<VirtualHost *:80>
+
+	RewriteEngine On
+	RewriteCond %{HTTPS} off
+	RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
+	
+	php_admin_value open_basedir "/var/www:/tmp:/usr/share:/etc/roundcube:/etc/phpmyadmin:/var/lib/phpmyadmin:/var/lib/roundcube:/var/log/roundcube"
+	php_admin_value upload_tmp_dir "/tmp"
+	php_admin_value session.save_path "/var/www/php_sessions"
+
+</VirtualHost>
+
+# this file used in Easy Hosting Control Panel (ehcp), www.ehcp.net
+
+<VirtualHost *:443>
+
+	ServerName ssl
+	DocumentRoot /var/www/new
+	<Directory />
+		Options +FollowSymLinks
+		AllowOverride None
+	</Directory>
+
+	<Directory /var/www/vhosts/>
+		Options -Indexes -FollowSymLinks -MultiViews
+		AllowOverride All
+		Order Allow,Deny
+		Allow from All
+	</Directory>
+
+	<FilesMatch "access_log|error_log">
+		Deny from All
+	</FilesMatch>
+	
+	<Files  ~ "\.conf$">
+		Order allow,deny
+		Deny from all
+	</Files>
+		
+	<Files  ~ "\.txt$">
+		Order allow,deny
+		Deny from all
+	</Files>
+	
+	<Files  ~ "\.log$">
+		Order allow,deny
+		Deny from all
+	</Files>
+	
+	<Files  ~ "\.sh$">
+		Order allow,deny
+		Deny from all
+	</Files>
+
+	LogLevel debug
+	ErrorLog /var/log/apache2/default.error.log
+	CustomLog /var/log/apache2/default.access.log vhost_combined
+
+	SSLEngine on
+	SSLCertificateFile /etc/ssl/certs/server.crt
+	SSLCertificateKeyFile /etc/ssl/private/server.key
+	
+	php_admin_value open_basedir "/var/www:/tmp:/usr/share:/etc/roundcube:/etc/phpmyadmin:/var/lib/phpmyadmin:/var/lib/roundcube:/var/log/roundcube"
+	php_admin_value upload_tmp_dir "/tmp"
+	php_admin_value session.save_path "/var/www/php_sessions"
+
+</VirtualHost>

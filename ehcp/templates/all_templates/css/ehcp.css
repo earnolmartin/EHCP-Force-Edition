@@ -1,0 +1,25 @@
+.ehcp-all-clickme{
+	cursor: pointer;
+	text-decoration: underline;
+}
+
+.ehcp-all-active{
+	cursor: auto;
+	text-decoration: none;
+}
+
+.ehcp-all-hide{
+	display: none !important;
+}
+
+.ehcp-all-green{
+	color: green;
+}
+
+.ehcp-all-small-text{
+	font-size: 10px;
+}
+
+.ehcp-all-cursor{
+	cursor: pointer !important;
+}

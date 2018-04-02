@@ -1,0 +1,177 @@
+# this file used in Easy Hosting Control Panel (ehcp), www.ehcp.net
+# nginx default server config file
+
+server {
+        listen   80 default;
+        server_name  _;
+
+        access_log /var/log/nginx/default.access.log;
+        error_log  /var/log/nginx/default.error.log;
+        
+        root   /var/www/new;
+        index  index.html index.htm index.php;
+
+        # Set this to off if you're hosting more than one site
+        server_name_in_redirect  off;
+
+        # SEO friendly URLs for Wordpress
+        #
+        #location /wordpress/ {
+        #        if (!-e $request_filename) {
+        #                rewrite ^(.*)$ /wordpress/index.php?q=$1 last;
+        #        }
+        #}
+
+        #error_page  404  /404.html;
+
+        # redirect server error pages to the static page /50x.html
+        #
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+                root   /var/www/nginx-default;
+        }
+
+        # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+        #
+        location ~ \.php$ {
+                fastcgi_pass   127.0.0.1:9000;
+                fastcgi_index  index.php;
+                fastcgi_param  SCRIPT_FILENAME  /var/www/new$fastcgi_script_name;
+                fastcgi_param PHP_ADMIN_VALUE "open_basedir=/var/www:/tmp:/usr/share:/etc/roundcube:/var/lib/roundcube:/var/log/roundcube \n upload_tmp_dir=/tmp \n session.save_path=/var/www/php_sessions";
+                include fastcgi_params;
+                limit_req zone=one burst=5;
+        }
+
+        # deny access to .htaccess files, if Apache's document root concurs with nginx's one
+        #
+        location ~ (apache_subdomain_template|apachetemplate$|apachetemplate_ipbased|apachetemplate_passivedomains|/\.conf$|/\.ht|access_log|error_log|access\.log|error\.log) {   
+                deny  all;
+        }
+        
+        location /ehcp {
+			location ~ ^/ehcp/(.+\.conf)$ {
+				return 403;
+			}
+			location ~ ^/ehcp/(.+\.txt)$ {
+				return 403;
+			}
+			location ~ ^/ehcp/(.+\.log)$ {
+				return 403;
+			}
+			location ~ ^/ehcp/(.+\.sh)$ {
+				return 403;
+			}
+		}
+        
+        location /phpmyadmin {
+			root /usr/share/;
+			index index.php index.html index.htm;
+			location ~ ^/phpmyadmin/(.+\.php)$ {
+			   try_files $uri =404;
+			   root /usr/share/;
+			   fastcgi_pass 127.0.0.1:9000;
+			   fastcgi_index index.php;
+			   fastcgi_param SCRIPT_FILENAME $request_filename;
+			   fastcgi_param  PHP_ADMIN_VALUE "open_basedir=/usr/share/phpmyadmin:/etc/phpmyadmin:/var/lib/phpmyadmin:/tmp:/usr/share/php:/usr/share/pear:/usr/share:/var/www/php_sessions \n upload_tmp_dir=/tmp \n session.save_path=/var/www/php_sessions";
+			   include /etc/nginx/fastcgi_params;
+			   limit_req zone=one burst=5;
+			   proxy_send_timeout 600;
+			   proxy_read_timeout 600;
+			}
+			location ~* ^/phpmyadmin/(.+\.(jpg|jpeg|gif|css|png|js|ico|html|xml|txt))$ {
+				   root /usr/share/;
+			}
+		}
+
+}
+
+# For SSL CONFIG
+
+server {
+        listen 443 ssl;
+        server_name  _;
+        
+        ssl_certificate     /etc/ssl/certs/server.crt;
+		ssl_certificate_key /etc/ssl/private/server.key;
+		ssl_protocols       SSLv3 TLSv1 TLSv1.1 TLSv1.2;
+		ssl_ciphers         HIGH:!aNULL:!MD5;
+
+        access_log /var/log/nginx/default.access.log;
+        error_log  /var/log/nginx/default.error.log;
+        
+        root   /var/www/new;
+        index  index.html index.htm index.php;
+
+        # Set this to off if you're hosting more than one site
+        server_name_in_redirect  off;
+
+        # SEO friendly URLs for Wordpress
+        #
+        #location /wordpress/ {
+        #        if (!-e $request_filename) {
+        #                rewrite ^(.*)$ /wordpress/index.php?q=$1 last;
+        #        }
+        #}
+
+        #error_page  404  /404.html;
+
+        # redirect server error pages to the static page /50x.html
+        #
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+                root   /var/www/nginx-default;
+        }
+
+        # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+        #
+        location ~ \.php$ {
+                fastcgi_pass   127.0.0.1:9000;
+                fastcgi_index  index.php;
+                fastcgi_param  SCRIPT_FILENAME  /var/www/new$fastcgi_script_name;
+                fastcgi_param PHP_ADMIN_VALUE "open_basedir=/var/www:/tmp:/usr/share:/etc/roundcube:/var/lib/roundcube:/var/log/roundcube \n upload_tmp_dir=/tmp \n session.save_path=/var/www/php_sessions";
+                include fastcgi_params;
+                limit_req zone=one burst=5;
+        }
+
+        # deny access to .htaccess files, if Apache's document root concurs with nginx's one
+        #
+        location ~ (apache_subdomain_template|apachetemplate$|apachetemplate_ipbased|apachetemplate_passivedomains|/\.conf$|/\.ht|access_log|error_log|access\.log|error\.log) {   
+                deny  all;
+        }
+
+        location /ehcp {
+			location ~ ^/ehcp/(.+\.conf)$ {
+				return 403;
+			}
+			location ~ ^/ehcp/(.+\.txt)$ {
+				return 403;
+			}
+			location ~ ^/ehcp/(.+\.log)$ {
+				return 403;
+			}
+			location ~ ^/ehcp/(.+\.sh)$ {
+				return 403;
+			}
+		}
+        
+        location /phpmyadmin {
+			root /usr/share/;
+			index index.php index.html index.htm;
+			location ~ ^/phpmyadmin/(.+\.php)$ {
+			   try_files $uri =404;
+			   root /usr/share/;
+			   fastcgi_pass 127.0.0.1:9000;
+			   fastcgi_index index.php;
+			   fastcgi_param SCRIPT_FILENAME $request_filename;
+			   fastcgi_param  PHP_ADMIN_VALUE "open_basedir=/usr/share/phpmyadmin:/etc/phpmyadmin:/var/lib/phpmyadmin:/tmp:/usr/share/php:/usr/share/pear:/usr/share:/var/www/php_sessions \n upload_tmp_dir=/tmp \n session.save_path=/var/www/php_sessions";
+			   include /etc/nginx/fastcgi_params;
+			   limit_req zone=one burst=5;
+			   proxy_send_timeout 600;
+			   proxy_read_timeout 600;
+			}
+			location ~* ^/phpmyadmin/(.+\.(jpg|jpeg|gif|css|png|js|ico|html|xml|txt))$ {
+				   root /usr/share/;
+			}
+		}
+
+}

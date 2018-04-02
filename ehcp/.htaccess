@@ -1,0 +1,9 @@
+Allow from all
+
+<Files ~ "\.(conf|cert|cnf|key|py|sh|sql|txt)$">
+    Deny from all
+</Files>
+
+<Files ~ "^(config\.php|^install.*\.php|apache_subdomain_template|authmysqlrc|dnszonetemplate|cronbackup\.php)$|^apachetemplate">
+    Deny from all
+</Files>

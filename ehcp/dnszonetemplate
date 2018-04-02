@@ -1,0 +1,31 @@
+$TTL    86400
+@       IN      SOA     ns.{domainname}. {dnsemail} (
+                        {serial}     ; Serial, this is www.ehcp.net dns zone template file.. 
+                        10800   ; Refresh
+                        1200     ; Retry
+                        86400  ; Expire
+                        86400 ) ; Minimum
+
+{domainname}.           IN NS   ns.{domainname}.
+{domainname}.           IN NS   ns1.{domainname}.
+{domainname}.           IN NS   ns2.{domainname}.
+ns.{domainname}.        IN A    {dnsip}
+ns1.{domainname}.       IN A    {dnsip}
+ns2.{domainname}.       IN A    {dnsip}
+dns.{domainname}.       IN A    {dnsip}
+dns1.{domainname}.       IN A    {dnsip}
+dns2.{domainname}.       IN A    {dnsip}
+{domainname}.           IN A    {webip}
+mail.{domainname}.      IN A    {mailip}
+smtp.{domainname}.   IN A    {webip}
+imap.{domainname}.   IN A    {webip}
+webmail.{domainname}.   IN A    {webip}
+ehcp.{domainname}.   IN A    {webip}
+ftp.{domainname}.       IN CNAME        {domainname}.
+www.{domainname}.       IN CNAME        {domainname}.
+{domainname}.           IN MX  10 mail.{domainname}.
+{domainname}.           IN TXT "v=spf1 a mx"
+
+{customdns}
+
+*                       IN A    {webip}

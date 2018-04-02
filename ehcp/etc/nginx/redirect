@@ -1,0 +1,5 @@
+server {
+	listen 80;
+	server_name  {domainname} www.{domainname} {wildcarddomain}; # this is changed to *.{domainname} within classapp.php
+	return 301 {domainname_redirect}$request_uri;
+}

@@ -1,0 +1,58 @@
+<!-- <h1>Server Admin Main Menu</h1> -->
+<!--
+Icons:
+http://www.iconspedia.com/pack/nx10-1-6/
+http://www.iconspedia.com/pack/devcom-network-347/
+http://www.iconspedia.com/pack/crystal-clear-actions-1303/
+http://www.iconspedia.com/pack/soft-17-0/
+-->
+<table id="tblcontent"><tr>
+<td>
+<div class="content">
+<div class="title"><img src="{templatedir}/domain.png" alt=""> Domains</div>
+      <ul>       
+       <li>Domains : <a href="?op=selectdomain"><b>List</b></a> - <a href="?op=addDomainToThisPaneluser"><b>Easy Add domain to this ftp user</b></a> - <a href="?op=adddomaineasy"><b>Easy add</b></a> - <a href="?op=adddomain"><b>Normal Add</b></a> - <a href="?op=bulkadddomain"><b>Bulk add</b></a></li>
+       <li>dns only hosting : <a href="?op=adddnsonlydomain">Add</a> - <a href="?op=adddnsonlydomainwithpaneluser">Add With Paneluser</a></li>
+       <li><a href="?op=listpassivedomains">List <b>passive/De-Activated domains</b> and new domain requests/applications</a></li>        
+      </ul>
+
+</div>
+</td><td>
+<div class="content">
+<div class="title"><img src="{templatedir}/users.png" alt=""> Users</div>
+      <ul>
+        <li><a href="?op=listallftpusers"><b>Ftp</b> Users</a> (<a href="?op=listallftpusers">List</a>, <a href="?op=addftpuser">Add New</a>, <a href="?op=addftptothispaneluser">Add Under My ftp</a>,<a href="?op=addsubdirectorywithftp">Add Under Domainname</a>,<a href="?op=addsubdomainwithftp">Add subdomain with ftp</a>)</li>
+        <li><a href="?op=listallemailusers"><b>Email</b> Users</a> (<a href="?op=listallemailusers">List</a>, <a href="?op=addemailuser">Add</a> , <a href="?op=bulkaddemail">Bulk Add Email</a>)</li>
+        <li><a href="?op=listpanelusers"><b>Panel</b> Users or Clients</a> (<a href="?op=listpanelusers">List</a>, <a href="?op=addpaneluser">Add</a>)</li>
+        <li><a href="?op=domainop&amp;action=listdb"><b>Mysql</b> db</a> (<a href="?op=domainop&amp;action=listdb">List</a>, <a href="?op=addmysqldb">Add Mysql db&amp;User </a>, <a href='?op=addmysqldbtouser'>add Mysql db to existing user</a>, <a href='?op=dbadduser'>add mysql user to existing db</a>)</li>
+      </ul>
+
+</div>
+</td></tr><tr><td>
+<div class="content">
+<div class="title"><img src="{templatedir}/system.png" alt=""> System</div>
+      <ul>
+        <li><a href="?op=doupdatediskquota">Update Disk Quota information for domains</a></li>
+		<li><a href="?op=dosyncdns"><b>Reload DNS</b> zones</a></li>
+        <li><a href="?op=dosyncdomains">Sync domains</a></li>
+        <li><a href="index.php?op=dobackup"><b>Backup</b> Server</a> (<a href="index.php?op=listbackups">List backups</a>, <a href="index.php?op=dorestore">Restore</a>)</li>
+        <li><a href="?op=operations">List Completed/pending daemon operations</a></li>
+        <li><a href="?op=options"><b>Options</b></a>, <a href="?op=changetemplate">Templates</a>, <a href="?op=changemypass">Change password</a></li>
+        <li><a href="?op=serverstatus">Server Status</a></li>
+
+      </ul>
+
+</div>
+</td>
+<td>
+<div class="content">
+<div class="title"><img src="{templatedir}/info.png" alt=""> Info</div>
+<div class="info">
+<font><b>
+{dynamicinfo}
+</div>
+</div>
+</td>
+
+</tr>
+</table>
