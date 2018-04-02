@@ -185,7 +185,7 @@ function getLatestEHCPFiles(){
 	
 	# Get the latest snapshot files of EHCP Force
 	if [ "$operationMode" == "update" ] || [ "$operationMode" == "upgrade" ]; then
-		wget -O "ehcpforce_stable_snapshot.tar.gz" -N http://sourceforge.net/projects/ehcpforce/files/ehcpforce_stable_snapshot.tar.gz/download
+		wget -O "ehcpforce_stable_snapshot.tar.gz" -N https://github.com/earnolmartin/EHCP-Force-Edition/releases/download/1.1.1.1/ehcpforce_stable_snapshot.tar.gz
 		tar -zxvf "ehcpforce_stable_snapshot.tar.gz"
 		cd ehcp
 		CUREHCPDLDIR=$(pwd)
