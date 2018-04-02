@@ -1764,10 +1764,9 @@ Some install/usage info and your name/email is sent to ehcp developpers for stat
 	$app = new Application("localhost","ehcp",$ehcpmysqlpass,"ehcp");
 	$app->commandline=true;
 
-
-	installmysql();
-	sleep(2);
 	getinputs();
+	sleep(2);
+	installmysql();
 
 
 	//echo "Can we list you in the list of persons who installed ehcp ? (y/n) default y:";
