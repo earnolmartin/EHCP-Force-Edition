@@ -1630,10 +1630,11 @@ function getinputs(){
 	if(!$unattended){
 		if($emptypass){
 			$rootpass="1234";
-			$rootpass=getVerifiedInput("MySQL root user account desired PASSWORD","1234");
 			
 			if(hasValue($mysql_root_pass)){
 				$rootpass = $mysql_root_pass;
+			}else{
+				$rootpass=getVerifiedInput("MySQL root user account desired PASSWORD","1234");
 			}
 		} else {
 			echo "\n\n=======> MYSQL PASSWORD SETTINGS IS VERY IMPORTANT - YOUR EHCP MAY NOT FUNCTION IF YOU MISS SOMETHING HERE.. ehcp related information will be stored in your local mysql server ==========\n\n";
