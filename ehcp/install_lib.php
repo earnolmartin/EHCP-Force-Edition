@@ -163,7 +163,12 @@ function getInput($prompt='',$default='',$allowempty=False) {
 	global $unattended;
 	if($unattended===True and $default<>'') return $default;
 	
-	if($prompt<>'') echo $prompt;
+	if($prompt<>''){
+		if($prompt[strlen($prompt)-1] != ' '){
+			$prompt .= ' ';
+		}
+		echo $prompt;
+	}
 	
 	$giris=trim(Console::GetLine());
 	
