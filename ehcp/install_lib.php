@@ -1616,35 +1616,10 @@ function getinputs(){
 
 	$user_name=getInput("Please enter your name:",'myname');
 	$user_email=getInput("Please enter an already working email address that will be associated with the main admin account:",'myemail@test.com');
-
-	#$command="wget -q -O /dev/null --timeout=15 \"http://www.ehcp.net/diger/ehcpemailregister.php?user_email=$user_email\"";
-	# $url="http://www.ehcp.net/diger/ehcpemailregister.php?user_email=$user_email";
-	#passthru($command);
-	# file_get_contents($url);
-
-	$emptypass=checkmysqlpass('root','');
-
-	// Restart MySQL service in case of missing socket bug
-	restartMySQL();
 	
 	if(!$unattended){
-		if($emptypass){
-			$rootpass="1234";
-			
-			if(hasValue($mysql_root_pass)){
-				$rootpass = $mysql_root_pass;
-			}else{
-				$rootpass=getVerifiedInput("MySQL root user account desired PASSWORD","1234");
-			}
-		} else {
-			echo "\n\n=======> MYSQL PASSWORD SETTINGS IS VERY IMPORTANT - YOUR EHCP MAY NOT FUNCTION IF YOU MISS SOMETHING HERE.. ehcp related information will be stored in your local mysql server ==========\n\n";
-			$passtrue=false;
-			while(!$passtrue){				
-				$rootpass=getInput("\nEnter your current MYSQL ROOT PASSWORD:"); # mysql root otomatik verebilirsem, burayi da 1234 default yapmaliyim.
-				$passtrue=checkmysqlpass('root',$rootpass);
-				if(!$passtrue) echo "\n Your mysql root password is not correct ! \nIt is impossible and useless to continue without it. You need to learn it and retry here. Look at www.ehcp.net forums section (or here: http://www.ehcp.net/?q=node/245)\nYou may also try to run ./resetmysqlrootpass.sh program in this dir to reset pass, to use, Ctrl-C this and run ./resetmysqlrootpass.sh";
-			}
-		}
+		echo "\n\n=======> Configuring MySQL / MariaDB Database ==========\n\n";
+		$rootpass=getVerifiedInput("MySQL root user account desired PASSWORD","1234");
 	}else{
 		$rootpass="1234";
 		
