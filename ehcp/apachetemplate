@@ -101,9 +101,6 @@
 
 	AccessFileName .htaccess
 
-	Header set Access-Control-Allow-Origin "*"
-	Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
-
 	{customhttp}
 	{root_password_protected_dirs}
 	{password_protected_dirs}

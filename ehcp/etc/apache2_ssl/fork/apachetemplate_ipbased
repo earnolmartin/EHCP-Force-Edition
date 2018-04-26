@@ -101,9 +101,6 @@
 	php_admin_value disable_functions "exec,passthru,shell_exec,system,proc_open,popen"
 
 	AccessFileName .htaccess
-	
-	Header set Access-Control-Allow-Origin "*"
-	Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
 
 	{customhttp}
 	{root_password_protected_dirs}
@@ -232,9 +229,6 @@
 	SSLCertificateFile {ssl_cert_path}
 	SSLCertificateKeyFile {ssl_cert_key_path}
 	{ssl_cert_chain_setting_with_path}
-	
-	Header set Access-Control-Allow-Origin "*"
-	Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
 	
 	{customhttp}
 	{root_password_protected_dirs}

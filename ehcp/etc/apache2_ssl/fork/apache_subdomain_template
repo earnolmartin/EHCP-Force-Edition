@@ -17,9 +17,6 @@
 	php_admin_value session.save_path "{homedir}/phptmpdir"
 	php_admin_value disable_functions "exec,passthru,shell_exec,system,proc_open,popen"
 	
-	Header set Access-Control-Allow-Origin "*"
-	Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
-	
 	{customsubdomainhttp}
 
 </VirtualHost>
@@ -48,9 +45,6 @@
 	php_admin_value disable_functions "exec,passthru,shell_exec,system,proc_open,popen"
 		
 	{customsubdomainhttp}
-	
-	Header set Access-Control-Allow-Origin "*"
-	Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
 
 </VirtualHost>
 

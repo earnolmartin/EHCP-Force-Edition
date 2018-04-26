@@ -16,9 +16,6 @@
 	php_admin_value upload_tmp_dir {homedir}/phptmpdir
 	php_admin_value disable_functions "exec,passthru,shell_exec,system,proc_open,popen"
 	
-	Header set Access-Control-Allow-Origin "*"
-	Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
-	
 </VirtualHost>
 
 #____________end of {domainname}__paneluser:{panelusername}_reseller:{reseller}_id:{id}____________
