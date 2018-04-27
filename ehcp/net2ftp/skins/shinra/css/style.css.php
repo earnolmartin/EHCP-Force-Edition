@@ -1303,3 +1303,8 @@ table, tr, td{
 	background: url(../img/to-top.png) no-repeat;
 	cursor: pointer;
 }
+
+#maintable td{
+	padding-left: 4px;
+	padding-right: 4px;
+}

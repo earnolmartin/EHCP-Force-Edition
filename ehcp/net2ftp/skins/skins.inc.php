@@ -543,7 +543,7 @@ function getMime($listline) {
 // Default Extension
 	elseif ($last) {
 		$icon = "mime";
-		$type = __("%1\$s File", strtoupper($last));
+		$type = __("File");
 	}
 
 // Default File
