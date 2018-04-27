@@ -284,9 +284,9 @@ class sysinfo {
     }
     $keys = array_keys($results);
     $keys2be = array('model', 'cpuspeed', 'cache', 'bogomips', 'cpus');
-    while ($ar_buf = each($keys2be)) {
-      if (!in_array($ar_buf[1], $keys)) {
-        $results[$ar_buf[1]] = 'N.A.';
+    foreach($keys2be as $arrKey => $arrValue){
+      if (!in_array($arrValue, $keys)) {
+        $results[$arrValue] = 'N.A.';
       }
     }
     if (rfts('/proc/acpi/thermal_zone/THRM/temperature', $buf, 1, 4096, false)) {

@@ -119,7 +119,7 @@ function printLanguageSelect($fieldname, $onchange, $style, $class) {
 
 	echo "<select name=\"$fieldname\" id=\"$fieldname\" $onchange_full $style_full $class_full>\n";
 
-	while (list($key,$value) = each($languageArray)) {
+	foreach($languageArray as $key => $value){
 	// $key loops over "en", "fr", "nl", ...
 	// $value will be an array like $value["name"] = "English" and $value["file"] = "en.inc.php"
 		if ($key == $currentlanguage) { $selected = "selected=\"selected\""; }

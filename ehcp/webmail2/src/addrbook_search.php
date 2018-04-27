@@ -137,7 +137,7 @@ function display_result($res, $includesource = true) {
     }    
     echo "</tr>\n";
     
-    while (list($undef, $row) = each($res)) {
+    foreach($res as $undef => $row) {
         $email = htmlspecialchars(addcslashes(AddressBook::full_address($row), "'"), ENT_QUOTES);
         if ($line % 2) { 
             $tr_bgcolor = $color[12];
@@ -220,7 +220,7 @@ if ($show == 'form' && empty($listall)) {
         $selopts['-1'] = _("All address books");
 
         $ret = $abook->get_backend_list();
-        while (list($undef,$v) = each($ret)) {
+        foreach($ret as $undef => $v) {
             $selopts[$v->bnum] = $v->sname;
         }
         echo addSelect('backend', $selopts, '-1', TRUE);

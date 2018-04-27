@@ -408,7 +408,7 @@ function remove_magic_quotes(&$x, $keyname="") {
 	if (get_magic_quotes_gpc() == 1) {
 
 		if (is_array($x)) {
-			while (list($key,$value) = each($x)) {
+			foreach($x as $key => $value) {
 				if ($value) { remove_magic_quotes($x[$key],$key); }
 			}
 		}

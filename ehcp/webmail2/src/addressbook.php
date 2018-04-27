@@ -132,7 +132,7 @@ function list_writable_backends($name) {
     if ( $abook->numbackends > 1 ) {
         $backends = $abook->get_backend_list();
         $writeable_abooks=array();
-        while (list($undef,$v) = each($backends)) {
+        foreach($backends as $undef => $v) {
             if ($v->writeable) {
                 // add each backend to array
                 $writeable_abooks[$v->bnum]=$v->sname;
@@ -439,7 +439,7 @@ if ($showaddrlist) {
             $abook_fields = 5;
         }
         $count = 0;
-        while(list($undef,$row) = each($alist)) {
+        foreach($alist as $undef => $row) {
 
             /* New table header for each backend */
             if($prevbackend != $row['backend']) {

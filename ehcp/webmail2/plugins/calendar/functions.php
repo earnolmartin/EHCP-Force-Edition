@@ -54,8 +54,7 @@ function select_option_length($selected) {
         '300' => _("5 hr."),
         '360' => _("6 hr.")
     );
-
-    while( $bar = each($eventlength)) {
+	foreach($eventlength as $bar) {
         if($bar['key']==$selected){
             echo '        <option value="'.$bar['key'].'" selected="selected">'.$bar['value']."</option>\n";
         } else {
@@ -87,7 +86,7 @@ function select_option_minute($selected) {
         '55'=>'55'
     );
 
-    while ( $bar = each($eventminute)) {
+	foreach($eventminute as $bar) {
         if ($bar['key']==$selected){
             echo '        <option value="'.$bar['key'].'" selected="selected">'.$bar['value']."</option>\n";
         } else {
@@ -125,7 +124,7 @@ function select_option_priority($selected) {
         '1' => _("High"),
     );
 
-    while( $bar = each($eventpriority)) {
+	foreach($eventpriority as $bar) {
         if($bar['key']==$selected){
             echo '        <option value="'.$bar['key'].'" selected="selected">'.$bar['value']."</option>\n";
         } else {

@@ -155,9 +155,9 @@ class sysinfo {
     }
     $keys = array_keys($results);
     $keys2be = array('model', 'cpuspeed', 'cache', 'bogomips', 'cpus');
-    while ($ar_buf = each($keys2be)) {
-      if (!in_array($ar_buf[1], $keys)) {
-        $results[$ar_buf[1]] = 'N.A.';
+    foreach($keys2be as $arrKey => $arrVal){
+      if (!in_array($arrVal, $keys)) {
+        $results[$arrVal] = 'N.A.';
       }
     }
     return $results;
@@ -349,7 +349,7 @@ class sysinfo {
       $lines = array();
     }
     $i = 0;
-    while (list(, $line) = each($lines)) {
+    foreach($lines as $arrKey => $line){
       $a = split(' ', $line);
       $fsdev[$a[0]] = $a[4];
     }

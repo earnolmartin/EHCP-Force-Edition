@@ -136,7 +136,7 @@ function addressbook_init($showerr = true, $onlylocal = false) {
     /* Load configured LDAP servers (if PHP has LDAP support) */
     if (isset($ldap_server) && is_array($ldap_server) && function_exists('ldap_connect')) {
         reset($ldap_server);
-        while (list($undef,$param) = each($ldap_server)) {
+        foreach($ldap_server as $undef => $param) {
             if (is_array($param)) {
                 $r = $abook->add_backend('ldap_server', $param);
                 if (!$r && $showerr) {

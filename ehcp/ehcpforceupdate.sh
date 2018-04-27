@@ -589,14 +589,14 @@ function finalize(){
 	tar -zxvf "update_ez_install.tar.gz"
 	php update_ez_install.php
 	
+	# Killall and restart mysql
+	killAllMySQLAndRestart
+	
 	# Restart PolicyD if available
 	if [ ! -z "$insPolicyD" ] && [ "$insPolicyD" = true ]; then
 		manageService "policyd_agent" "stop"
 		manageService "policyd_agent" "start"
 	fi
-	
-	# Killall and restart mysql
-	killAllMySQLAndRestart
 	
 	# Restart ehcp
 	manageService "ehcp" "restart"

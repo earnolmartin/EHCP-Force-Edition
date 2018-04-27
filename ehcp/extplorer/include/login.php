@@ -78,7 +78,11 @@ function login() {
 		exit();
 	}
 	
-	echo "<p style='color: red; text-align: center;'>Unauthorized.&nbsp; Please login to the <a href='../' style='color: black;'>EHCP panel</a> and try again.</p>";
+	if(!isset($_SESSION['FTP_HOME_PATH']) || empty($_SESSION['FTP_HOME_PATH'])){
+		echo "<p style='color: red; text-align: center;'>Please <a href='../index.php?op=addDomainToThisPaneluser'>add a domain to your EHCP account</a> before using extplorer.";
+	}else{
+		echo "<p style='color: red; text-align: center;'>Unauthorized.&nbsp; Please login to the <a href='../'>EHCP panel</a> and try again.</p>";
+	}
 	define( '_LOGIN_REQUIRED', 1 );
 }
 	

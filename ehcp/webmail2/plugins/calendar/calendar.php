@@ -110,7 +110,7 @@ function drawmonthview() {
             }
             if (isset($calendardata[$cdate])){
                 $i=0;
-                while ($calfoo = each($calendardata[$cdate])) {
+                foreach($calendardata[$cdate] as $calfoo) {
                     $calbar = $calendardata[$cdate][$calfoo['key']];
                     // FIXME: how to display multiline task
                     $title = '['. $calfoo['key']. '] ' .

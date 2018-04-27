@@ -80,7 +80,7 @@ function initialize_events() {
     $cdate = $month . $day . $year;
 
     if (isset($calendardata[$cdate])){
-        while ( $calfoo = each($calendardata[$cdate])){
+		foreach($calendardata[$cdate] as $calfoo) {
             $daily_events["$calfoo[key]"] = $calendardata[$cdate][$calfoo['key']];
         }
     }
@@ -96,7 +96,7 @@ function display_events() {
 
     ksort($daily_events,SORT_STRING);
     $eo=0;
-    while ($calfoo = each($daily_events)){
+    foreach($daily_events as $calfoo) {
         if ($eo==0){
             $eo=4;
         } else {

@@ -43,13 +43,13 @@ function make_list($_list1, $_list2) {		// make list of files
 	}
 
 	if(is_array($list1)) {
-		while (list($key, $val) = each($list1)) {
+		foreach($list1 as $key => $val) {
 			$list[$key] = $val;
 		}
 	}
 
 	if(is_array($list2)) {
-		while (list($key, $val) = each($list2)) {
+		foreach($list2 as $key => $val) {
 			$list[$key] = $val;
 		}
 	}
@@ -147,7 +147,7 @@ function print_table($dir, $list, $allow) {	// print table of files
 	}
 	$i = 0;
 
-	while(list($item,) = each($list)){
+	foreach($list as $item => $val) {
 		if( $item == 'index.html') {
 			continue;
 		}

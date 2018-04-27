@@ -32,7 +32,7 @@ $langs = sqspell_getSettings(null);
 $add = '<p>'
   . _("Make this dictionary my default selection:")
   . " <select name=\"lang_default\">\n";
-while (list($avail_lang, $junk) = each($SQSPELL_APP)){
+foreach($SQSPELL_APP as $avail_lang => $junk) { 
   $msg .= "<input type=\"checkbox\" name=\"use_langs[]\" "
     . "value=\"$avail_lang\"";
   if (in_array($avail_lang, $langs)) {

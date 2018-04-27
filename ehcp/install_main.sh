@@ -864,13 +864,7 @@ function allowHTACCESSOverrides(){
 	fi
 }
 
-function restartDaemons(){ # by earnolmartin@gmail.com
-	# Restart PolicyD if available
-	if [ "$insPolicyD" = true ]; then
-		manageService "policyd_agent" "stop"
-		manageService "policyd_agent" "start"
-	fi
-	
+function restartDaemons(){ # by earnolmartin@gmail.com	
 	# Restart MySQL Service
 	killAllMySQLAndRestart
 	
@@ -879,6 +873,12 @@ function restartDaemons(){ # by earnolmartin@gmail.com
 	
 	# Restart the EHCP daemon after installation is completed
 	manageService "ehcp" "restart"
+	
+	# Restart PolicyD if available
+	if [ "$insPolicyD" = true ]; then
+		manageService "policyd_agent" "stop"
+		manageService "policyd_agent" "start"
+	fi
 	
 	# Make sure courier daemon is enabled (mainly for Ubuntu 16.04 and up)
 	update-rc.d courier-authdaemon enable

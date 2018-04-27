@@ -132,7 +132,7 @@ class Console_Getopt
         }
 
         reset($args);
-        while (list($i, $arg) = each($args)) {
+		foreach($args as $i => $arg) {
             /* The special element '--' means explicit end of
                options. Treat the rest of the arguments as non-options
                and end the loop. */
@@ -213,7 +213,7 @@ class Console_Getopt
                     if ($i + 1 < strlen($arg)) {
                         $opts[] = array($opt,  substr($arg, $i + 1));
                         break;
-                    } else if (list(, $opt_arg) = each($args)) {
+                    } else if (($opt_arg = reset($args))) {
                         /* Else use the next argument. */;
                         if (Console_Getopt::_isShortOpt($opt_arg)
                             || Console_Getopt::_isLongOpt($opt_arg)) {
@@ -308,7 +308,7 @@ class Console_Getopt
                 if (substr($long_opt, -2) != '==') {
                     /* Long option requires an argument.
                        Take the next argument if one wasn't specified. */;
-                    if (!strlen($opt_arg) && !(list(, $opt_arg) = each($args))) {
+                    if (!strlen($opt_arg) && !($opt_arg = reset($args))) {
                         $msg = "Console_Getopt: option requires an argument --$opt";
                         return PEAR::raiseError($msg);
                     }
