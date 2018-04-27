@@ -420,7 +420,7 @@ class abook_database extends addressbook_backend {
                          $this->table, $this->owner);
 
         $sepstr = '';
-        foreach($alis as $undef => $nickname) {
+        foreach($alias as $undef => $nickname) {
             $query .= sprintf("%s nickname='%s' ", $sepstr,
                               $this->dbh->quoteString($nickname));
             $sepstr = 'OR';
