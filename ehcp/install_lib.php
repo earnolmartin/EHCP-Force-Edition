@@ -837,11 +837,9 @@ hosts = localhost";
 
 
 	echo "editing: /etc/postfix/sasl/smtpd.conf\n";
-	$filecontent="
-	pwcheck_method: saslauthd
-	mech_list: plain login
-	allow_plaintext: true
-	";
+	$filecontent="pwcheck_method: saslauthd
+mech_list: plain login
+allow_plaintext: true";
 	writeoutput("/etc/postfix/sasl/smtpd.conf",$filecontent,"w");
 
 	echo "Configuring Courier\n";
