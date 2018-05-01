@@ -1935,7 +1935,7 @@ function advancedsettings(){
 		array('globalpanelurls', 'textarea', 'lefttext'=>'EHCP Panel Direct URL(s) (Protected by Let\'s Encrypt if SSL is Enabled):<br>(Takes the format of ns3.otherdomain.com,otherdomain.com)<br>Multiple entries separated by comma ",".<br>Leave blank if you don\'t want to configure any.<br>Use only domains or subdomains not currently configured in the panel for best results.</p>', 'default'=> $this->miscconfig['globalpanelurls'], 'skip-ending-colon'=>true),
 		array('sslcouriercertpath','lefttext'=>'POP3-SSL and IMAP-SSL Certificate Path:','righttext'=>'Leave blank to use the default self-signed certificate.','default'=>$this->miscconfig['sslcouriercertpath']),
 		array('restartcourier','checkbox','lefttext'=>'Reload Courier SSL (Refresh SSL Cert)','default'=>'Yes'),
-		array('sslvsftpdcertpath','lefttext'=>'VSFTPD Certificate Path:','righttext'=>'Leave blank to disable SSL over FTP.','default'=>$this->miscconfig['sslvsftpdcertpath']),
+		array('sslvsftpdcertpath','lefttext'=>'VSFTPD Certificate Path:','righttext'=>'Leave blank to revert back to default VSFTPD configuration.','default'=>$this->miscconfig['sslvsftpdcertpath']),
 		array('restartvsftpd','checkbox','lefttext'=>'Reload VSFTPD SSL (Refresh SSL Cert)','default'=>'Yes')
 	);
 
