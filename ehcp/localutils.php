@@ -245,32 +245,59 @@ function replaceOrAddLineInFile($find,$replace,$where){
 
 
 if(!function_exists("addifnotexists")){
-function addifnotexists($what,$where) {
-	debugecho("\naddifnotexists: ($what) -> ($where) \n ",4);
-	#bekle(__FUNCTION__." basliyor..");
-	$what.="\n";
-	$filearr=@file($where);
-	if(!$filearr) {
-		echo "cannot open file, trying to setup: ($where)\n";
-		$fp = fopen($where,'w');
-		fclose($fp);
-		$filearr=file($where);
+	function addifnotexists($what,$where) {
+		debugecho("\naddifnotexists: ($what) -> ($where) \n ",4);
+		#bekle(__FUNCTION__." basliyor..");
+		$what.="\n";
+		$filearr=@file($where);
+		if(!$filearr) {
+			echo "cannot open file, trying to setup: ($where)\n";
+			$fp = fopen($where,'w');
+			fclose($fp);
+			$filearr=file($where);
 
-	} //else print_r($file);
+		} //else print_r($file);
 
-	if(array_search($what,$filearr)===false) {
-		echo "dosyada bulamadı ekliyor: $where -> $what \n";
-		$filearr[]=$what;
-		arraytofile($where,$filearr);
+		if(array_search($what,$filearr)===false) {
+			echo "dosyada bulamadı ekliyor: $where -> $what \n";
+			$filearr[]=$what;
+			arraytofile($where,$filearr);
 
-	} else {
-		//echo "buldu... sorun yok. \n";
-		// already found, so, do not add
+		} else {
+			//echo "buldu... sorun yok. \n";
+			// already found, so, do not add
+		}
+		
+		#bekle(__FUNCTION__." bitti...");
+
 	}
-	
-	#bekle(__FUNCTION__." bitti...");
-
 }
+
+if(!function_exists("removeifexists")){
+	function removeifexists($what,$where) {
+		debugecho("\nremoveifexists: ($what) -> ($where) \n ",4);
+		$filearr=@file($where);
+		if(!$filearr) {
+			echo "cannot open file, trying to setup: ($where)\n";
+			$fp = fopen($where,'w');
+			fclose($fp);
+			$filearr=file($where);
+
+		}
+		
+		if(is_array($filearr) && count($filearr) > 0){
+			$newFileArr = array();
+			foreach($filearr as $line){
+				if(!startsWith($line, $what)){
+					$newFileArr[] = $line;
+				}
+			}
+			
+			if(is_array($newFileArr) && count($newFileArr) > 0){
+				arraytofile($where,$newFileArr);
+			}
+		}
+	}
 }
 
 
@@ -1405,5 +1432,4 @@ function buildquery2($select,$filtre,$orderby){ // v1.0
 	};
     return $res;
 }
-
 ?>

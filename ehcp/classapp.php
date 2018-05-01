@@ -768,7 +768,9 @@ function runOp($op){ # these are like url to function mappers...  maps op variab
 		case 'updatehostsfile'			: return $this->updateHostsFile();break;
 		case 'syncdomains'				: return $this->syncDomains();break;
 		case 'handlecouriersslcert'		: return $this->handleCourierSSLCert();break;
+		case 'handlevsftpdsslcert'		: return $this->handleVSFTPDSSLCert();break;
 		case 'resynccourierssl'			: return $this->resyncCourierSSL();break;
+		case 'resyncvsftpdssl'			: return $this->resyncVSFTPDSSL();break;
 		case 'syncftp'					: return $this->syncFtp();break;
 		case 'rebuild_crontab'			: return $this->rebuildCrontab();break;
 		case 'process_pwd_dirs'			: return $this->handlePasswordProtectedDirs();break;
@@ -1932,7 +1934,9 @@ function advancedsettings(){
 		array('allowanonymousftptodirectory','lefttext'=>'Enable Anonymous READONLY FTP Access to Specific Directory:','righttext'=>'Leave blank to keep disabled.&nbsp; DO NOT USE EHCP DIRECTORIES!','default'=>$this->miscconfig['allowanonymousftptodirectory']),
 		array('globalpanelurls', 'textarea', 'lefttext'=>'EHCP Panel Direct URL(s) (Protected by Let\'s Encrypt if SSL is Enabled):<br>(Takes the format of ns3.otherdomain.com,otherdomain.com)<br>Multiple entries separated by comma ",".<br>Leave blank if you don\'t want to configure any.<br>Use only domains or subdomains not currently configured in the panel for best results.</p>', 'default'=> $this->miscconfig['globalpanelurls'], 'skip-ending-colon'=>true),
 		array('sslcouriercertpath','lefttext'=>'POP3-SSL and IMAP-SSL Certificate Path:','righttext'=>'Leave blank to use the default self-signed certificate.','default'=>$this->miscconfig['sslcouriercertpath']),
-		array('restartcourier','checkbox','lefttext'=>'Reload Courier SSL (Refresh SSL Cert)','default'=>'Yes')
+		array('restartcourier','checkbox','lefttext'=>'Reload Courier SSL (Refresh SSL Cert)','default'=>'Yes'),
+		array('sslvsftpdcertpath','lefttext'=>'VSFTPD Certificate Path:','righttext'=>'Leave blank to disable SSL over FTP.','default'=>$this->miscconfig['sslvsftpdcertpath']),
+		array('restartvsftpd','checkbox','lefttext'=>'Reload VSFTPD SSL (Refresh SSL Cert)','default'=>'Yes')
 	);
 
 	if($this->miscconfig['morethanoneserver']) {
@@ -1946,13 +1950,14 @@ function advancedsettings(){
 		$old_globalpanelurls = $this->miscconfig['globalpanelurls'];
 		$old_globalcert_type=$this->miscconfig['useglobalsslcert'];
 		$old_courier_ssl_cert=$this->miscconfig['sslcouriercertpath'];
+		$old_vsftpd_ssl_cert = $this->miscconfig['sslvsftpdcertpath'];
 		
 		if($old_webserver_type=='') $old_webserver_type='apache2-nonssl';
 
 		$this->output.="Updating configuration...";
 		#$this->debugecho(print_r2($optionlist),3,false);
 
-		$optionsToIgnore = array('restartcourier');
+		$optionsToIgnore = array('restartcourier', 'restartvsftpd');
 		foreach($optionlist as $option) {
 			if(!in_array($option[0], $optionsToIgnore)){
 				global ${$option[0]}; # make it global to be able to read in getVariable function..may be we need to fix the global thing..
@@ -2006,6 +2011,20 @@ function advancedsettings(){
 			// If they're the same, the certificate may have changed, so we allow a quick way to restart the courier ssl services
 			if($this->hasValueOrZero($_REQUEST["restartcourier"])){
 				$this->addDaemonOp('resynccourierssl','','','','resynccourierssl');
+			}
+		}
+		
+		// Handle VSFTPD SSL certificate path
+		if($old_vsftpd_ssl_cert != $this->miscconfig['sslvsftpdcertpath']){
+			if($this->hasValueOrZero($this->miscconfig['sslvsftpdcertpath']) && !isextension($this->miscconfig['sslvsftpdcertpath'], 'pem')){
+				// Reset its value since it's not valid
+				$this->setConfigValue('sslvsftpdcertpath',$old_vsftpd_ssl_cert);
+			}
+			$this->addDaemonOp('handlevsftpdsslcert','','','','handlevsftpdsslcert');
+		}else{
+			// If they're the same, the certificate may have changed, so we allow a quick way to restart the courier ssl services
+			if($this->hasValueOrZero($_REQUEST["restartvsftpd"])){
+				$this->addDaemonOp('resyncvsftpdssl','','','','resyncvsftpdssl');
 			}
 		}
 		
@@ -13285,6 +13304,93 @@ function resyncCourierSSL(){
 	return true;
 }
 
+function resyncVSFTPDSSL(){
+	$this->requireCommandLine(__FUNCTION__);
+	echo "Restarting VSFTPD service!\n";
+	manageService("vsftpd", "restart");
+	
+	return true;
+}
+
+function handleVSFTPDSSLCert(){
+	$this->requireCommandLine(__FUNCTION__);
+	
+	// Echo statements for debug and showing in the log
+	echo "Updating VSFTDP SSL certificate!\n";
+	
+	// Load latest config
+	$this->loadConfigWithDaemon();
+	
+	// Variables
+	$vsftpdCertOrigPath = "/etc/ssl/certs/vsftpd_original.pem";
+	$vsftpdCertPath = "/etc/ssl/certs/vsftpd.pem";
+	$vsftpdConfPath = "/etc/vsftpd.conf";
+	
+	if($this->hasValueOrZero($this->miscconfig['sslvsftpdcertpath'])){
+		$sslVSFTPDPath = $this->miscconfig['sslvsftpdcertpath'];
+		if(file_exists($sslVSFTPDPath) && isextension($sslVSFTPDPath,'pem')){
+			echo "Using certificate from $sslVSFTPDPath for SSL over VSFTPD!\n";
+			
+			if(!file_exists($vsftpdCertOrigPath)){
+				if(file_exists($vsftpdCertPath)){
+					echo "Saving a copy of the default VSFTPD certificate to " . $vsftpdCertOrigPath . "\n";
+					rename($vsftpdCertPath, $vsftpdCertOrigPath);
+				}
+			}else{
+				if(file_exists($vsftpdCertPath)){
+					// Make a copy
+					$copyPath = $vsftpdCertPath . "_" . date('Y_m_d_H_i_s');
+					echo "Saving a copy of the current VSFTPD certificate to " . $copyPath . "\n";
+					rename($vsftpdCertPath, $copyPath);
+				}
+			}
+			
+			// Create a symlink which will point to the user's certpath... Let's Encrypt certificates will update, so I can see this working nicely. 
+			passthru2("ln -sf " . $sslVSFTPDPath . " " . $vsftpdCertPath, true, true);
+			
+			// Adjust VSFTPD configuration
+			addifnotexists("ssl_enable=YES", $vsftpdConfPath);
+			addifnotexists("ssl_tlsv1=YES", $vsftpdConfPath);
+			addifnotexists("ssl_sslv2=NO", $vsftpdConfPath);
+			addifnotexists("ssl_sslv3=NO", $vsftpdConfPath);
+			addifnotexists("require_ssl_reuse=NO", $vsftpdConfPath);
+			addifnotexists("ssl_ciphers=HIGH", $vsftpdConfPath);
+			
+			// Restart VSFTPD service
+			$this->resyncVSFTPDSSL();
+		}else{
+			echo "Proposed certificate path of \"" . $sslVSFTPDPath . "\" does NOT exist!\n";
+		}
+	}else{
+		echo "Restoring default SSL certificate for VSFTPD!\n";
+		
+		// Restore default cert if it exists
+		if(file_exists($vsftpdCertOrigPath)){
+			if(file_exists($vsftpdCertPath)){
+				// Make a copy
+				$copyPath = $vsftpdCertPath . "_" . date('Y_m_d_H_i_s');
+				rename($vsftpdCertPath, $copyPath);
+			}
+			rename($vsftpdCertOrigPath, $vsftpdCertPath);
+			$this->resyncVSFTPDSSL();
+		}else{
+			// Disable SSL option in VSFTPD config file
+			removeifexists("ssl_enable=YES", $vsftpdConfPath);
+			removeifexists("ssl_tlsv1=YES", $vsftpdConfPath);
+			removeifexists("ssl_sslv2=NO", $vsftpdConfPath);
+			removeifexists("ssl_sslv3=NO", $vsftpdConfPath);
+			removeifexists("require_ssl_reuse=NO", $vsftpdConfPath);
+			removeifexists("ssl_ciphers=HIGH", $vsftpdConfPath);
+			if(file_exists($vsftpdCertPath)){
+				unlink($vsftpdCertPath);
+			}
+			$this->resyncVSFTPDSSL();
+		}
+	}
+	
+	return true;
+}
+
 function handleCourierSSLCert(){
 	$this->requireCommandLine(__FUNCTION__);
 	
@@ -13337,14 +13443,21 @@ function handleCourierSSLCert(){
 		
 		// Restore default cert if it exists
 		if(file_exists($imapdOrigPath)){
-			unlink($imapdPath);
+			if(file_exists($imapdPath)){
+				// Make a copy
+				$copyPath = $imapdPath . "_" . date('Y_m_d_H_i_s');
+				rename($imapdPath, $copyPath);
+			}
 			rename($imapdOrigPath, $imapdPath);
 			manageService("courier-imap-ssl", "restart");
 		}
 		
 		// Restore default cert if it exists
 		if(file_exists($pop3dOrigPath)){
-			unlink($pop3dPath);
+			if(file_exists($pop3dPath)){
+				$copyPath = $pop3dPath . "_" . date('Y_m_d_H_i_s');
+				rename($pop3dPath, $copyPath);
+			}
 			rename($pop3dOrigPath, $pop3dPath);
 			manageService("courier-pop-ssl", "restart");
 		}		
@@ -14533,5 +14646,4 @@ function generateMySQLInClause($arrayOfInputs){
 }
 
 }// end class
-
 ?>
