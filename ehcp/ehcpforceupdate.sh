@@ -602,24 +602,29 @@ function finalize(){
 	manageService "ehcp" "restart"
 	
 	echo -e "\nWaiting 30 seconds before restarting $WebServerType daemon so that website configs are reconstructed.\n"
-	sleep 30
+	sleep 30s
 	
 	# Restart php-fpm before nginx if the web server is nginx
 	if [ "$WebServerType" == "nginx" ]; then
+		echo -e "\nRestarting PHP FPM service.\n"
 		managePHPFPMService
 	fi
 	
 	# Restart web server
+	echo -e "\nRestarting the ${WebServerType} web server.\n"
 	manageService "$WebServerType" "restart"
 	
 	# Make sure courier daemon is enabled (mainly for Ubuntu 16.04 and up)
+	echo -e "\nAdjusing and restarting courier-authdaemon defaults.\n"
 	update-rc.d courier-authdaemon enable
 	update-rc.d courier-authdaemon defaults
 	manageService "courier-authdaemon" "restart"
 	
 	# Restart postfix
+	echo -e "\nRestarting postfix.\n"
 	manageService "postfix" "restart"
 	
+	echo -e "\nRunning final cleanup.\n"
 	finalCleanup
 }
 
@@ -688,10 +693,14 @@ function checkDistro() {
 			oldMRelease=$(cat "/var/www/new/ehcp/version_during_install.txt" | awk {'print $2'})
 		fi
 
-		if [ ! -z "$oldYRelease" ] && [ ! -z "$oldMRelease" ] && [ ! -z "$oldDistro" ] && [ "$oldYRelease" != "$yrelease" ] && [ "$oldMRelease" != "$mrelease" ] && [ "$oldDistro" == "$distro" ]; then
-			OSUpgradeChangeDetectedFromInstall=true
+		if [ ! -z "$oldYRelease" ] && [ ! -z "$oldMRelease" ] && [ ! -z "$oldDistro" ]; then
+			if [ "$oldYRelease" != "$yrelease" ] || [ "$oldMRelease" != "$mrelease" ] || [ "$oldDistro" != "$distro" ]; then
+				OSUpgradeChangeDetectedFromInstall=true
+			else
+				OSUpgradeChangeDetectedFromInstall=false
+			fi
 		else
-			OSUpgradeChangeDetectedFromInstall=false
+			OSUpgradeChangeDetectedFromInstall=true
 		fi
 }
 
@@ -1394,16 +1403,6 @@ function installExtras(){
 			# If we've changed distribution versions, we need to reset the rules
 			echo -e "A system upgrade has been detected since the original install of EHCP... updating mod security rules..."
 			apacheSecurity
-		else
-			echo ""
-			echo -n "Has the operating system version changed since the original install of EHCP (in case you're running this script after upgrading your old version of Ubuntu to a newer version)? [y/n]: "
-			read insMode
-			echo ""
-		
-			insMode=$(echo "$insMode" | awk '{print tolower($0)}')
-			if [ "$insMode" == "y" ]; then
-				apacheSecurity
-			fi
 		fi
 	fi
 }
@@ -2553,7 +2552,7 @@ function makeRoundCubeDefaultMailClient(){
 }
 
 function writeOutVersionInfo(){
-	if [ "$OSUpgradeChangeDetectedFromInstall" = true ] || [ ! -e "/var/www/new/ehcp/version_during_install" ]; then
+	if [ "$OSUpgradeChangeDetectedFromInstall" = true ] || [ ! -e "/var/www/new/ehcp/version_during_install.txt" ]; then
 		if [ ! -z "$yrelease" ] && [ ! -z "$mrelease" ]; then
 			echo -e "$yrelease $mrelease" > "/var/www/new/ehcp/version_during_install.txt"
 		fi
@@ -2888,6 +2887,7 @@ echo -e "Restarting web services, synchronizing domains, and finalizing installa
 finalize
 
 # Write out version info with current info in case anything has changed
+echo -e "Writing out versioning information!\n"
 writeOutVersionInfo
 
 echo -e "\nSuccessfully ${operationVerb}d ${EHCPModeText} to the latest version of EHCP Force Edition!"
