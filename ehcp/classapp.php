@@ -13355,6 +13355,8 @@ function handleVSFTPDSSLCert(){
 			addifnotexists("ssl_sslv3=NO", $vsftpdConfPath);
 			addifnotexists("require_ssl_reuse=NO", $vsftpdConfPath);
 			addifnotexists("ssl_ciphers=HIGH", $vsftpdConfPath);
+			addifnotexists("force_local_logins_ssl=NO", $vsftpdConfPath);
+			addifnotexists("force_local_data_ssl=NO", $vsftpdConfPath);
 			
 			// Restart VSFTPD service
 			$this->resyncVSFTPDSSL();
@@ -13381,6 +13383,9 @@ function handleVSFTPDSSLCert(){
 			removeifexists("ssl_sslv3=NO", $vsftpdConfPath);
 			removeifexists("require_ssl_reuse=NO", $vsftpdConfPath);
 			removeifexists("ssl_ciphers=HIGH", $vsftpdConfPath);
+			removeifexists("force_local_logins_ssl=NO", $vsftpdConfPath);
+			removeifexists("force_local_data_ssl=NO", $vsftpdConfPath);
+			
 			if(file_exists($vsftpdCertPath)){
 				unlink($vsftpdCertPath);
 			}
