@@ -13218,27 +13218,44 @@ function updateHostsFile(){
 	#print_r($doms);
 	$line="\n" . $ip;
 	foreach($doms as $domain) {
-	  # Limit entries per line to avoid problems due to the line being too long
-	  # 255 Character Limit Per Line
-	  if($count == 2){
-		  $line .= '\n' . $ip;
-		  $count = 0;
-	  }
-	  $line.=" www.".$domain['domainname']." ".$domain['domainname']." mail.".$domain['domainname'] . " ehcp.".$domain['domainname'];
-	  $count++;
+		// Don't do this for domains configured as SLAVE DNS domains
+		if(empty($domain["dnsmaster"])){	
+			# Limit entries per line to avoid problems due to the line being too long
+			# 255 Character Limit Per Line
+			if($count == 2){
+				$line .= '\n' . $ip;
+				$count = 0;
+			}
+			$line.=" www.".$domain['domainname']." ".$domain['domainname']." mail.".$domain['domainname'] . " ehcp.".$domain['domainname'];
+			$count++;
+		}
 	}
 	
 	// Don't forget to add subdomains to the hosts file too!
-	$subdoms=$this->getSubDomains("");
+	$subdoms=$this->getSubDomains("", "ORDER BY id ASC, domainname ASC");
 	foreach($subdoms as $sub) {
-	  # Limit entries per line to avoid problems due to the line being too long
-	  # 255 Character Limit Per Line
-	  if($count == 2){
-		  $line .= '\n' . $ip;
-		  $count = 0;
-	  }
-	  $line.=" www." . $sub['subdomain'] . '.' . $sub['domainname'] . " " . $sub['subdomain'] . '.' . $sub['domainname'];
-	  $count++;
+		// Get the domain entry too
+		if(!isset($domEntry) || !is_array($domEntry) || $domEntry['domainname'] != $sub['domainname']){
+			foreach($doms as $domain) {
+				if($domain['domainname'] == $sub['domainname']){
+					$domEntry = $domain;
+					break;
+				}
+			}
+		}
+		
+		// Don't do this for domains configured as SLAVE DNS domains
+		if(empty($domEntry["dnsmaster"])){
+		
+			# Limit entries per line to avoid problems due to the line being too long
+			# 255 Character Limit Per Line
+			if($count == 2){
+				$line .= '\n' . $ip;
+				$count = 0;
+			}
+			$line.=" www." . $sub['subdomain'] . '.' . $sub['domainname'] . " " . $sub['subdomain'] . '.' . $sub['domainname'];
+			$count++;
+		}
 	}
 
 	# Causes issues because localhost is already defined in its own line
