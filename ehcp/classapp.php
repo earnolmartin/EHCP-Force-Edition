@@ -4927,6 +4927,9 @@ function addSlaveDNS(){ # coded by earnolmartin@gmail.com, modified little by eh
 		$sql="update ".$this->conf['domainstable']['tablename']." set dnsmaster ='$dnsmaster' WHERE domainname = '$domainname'";
 		$success=$success && $this->executeQuery($sql);
 		$success=$success && $this->addDaemonOp("syncdns",'','','','sync dns');
+		if($this->miscconfig['updatehostsfile'] != '' && $success){
+			$success = $this->addDaemonOp("updatehostsfile",'','','','update hostsfile');
+		}
 		
 		# single function ok_err_text is enaugh at end of an operation.
 		$this->ok_err_text($success,'Domain has been configured as a DNS Slave',"Failed to change domain into slave! $errmsg (".__FUNCTION__.')');
@@ -4967,6 +4970,9 @@ function removeSlaveDNS(){ # coded by earnolmartin@gmail.com, modified by ehcpde
 		$sql="update ".$this->conf['domainstable']['tablename']." set dnsmaster = NULL WHERE domainname = '$domainname'";
 		$success=$success && $this->executeQuery($sql);
 		$success=$success && $this->addDaemonOp("syncdns",'','','','sync dns');
+		if($this->miscconfig['updatehostsfile'] != '' && $success){
+			$success = $this->addDaemonOp("updatehostsfile",'','','','update hostsfile');
+		}
 		$this->ok_err_text($success,"$domainname is no longer configured as a slave domain.","$errmsg <br>No configuration changes have been made to the DNS type of your domain! (".__FUNCTION__.')');
 	}
 
