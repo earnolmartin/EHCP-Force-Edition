@@ -43,6 +43,7 @@
 			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 2); 
 			curl_setopt($ch, CURLOPT_TIMEOUT, 5); //timeout in seconds
+			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); // Follow redirects
 
 			//execute post
 			$result = curl_exec($ch);
