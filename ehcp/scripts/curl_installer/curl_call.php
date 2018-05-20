@@ -44,6 +44,7 @@
 			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 2); 
 			curl_setopt($ch, CURLOPT_TIMEOUT, 5); //timeout in seconds
 			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); // Follow redirects
+			curl_setopt($ch, CURLOPT_POSTREDIR, 3); // Keep posted data after redirects // https://stackoverflow.com/questions/35359720/php-with-curl-follow-redirect-with-post
 
 			//execute post
 			$result = curl_exec($ch);
