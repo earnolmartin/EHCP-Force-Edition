@@ -14248,7 +14248,17 @@ function installScriptForceEdition($scriptname,$domainname,$installInfoNeeded){
 
 function runCurlToCompleteInstall($scriptname,$domainname,$directory,$targetdirectory,$dbName,$dbUserName,$dbPass,$mysql_host,$titleForScript,$adminEmail){
 	$this->requireCommandLine(__FUNCTION__);
-	$insScript = "bash /var/www/new/ehcp/scripts/curl_installer/curlInstallScript.sh '" . $scriptname . "' '" . $domainname . "' '" . $directory . "' '" . $targetdirectory . "' '" . $dbName . "' '" . $dbUserName . "' '" . $dbPass . "' '" . $mysql_host . "' \"" . $titleForScript . "\" '" . $adminEmail . "' '" . $this->wwwuser . "' '" . $this->wwwgroup . "' '" . $this->miscconfig['webservermode'] . "' > /dev/null 2>&1 &";
+	
+	$modeToSend = $this->miscconfig['webservermode'];
+	if($this->miscconfig['webservermode'] == "ssl"){
+		// Figure out if we should use https or http depending on the domain setting
+		$domainInfo = $this->getDomainInfo($domainname);
+		if($domainInfo["ssl_redirect_https"]){
+			$modeToSend = "sslonly";
+		}
+	}
+	
+	$insScript = "bash /var/www/new/ehcp/scripts/curl_installer/curlInstallScript.sh '" . $scriptname . "' '" . $domainname . "' '" . $directory . "' '" . $targetdirectory . "' '" . $dbName . "' '" . $dbUserName . "' '" . $dbPass . "' '" . $mysql_host . "' \"" . $titleForScript . "\" '" . $adminEmail . "' '" . $this->wwwuser . "' '" . $this->wwwgroup . "' '" . $modeToSend . "' > /dev/null 2>&1 &";
 	passthru2($insScript, true, true);
 	return true;
 }
