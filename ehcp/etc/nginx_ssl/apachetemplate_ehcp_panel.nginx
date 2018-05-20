@@ -24,18 +24,6 @@ server {
         root   {ehcpdir};
         index  index.php;
 
-        location ~ \.php$ {
-			root {ehcpdir};
-			include fastcgi_params;
-			try_files $uri = 404;
-			fastcgi_pass   127.0.0.1:9000;
-			fastcgi_index  index.php;
-			fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
-            fastcgi_param PHP_ADMIN_VALUE "open_basedir={ehcpdir}:/tmp:/usr/share:/etc/roundcube:/var/lib/roundcube:/var/log/roundcube \n upload_tmp_dir=/tmp \n session.save_path=/var/www/php_sessions";
-			fastcgi_read_timeout 300;
-			limit_req zone=one burst=5;
-        }
-
         # deny access to .htaccess files, if Apache's document root concurs with nginx's one
         #
         location ~ (apache_subdomain_template|apachetemplate$|apachetemplate_ipbased|apachetemplate_passivedomains|/\.conf$|/\.ht|access_log|error_log|access\.log|error\.log) {   
@@ -54,6 +42,17 @@ server {
 			}
 			location ~ ^/(.+\.sh)$ {
 				return 403;
+			}
+			location ~ \.php$ {
+				root {ehcpdir};
+				include fastcgi_params;
+				try_files $uri = 404;
+				fastcgi_pass   127.0.0.1:9000;
+				fastcgi_index  index.php;
+				fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+				fastcgi_param PHP_ADMIN_VALUE "open_basedir={ehcpdir}:/tmp:/usr/share:/etc/roundcube:/var/lib/roundcube:/var/log/roundcube \n upload_tmp_dir=/tmp \n session.save_path=/var/www/php_sessions";
+				fastcgi_read_timeout 300;
+				limit_req zone=one burst=5;
 			}
 		}
         
