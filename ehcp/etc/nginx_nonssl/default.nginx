@@ -34,7 +34,7 @@ server {
         # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
         #
         location ~ \.php$ {
-                fastcgi_pass   127.0.0.1:9000;
+                fastcgi_pass   127.0.0.1:9001;
                 fastcgi_index  index.php;
                 fastcgi_param  SCRIPT_FILENAME  /var/www/new$fastcgi_script_name;
                 fastcgi_param PHP_ADMIN_VALUE "open_basedir=/var/www:/tmp:/usr/share:/etc/roundcube:/var/lib/roundcube:/var/log/roundcube \n upload_tmp_dir=/tmp \n session.save_path=/var/www/php_sessions";
@@ -69,7 +69,7 @@ server {
 			location ~ ^/phpmyadmin/(.+\.php)$ {
 			   try_files $uri =404;
 			   root /usr/share/;
-			   fastcgi_pass 127.0.0.1:9000;
+			   fastcgi_pass 127.0.0.1:9001;
 			   fastcgi_index index.php;
 			   fastcgi_param SCRIPT_FILENAME $request_filename;
 			   fastcgi_param  PHP_ADMIN_VALUE "open_basedir=/usr/share/phpmyadmin:/etc/phpmyadmin:/var/lib/phpmyadmin:/tmp:/usr/share/php:/usr/share/pear:/usr/share:/var/www/php_sessions \n upload_tmp_dir=/tmp \n session.save_path=/var/www/php_sessions";

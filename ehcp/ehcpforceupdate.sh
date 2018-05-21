@@ -102,6 +102,30 @@ function changeApacheUser(){ # by earnolmartin@gmail.com
 		sed -i "s/user = .*/user = ${VSFTPDUser}/g" "$PHPCONFDir/fpm/pool.d/www.conf"
 		sed -i "s/group = .*/group = www-data/g" "$PHPCONFDir/fpm/pool.d/www.conf"
 	fi
+	
+	# Create EHCP Pool and Secure WWW Pool
+	# VHOSTs can't run protected functions :)
+	createEHCPPool
+}
+
+function createEHCPPool(){
+	# Create EHCP Pool
+	if [ ! -e "$PHPCONFDir/fpm/pool.d/ehcp.conf" ]; then
+		cp "$PHPCONFDir/fpm/pool.d/www.conf" "$PHPCONFDir/fpm/pool.d/ehcp.conf"
+		sed -i "s/^\[www\]/\[ehcp\]/g" "$PHPCONFDir/fpm/pool.d/ehcp.conf"
+		sed -i "s/^listen.*/listen = 9001/g" "$PHPCONFDir/fpm/pool.d/ehcp.conf"
+	fi
+	
+	hasDisableFunctions=$(cat "$PHPCONFDir/fpm/pool.d/www.conf" | grep -o "php_admin_value\[disable_functions\].*")
+	if [ -z "$hasDisableFunctions" ]; then
+		echo "php_admin_value[disable_functions] = exec,passthru,shell_exec,system,proc_open,popen" >> "$PHPCONFDir/fpm/pool.d/www.conf"
+	fi
+	
+	# Remove it from ehcp if it's there
+	hasDisableFunctionsTwo=$(cat "$PHPCONFDir/fpm/pool.d/ehcp.conf" | grep -o "php_admin_value\[disable_functions\].*")
+	if [ ! -z "$hasDisableFunctionsTwo" ]; then
+		sed -i "s/^php_admin_value\[disable_functions\]/;php_admin_value\[disable_functions\]/g" "$PHPCONFDir/fpm/pool.d/ehcp.conf"
+	fi
 }
 
 function changeNginxUser(){
