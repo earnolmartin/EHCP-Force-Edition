@@ -15,7 +15,6 @@
 	php_admin_value open_basedir "{homedir}"
 	php_admin_value upload_tmp_dir "{homedir}/phptmpdir"
 	php_admin_value session.save_path "{homedir}/phptmpdir"
-	php_admin_value disable_functions "exec,passthru,shell_exec,system,proc_open,popen"
 	
 </VirtualHost>
 
