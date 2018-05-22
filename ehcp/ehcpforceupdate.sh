@@ -384,6 +384,7 @@ function apacheSecurity(){
 	aptgetInstall libapache2-mod-evasive
 	aptgetInstall libapache-mod-security
 	aptgetInstall libapache2-modsecurity
+	aptgetInstall libapache2-mod-security2
 	
 	# Make sure the conf.d directory exists
 	addConfDFolder
