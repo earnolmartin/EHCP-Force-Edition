@@ -12,8 +12,10 @@
 	CustomLog  {homedir}/logs/access_log combined
 	CustomLog  /var/log/apache2/access_log_multi.log vhost_combined_host
 
-	php_admin_value open_basedir {homedir}
-	php_admin_value upload_tmp_dir {homedir}/phptmpdir
+	ProxyPassMatch ^/(.*\.php(/.*)?)$ fcgi://127.0.0.1:9000{homedir}/$1
+	ProxyFCGISetEnvIf "true" PHP_ADMIN_VALUE "open_basedir={homedir}:/usr/share/php:/usr/share/pear"
+	ProxyFCGISetEnvIf "true" PHP_ADMIN_VALUE "upload_tmp_dir={homedir}/phptmpdir"
+	ProxyFCGISetEnvIf "true" PHP_ADMIN_VALUE "session.save_path={homedir}/phptmpdir"
 	
 </VirtualHost>
 

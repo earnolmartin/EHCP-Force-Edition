@@ -16,9 +16,10 @@
 	CustomLog  {homedir}/logs/access_log combined
 	CustomLog  /var/log/apache2/access_log_multi.log vhost_combined_host
 
-	php_admin_value open_basedir "{ehcpdir}/webmail:/tmp:/var/www/php_sessions:/usr/share:/etc/roundcube:/var/lib/roundcube:/var/log/roundcube"
-	php_admin_value upload_tmp_dir "/tmp"
-	php_admin_value session.save_path "/var/www/php_sessions"
+	ProxyPassMatch ^/(.*\.php(/.*)?)$ fcgi://127.0.0.1:9001{ehcpdir}/webmail/$1
+	ProxyFCGISetEnvIf "true" PHP_ADMIN_VALUE "open_basedir={ehcpdir}/webmail:/tmp:/var/www/php_sessions:/usr/share:/etc/roundcube:/var/lib/roundcube:/var/log/roundcube"
+	ProxyFCGISetEnvIf "true" PHP_ADMIN_VALUE "upload_tmp_dir=/tmp"
+	ProxyFCGISetEnvIf "true" PHP_ADMIN_VALUE "session.save_path=/var/www/php_sessions"
 
 </VirtualHost>
 
@@ -35,9 +36,10 @@
 	CustomLog  {homedir}/logs/access_log combined
 	CustomLog  /var/log/apache2/access_log_multi.log vhost_combined_host
 	
-	php_admin_value open_basedir "{ehcpdir}/webmail2"
-	php_admin_value upload_tmp_dir "{ehcpdir}/webmail2/data"
-	php_admin_value session.save_path "{ehcpdir}/webmail2/data"
+	ProxyPassMatch ^/(.*\.php(/.*)?)$ fcgi://127.0.0.1:9001{ehcpdir}/webmail2/$1
+	ProxyFCGISetEnvIf "true" PHP_ADMIN_VALUE "open_basedir={ehcpdir}/webmail2"
+	ProxyFCGISetEnvIf "true" PHP_ADMIN_VALUE "upload_tmp_dir={ehcpdir}/webmail2/data"
+	ProxyFCGISetEnvIf "true" PHP_ADMIN_VALUE "session.save_path={ehcpdir}/webmail2/data"
 	
 </VirtualHost>
 
@@ -53,7 +55,8 @@
 	LogFormat "%v:%p %h %l %u %t \"%{Host}i\" \"%r\" %>s %O \"%{Referer}i\" \"%{User-Agent}i\"" vhost_combined_host
 	CustomLog  /var/log/apache2/access_log_multi.log vhost_combined_host
 
-	php_admin_value open_basedir {ehcpdir}
+	ProxyPassMatch ^/(.*\.php(/.*)?)$ fcgi://127.0.0.1:9001{ehcpdir}/$1
+	ProxyFCGISetEnvIf "true" PHP_ADMIN_VALUE "open_basedir={ehcpdir}:/usr/share/php:/usr/share/pear"
 
 	<Files  ~ "\.conf$">
 		Order allow,deny
@@ -93,10 +96,10 @@
 	CustomLog  {homedir}/logs/access_log combined
 	CustomLog  /var/log/apache2/access_log_multi.log vhost_combined_host
 	
-	# this is pear compatible:
-	php_admin_value open_basedir "{homedir}:/usr/share/php:/usr/share/pear"
-	php_admin_value upload_tmp_dir {homedir}/phptmpdir
-	php_admin_value session.save_path 0;660;{homedir}/phptmpdir
+	ProxyPassMatch ^/(.*\.php(/.*)?)$ fcgi://127.0.0.1:9000{homedir}/httpdocs/$1
+	ProxyFCGISetEnvIf "true" PHP_ADMIN_VALUE "open_basedir={homedir}:/usr/share/php:/usr/share/pear"
+	ProxyFCGISetEnvIf "true" PHP_ADMIN_VALUE "upload_tmp_dir={homedir}/phptmpdir"
+	ProxyFCGISetEnvIf "true" PHP_ADMIN_VALUE "session.save_path={homedir}/phptmpdir"
 
 	AccessFileName .htaccess
 

@@ -649,6 +649,7 @@ function runOp($op){ # these are like url to function mappers...  maps op variab
 		// Custom FTP
 		case 'addcustomftp'				: return $this->addCustomFTP();break;
 		case 'removecustomftp'			: return $this->removeCustomFTP();break;
+		case 'resetallcustomtemplates'  : return $this->resetAllCustomTemplates();break;
 		
 		// Global Website Apache / Nginx Templates
 		case 'manageglobalwebtemplates'	: return $this->manageGlobalWebTemplates();break;
@@ -1453,6 +1454,54 @@ function adjust_system(){
 		$this->add_daemon_op(array('op'=>__FUNCTION__));
 	}
 	return True;
+}
+
+function resetAllCustomTemplates(){
+	# This function is used to reset all the custom web templates to the system default (useful when major template updates are released in EHCP)
+	$this->requireAdmin();
+	$success = true;
+	$writeOut = "";
+	
+	// Make a backup of all templates
+	$SQL = "SELECT * FROM " . $this->conf['globalwebservertemplatestable']['tablename'] . " WHERE template_value != ''";
+	$rs = $this->query($SQL);
+	foreach($rs as $r){
+		$templateName = $r["template_name"];
+		$templateWM = $r["template_webserver_type"];
+		$templateValue = $r["template_value"];
+		$templateSSLType = $r["template_ssl_type"];
+		$writeOut .= "\n\n" . $templateName . " for " . $templateSSLType . " " . $templateWM . ":\n\n" . $templateValue;
+	}
+	
+	// Make a backup of all templates
+	$SQL = "SELECT * FROM " . $this->conf['domainstable']['tablename'] . " WHERE apache2template != '' OR nginxtemplate != ''";
+	$rs = $this->query($SQL);
+	foreach($rs as $r){
+		$domain = $r["domainname"];
+		if(!empty($r["apache2template"])){
+			$writeOut .= "\n\nCustom apache2template for " . $domain . ":\n\n" . $r["apache2template"];
+		}
+		
+		if(!empty($r["nginxtemplate"])){
+			$writeOut .= "\n\nCustom nginxtemplate for " . $domain . ":\n\n" . $r["nginxtemplate"];
+		}
+	}
+	
+	if(isset($writeOut) && !empty($writeOut)){
+		$date = date("Y_m_d_H_i_s");
+		$backupFile = "/var/www/new/ehcp/custom_domain_template_backups_" . $date . ".conf";
+		$this->write_file_if_not_exists($backupFile,$writeOut);
+	}
+	
+	// Clear custom global templates
+	$SQL = "UPDATE " . $this->conf['globalwebservertemplatestable']['tablename'] . " SET template_value=''";
+	$success=$success && $this->executeQuery($SQL);
+	
+	// Clear domain templates
+	$success=$success && $this->executeQuery("update ".$this->conf['domainstable']['tablename']." set nginxtemplate='', apache2template=''");
+	$success=$success && $this->addDaemonOp('syncdomains','','','','sync domains');
+	$this->ok_err_text($success,"All templates have been reset to their default state.&nbsp;" . (isset($backupFile) ? " A backup file (" . $backupFile . ") of the custom templates was saved." : ""),"Failed to clear all templates.");
+	return $success; 
 }
 
 function editApacheTemplate(){	

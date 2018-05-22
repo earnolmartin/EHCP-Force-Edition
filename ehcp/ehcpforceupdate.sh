@@ -128,6 +128,14 @@ function createEHCPPool(){
 	fi
 }
 
+function apacheUseFPM(){
+	a2enmod proxy_fcgi
+	a2dismod php5
+	a2dismod php7.0
+	a2dismod php7.1
+	a2dismod php7.2
+}
+
 function changeNginxUser(){
 	# Change nginx user
 	if [ -e "/etc/nginx/nginx.conf" ]; then
@@ -2792,6 +2800,10 @@ fixNginxSessions
 echo -e "Changing Apache User\n"
 # Change Apache User
 changeApacheUser
+
+echo -e "Configuring apache2 to use FPM for PHP\n"
+# Use FPM for apache
+apacheUseFPM
 
 # Add Nginx Limiting
 echo -e "Adding rate limiting for nginx\n"

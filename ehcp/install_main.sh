@@ -818,6 +818,14 @@ function createEHCPPool(){
 	fi
 }
 
+function apacheUseFPM(){
+	a2enmod proxy_fcgi
+	a2dismod php5
+	a2dismod php7.0
+	a2dismod php7.1
+	a2dismod php7.2
+}
+
 function changeNginxUser(){
 	# Change nginx user
 	if [ -e "/etc/nginx/nginx.conf" ]; then
@@ -2499,6 +2507,8 @@ fixPHPFPMListen
 fixNginxSessions
 # Change Apache user to vsftpd to ensure chmod works via PHP and through FTP Clients
 changeApacheUser
+# Use FPM for apache
+apacheUseFPM
 # Add rate limiting option to nginx if it doesn't have it
 nginxRateLimit
 # Fix extra mysql module getting loaded in the PHP config printing warning messages
