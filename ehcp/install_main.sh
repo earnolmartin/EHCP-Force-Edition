@@ -824,6 +824,11 @@ function apacheUseFPM(){
 	a2dismod php7.0
 	a2dismod php7.1
 	a2dismod php7.2
+	
+	# We need a newer version of Apache for this to work properly!
+	add-apt-repository -y ppa:ondrej/apache2
+	aptget_Update
+	apt-get install -y --no-remove --allow-unauthenticated -o Dpkg::Options::="--force-confold" apache2
 }
 
 function changeNginxUser(){
