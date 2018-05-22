@@ -1990,6 +1990,9 @@ function installNewPackages(){
 	aptgetInstall libssl-dev 
 	aptgetInstall python-dev 
 	aptgetInstall python-virtualenv
+	
+	# debian fix
+	aptgetInstall software-properties-common 
 }
 
 function getRidOfExtraPHPMyAdminAlias(){

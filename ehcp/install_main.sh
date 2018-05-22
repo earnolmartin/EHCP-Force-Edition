@@ -2428,6 +2428,8 @@ function fixMariaDBSkippingInnoDB(){
 
 function getImportantPreReqs(){
 	aptgetInstall lsb-release
+	# debian fix
+	aptgetInstall software-properties-common 
 }
 
 #############################################################
