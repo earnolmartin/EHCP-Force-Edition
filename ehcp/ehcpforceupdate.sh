@@ -627,6 +627,9 @@ function finalize(){
 	tar -zxvf "update_ez_install.tar.gz"
 	php update_ez_install.php
 	
+	# Enable php-fpm
+	enablePHPFPMService
+	
 	# Killall and restart mysql
 	killAllMySQLAndRestart
 	
@@ -643,10 +646,8 @@ function finalize(){
 	sleep 30s
 	
 	# Restart php-fpm before nginx if the web server is nginx
-	if [ "$WebServerType" == "nginx" ]; then
-		echo -e "\nRestarting PHP FPM service.\n"
-		managePHPFPMService
-	fi
+	echo -e "\nRestarting PHP FPM service.\n"
+	managePHPFPMService
 	
 	# Restart web server
 	echo -e "\nRestarting the ${WebServerType} web server.\n"
@@ -2260,29 +2261,15 @@ function addSystemCronJob(){ # by earnolmartin@gmail.com
 }
 
 function getPHPSessionTimeout(){
-	if [ "$WebServerType" == "nginx" ]; then
-		nginxFPMPHPConfig="$PHPCONFDir/fpm/php.ini"
-		if [ -e "$nginxFPMPHPConfig" ]; then
-			SessionTimeoutSetting=$(cat "$nginxFPMPHPConfig" | grep -o "^session.gc_maxlifetime.*" | grep -o "=.*" | grep -o "[^= ].*")
-			if [ ! -z "$SessionTimeoutSetting" ] && (isnum "$SessionTimeoutSetting"); then
-				SessionTimeoutSetting=$((SessionTimeoutSetting/60))
-				if [ "$SessionTimeoutSetting" -le "0" ]; then
-					SessionTimeoutSetting=1
-				fi
-				echo -e "Session timeout is configured to be to $SessionTimeoutSetting minutes!"
+	nginxFPMPHPConfig="$PHPCONFDir/fpm/php.ini"
+	if [ -e "$nginxFPMPHPConfig" ]; then
+		SessionTimeoutSetting=$(cat "$nginxFPMPHPConfig" | grep -o "^session.gc_maxlifetime.*" | grep -o "=.*" | grep -o "[^= ].*")
+		if [ ! -z "$SessionTimeoutSetting" ] && (isnum "$SessionTimeoutSetting"); then
+			SessionTimeoutSetting=$((SessionTimeoutSetting/60))
+			if [ "$SessionTimeoutSetting" -le "0" ]; then
+				SessionTimeoutSetting=1
 			fi
-		fi
-	elif [ "$WebServerType" == "apache2" ]; then
-		apachePHPConfig="$PHPCONFDir/apache2/php.ini"
-		if [ -e "$apachePHPConfig" ]; then
-			SessionTimeoutSetting=$(cat "$apachePHPConfig" | grep -o "^session.gc_maxlifetime.*" | grep -o "=.*" | grep -o "[^= ].*")
-			if [ ! -z "$SessionTimeoutSetting" ] && (isnum "$SessionTimeoutSetting"); then
-				SessionTimeoutSetting=$((SessionTimeoutSetting/60))
-				if [ "$SessionTimeoutSetting" -le "0" ]; then
-					SessionTimeoutSetting=1
-				fi
-				echo -e "Session timeout is configured to be to $SessionTimeoutSetting minutes!"
-			fi
+			echo -e "Session timeout is configured to be to $SessionTimeoutSetting minutes!"
 		fi
 	fi
 	
@@ -2708,6 +2695,36 @@ function managePHPFPMService(){
 		manageService "php-fpm" "${fpmAction}"
 		manageService "php7.0-fpm" "${fpmAction}"
 		manageService "php7.1-fpm" "${fpmAction}"
+	fi
+}
+
+function enablePHPFPMService(){
+	searchForServiceName "-fpm"
+	fpmService=$(cat "${serviceNameTempFile}")
+	if [ ! -z "$fpmService" ]; then
+		echo -e "Enabling specifically detected php-fpm service ${fpmService}...\n"
+		update-rc.d "${fpmService}" enable
+		update-rc.d "${fpmService}" defaults
+		systemctl enable "${fpmService}.service"
+	else
+		echo -e "Enabling php-fpm service generically...\n"
+		update-rc.d "php5-fpm" enable
+		update-rc.d "php5-fpm" defaults
+		update-rc.d "php-fpm" enable
+		update-rc.d "php-fpm" defaults
+		update-rc.d "php7.0-fpm" enable
+		update-rc.d "php7.0-fpm" defaults
+		update-rc.d "php7.1-fpm" enable
+		update-rc.d "php7.1-fpm" defaults
+		update-rc.d "php7.2-fpm" enable
+		update-rc.d "php7.2-fpm" defaults
+		
+		systemctl daemon-reload
+		systemctl enable php5-fpm.service
+		systemctl enable php-fpm.service
+		systemctl enable php7.0-fpm.service
+		systemctl enable php7.1-fpm.service
+		systemctl enable php7.2-fpm.service
 	fi
 }
 
