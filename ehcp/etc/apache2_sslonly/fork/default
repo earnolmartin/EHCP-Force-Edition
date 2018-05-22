@@ -59,8 +59,6 @@
 	SSLCertificateKeyFile /etc/ssl/private/server.key
 	
 	ProxyPassMatch ^/(.*\.php(/.*)?)$ fcgi://127.0.0.1:9001/var/www/new/$1
-	ProxyFCGISetEnvIf "true" PHP_ADMIN_VALUE "open_basedir=/var/www:/tmp:/usr/share:/etc/roundcube:/etc/phpmyadmin:/var/lib/phpmyadmin:/var/lib/roundcube:/var/log/roundcube"
-	ProxyFCGISetEnvIf "true" PHP_ADMIN_VALUE "upload_tmp_dir=/tmp"
-	ProxyFCGISetEnvIf "true" PHP_ADMIN_VALUE "session.save_path=/var/www/php_sessions"
+	ProxyFCGISetEnvIf "true" PHP_ADMIN_VALUE "open_basedir=/var/www:/tmp:/usr/share:/etc/roundcube:/etc/phpmyadmin:/var/lib/phpmyadmin:/var/lib/roundcube:/var/log/roundcube; \n upload_tmp_dir=/tmp; \n session.save_path=/var/www/php_sessions;"
 
 </VirtualHost>

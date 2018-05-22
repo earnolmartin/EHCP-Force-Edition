@@ -2408,7 +2408,6 @@ function rebuild_webserver_configs(){
 	# remove all webservers from auto-start
 	$this->disableService("nginx");
 	$this->disableService("apache2");
-	$this->disableService($this->php_fpm_name);
 
 	if($this->miscconfig['webservertype']=='apache2'){
 		// Web server mode changed so restore the original main config file if it exists
@@ -2468,6 +2467,7 @@ function rebuild_apache2_config(){
 	
 	if($this->miscconfig['webservertype']=='apache2'){
 		$this->enableService("apache2"); # make apache2 auto-start on reboot
+		$this->enableService($this->php_fpm_name); # apache2 uses FPM now too
 	}
 	$this->syncDomains();
 	
@@ -2476,19 +2476,6 @@ function rebuild_apache2_config(){
 
 function rebuild_nginx_config(){
 	$this->requireCommandLine(__FUNCTION__,True);
-	// include_once("install_lib.php");
-	
-	if(!$this->getPHPFPMName()) {
-		$this->echoln("This server has no " . $this->php_fpm_name . " installed. install it before trying to switch to nginx. now, switching back to apache2");
-		$this->enableService("apache2"); # make apache2 auto-start on reboot
-		$this->setConfigValue('webservertype','apache2');
-		$this->loadConfigWithDaemon();
-		rebuild_webserver_configs();
-		return False;
-	}
-	
-	// Debug
-	//$this->writeToLogFile("Webmode is set to: " . $this->miscconfig['webservermode']);
 	
 	// Support SSL properly
 	if($this->miscconfig['webservermode']=='ssl'){
