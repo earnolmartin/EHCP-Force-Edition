@@ -1468,6 +1468,22 @@ function installAntiSpam(){
 		
 		# Install Anti-Spam Software
 		aptgetInstall "amavisd-new" "runlevel=1" # amavisd-new install should not start the daemon immediately after installation since we haven't configured our fully qualified domain name of the server yet
+		
+		# Prompt for FQDN
+		echo ""
+		echo -n "Please enter your Fully Qualified Domain Name (FQDN) for this mail server: "
+		read FQDNName
+		FQDNName=$(echo "$FQDNName" | awk '{print tolower($0)}')
+		if [ -z "$FQDNName" ]; then
+			# Just replace it with ehcpforce.tk
+			sed -i "s/^#\$myhostname.*/\$myhostname = \"ehcpforce.tk\";/g" "$AMAVISHOST"
+			sed -i "s#^\$myhostname.*#\$myhostname = \"ehcpforce.tk\";#g" "$AMAVISHOST"
+		else
+			sed -i "s/^#\$myhostname.*/\$myhostname = \"$FQDNName\";/g" "$AMAVISHOST"
+			sed -i "s#^\$myhostname.*#\$myhostname = \"$FQDNName\";#g" "$AMAVISHOST"
+		fi
+		
+		# Install SpamAssassin and Clamav-Daemon
 		aptgetInstall "spamassassin clamav-daemon"
 		
 		# Install individually incase some packages are not found
@@ -1607,20 +1623,6 @@ smtp-amavis     unix    -       -       -       -       2       smtp
 			POSTFIXMASCHECK4=$(cat "$PostFixMaster" | grep -A2 'pickup' | grep -v "pickup" | grep -o "\-o content_filter=$")
 			if [ -z "$POSTFIXMASCHECK4" ]; then
 				sed -i "/pickup.*/a\\\t-o content_filter=" "$PostFixMaster"
-			fi
-				
-			# Prompt for FQDN
-			echo ""
-			echo -n "Please enter your Fully Qualified Domain Name (FQDN) for this mail server: "
-			read FQDNName
-			FQDNName=$(echo "$FQDNName" | awk '{print tolower($0)}')
-			if [ -z "$FQDNName" ]; then
-				# Just replace it with ehcpforce.tk
-				sed -i "s/^#\$myhostname.*/\$myhostname = \"ehcpforce.tk\";/g" "$AMAVISHOST"
-				sed -i "s#^\$myhostname.*#\$myhostname = \"ehcpforce.tk\";#g" "$AMAVISHOST"
-			else
-				sed -i "s/^#\$myhostname.*/\$myhostname = \"$FQDNName\";/g" "$AMAVISHOST"
-				sed -i "s#^\$myhostname.*#\$myhostname = \"$FQDNName\";#g" "$AMAVISHOST"
 			fi
 			
 			# Change settings for amavis deb defaults

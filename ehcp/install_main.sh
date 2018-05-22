@@ -1337,6 +1337,12 @@ function installAntiSpam(){
 		
 		# Install Anti-Spam Software
 		aptgetInstall "amavisd-new" "runlevel=1" # amavisd-new install should not start the daemon immediately after installation since we haven't configured our fully qualified domain name of the server yet
+		
+		# Use FQDN for mail server (used by Amavis) as entered by user earlier
+		sed -i "s/^#\$myhostname.*/\$myhostname = \"$FQDNName\";/g" "$AMAVISHOST"
+		sed -i "s#^\$myhostname.*#\$myhostname = \"$FQDNName\";#g" "$AMAVISHOST"
+		
+		# Install SpamAssassin and Clamav-Daemon
 		aptgetInstall "spamassassin clamav-daemon"
 		
 		# Install individually incase some packages are not found
@@ -1477,10 +1483,6 @@ smtp-amavis     unix    -       -       -       -       2       smtp
 			if [ -z "$POSTFIXMASCHECK4" ]; then
 				sed -i "/pickup.*/a\\\t-o content_filter=" "$PostFixMaster"
 			fi
-				
-			# Use FQDN for mail server (used by Amavis) as entered by user earlier
-			sed -i "s/^#\$myhostname.*/\$myhostname = \"$FQDNName\";/g" "$AMAVISHOST"
-			sed -i "s#^\$myhostname.*#\$myhostname = \"$FQDNName\";#g" "$AMAVISHOST"
 			
 			# Change settings for amavis deb defaults
 			if [ -e "$AMAVISDEBDEFAULTSCONF" ]; then
