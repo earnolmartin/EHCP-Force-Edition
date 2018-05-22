@@ -1962,6 +1962,10 @@ function ModifyPHPIniConfigForFile(){
 
 function installNewPackages(){
 	# Install required packages that may be missing
+	
+	# debian fix
+	aptgetInstall software-properties-common
+	
 	aptgetInstall lsb-release
 	aptgetInstall "gdebi-core"
 	aptgetInstall "ftp"
@@ -1989,10 +1993,7 @@ function installNewPackages(){
 	aptgetInstall libffi-dev 
 	aptgetInstall libssl-dev 
 	aptgetInstall python-dev 
-	aptgetInstall python-virtualenv
-	
-	# debian fix
-	aptgetInstall software-properties-common 
+	aptgetInstall python-virtualenv 
 }
 
 function getRidOfExtraPHPMyAdminAlias(){
