@@ -1423,9 +1423,9 @@ function serverStatus(){
 		$this->check_program_service('apache2','dostartapache2','dostopapache2','dorestartapache2');
 	}else if($this->miscconfig['webservertype'] == "nginx"){
 		$this->check_program_service('nginx','dostartnginx','dostopnginx','dorestartnginx');
-		$this->check_program_service('php-fpm','dostartphp5fpm','dostopphp5fpm','dorestartphp5fpm');
 	}
 	
+	$this->check_program_service('php-fpm','dostartphp5fpm','dostopphp5fpm','dorestartphp5fpm');	
 	$this->check_program_service('mysqld','dostartmysqld','dostopmysqld','dorestartmysqld');
 	$this->check_program_service('vsftpd','dostartvsftpd','dostopvsftpd','dorestartvsftpd');
 	$this->check_program_service('bind','dostartbind','dostopbind','dorestartbind');
