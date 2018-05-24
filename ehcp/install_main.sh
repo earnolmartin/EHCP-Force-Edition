@@ -843,6 +843,7 @@ function apacheUseFPM(){
 		sed -i "s/cosmic/xenial/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-cosmic.list.save"
 	fi
 	
+	aptget_Update
 	apt-get install -y --no-remove --allow-unauthenticated -o Dpkg::Options::="--force-confold" apache2
 }
 
