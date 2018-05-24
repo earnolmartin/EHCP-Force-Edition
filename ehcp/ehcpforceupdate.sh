@@ -138,6 +138,17 @@ function apacheUseFPM(){
 	# We need a newer version of Apache for this to work properly!
 	add-apt-repository -y ppa:ondrej/apache2
 	aptget_Update
+	
+	# Harder to use PPAs from Ubuntu on Debian, but still possible :)
+	if [ "$distro" == "debian" && "$yrelease" -eq "8" ]; then
+		sed -i "s/cosmic/trusty/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-cosmic.list"
+		sed -i "s/cosmic/trusty/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-cosmic.list.save"
+	fi
+	if [ "$distro" == "debian" && "$yrelease" -eq "9" ]; then
+		sed -i "s/cosmic/xenial/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-cosmic.list"
+		sed -i "s/cosmic/xenial/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-cosmic.list.save"
+	fi
+	
 	apt-get install -y --no-remove --allow-unauthenticated -o Dpkg::Options::="--force-confold" apache2
 }
 
@@ -740,6 +751,11 @@ function checkDistro() {
 			fi
 		else
 			OSUpgradeChangeDetectedFromInstall=true
+		fi
+		
+		if [ "$distro" == "debian" && "$yrelease" -lt "8" ]; then
+			echo "Debian 7.x and lower are no longer supported."
+			exit
 		fi
 }
 
@@ -1965,6 +1981,7 @@ function installNewPackages(){
 	
 	# debian fix
 	aptgetInstall software-properties-common
+	aptgetInstall dirmngr
 	
 	aptgetInstall lsb-release
 	aptgetInstall "gdebi-core"
