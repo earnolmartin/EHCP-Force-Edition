@@ -834,11 +834,11 @@ function apacheUseFPM(){
 	aptget_Update
 	
 	# Harder to use PPAs from Ubuntu on Debian, but still possible :)
-	if [ "$distro" == "debian" && "$yrelease" -eq "8" ]; then
+	if [ "$distro" == "debian" ] && [ "$yrelease" -eq "8" ]; then
 		sed -i "s/cosmic/trusty/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-cosmic.list"
 		sed -i "s/cosmic/trusty/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-cosmic.list.save"
 	fi
-	if [ "$distro" == "debian" && "$yrelease" -eq "9" ]; then
+	if [ "$distro" == "debian" ] && [ "$yrelease" -eq "9" ]; then
 		sed -i "s/cosmic/xenial/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-cosmic.list"
 		sed -i "s/cosmic/xenial/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-cosmic.list.save"
 	fi
