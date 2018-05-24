@@ -11588,14 +11588,14 @@ function restart_webserver(){
 	# thanks to webmaster@securitywonks.net for encourage of nginx integration
 	
 	echo "\n".__FUNCTION__.": Current webserver is:".$this->miscconfig['webservertype']."\n";
+	passthru2("killall " . $this->php_fpm_name);
+	manageService($this->php_fpm_name, "restart");
 
 	if($this->miscconfig['webservertype']=='apache2') {
 		manageService("nginx", "stop");
 		manageService("apache2", "restart");
 	} else if($this->miscconfig['webservertype']=='nginx') {
 		manageService("apache2", "stop");
-		passthru2("killall " . $this->php_fpm_name);
-		manageService($this->php_fpm_name, "restart");
 		manageService("nginx", "restart");
 	}
 }
@@ -13814,6 +13814,7 @@ function configtest_reload_webserver(){
 			$success=false;
 		} else {
 			echo "\n $webserver configuration is valid and tested successfully!";
+			manageService($this->php_fpm_name, "reload");
 			manageService("apache2", "reload");
 			$success=true;
 		}
