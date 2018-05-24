@@ -1462,7 +1462,7 @@ function resetAllCustomTemplates(){
 	$success = true;
 	$writeOut = "";
 	
-	// Make a backup of all templates
+	// Make a backup of all global custom templates
 	$SQL = "SELECT * FROM " . $this->conf['globalwebservertemplatestable']['tablename'] . " WHERE template_value != ''";
 	$rs = $this->query($SQL);
 	foreach($rs as $r){
@@ -1473,7 +1473,7 @@ function resetAllCustomTemplates(){
 		$writeOut .= "\n\n" . $templateName . " for " . $templateSSLType . " " . $templateWM . ":\n\n" . $templateValue;
 	}
 	
-	// Make a backup of all templates
+	// Make a backup of all domain custom templates
 	$SQL = "SELECT * FROM " . $this->conf['domainstable']['tablename'] . " WHERE apache2template != '' OR nginxtemplate != ''";
 	$rs = $this->query($SQL);
 	foreach($rs as $r){
@@ -1485,6 +1485,17 @@ function resetAllCustomTemplates(){
 		if(!empty($r["nginxtemplate"])){
 			$writeOut .= "\n\nCustom nginxtemplate for " . $domain . ":\n\n" . $r["nginxtemplate"];
 		}
+	}
+	
+	// Make a backup of all custom http entries
+	$SQL = "SELECT * FROM " . $this->conf['customstable']['tablename'] . " WHERE name = 'customhttp'";
+	$rs = $this->query($SQL);
+	foreach($rs as $r){
+		$domain = $r["domainname"];
+		$webserverType = $r["webservertype"];
+		$customValue = $r["value"];
+		$id = $r["id"];
+		$writeOut .= "\n\nCustom " . $webserverType . " http entry with database ID of " . $id . " for " . $domain . ":\n\n" . $customValue;
 	}
 	
 	if(isset($writeOut) && !empty($writeOut)){
@@ -1499,6 +1510,11 @@ function resetAllCustomTemplates(){
 	
 	// Clear domain templates
 	$success=$success && $this->executeQuery("update ".$this->conf['domainstable']['tablename']." set nginxtemplate='', apache2template=''");
+	
+	// Clear custom http entries
+	$SQL = "DELETE FROM " . $this->conf['customstable']['tablename'] . " WHERE name = 'customhttp'";
+	$success=$success && $this->executeQuery($SQL);
+	
 	$success=$success && $this->addDaemonOp('syncdomains','','','','sync domains');
 	$this->ok_err_text($success,"All templates have been reset to their default state.&nbsp;" . (isset($backupFile) ? " A backup file (" . $backupFile . ") of the custom templates was saved." : ""),"Failed to clear all templates.");
 	return $success; 
