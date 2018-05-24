@@ -16,7 +16,7 @@
 	CustomLog  {homedir}/logs/access_log combined
 	CustomLog  /var/log/apache2/access_log_multi.log vhost_combined_host
 
-	ProxyPassMatch ^/(.*\.php(/.*)?)$ fcgi://127.0.0.1:9001{ehcpdir}/webmail/$1
+	ProxyPassMatch ^(.*\.php)$ fcgi://127.0.0.1:9001{ehcpdir}/webmail/$1
 	ProxyFCGISetEnvIf "true" PHP_ADMIN_VALUE "open_basedir={ehcpdir}/webmail:/tmp:/var/www/php_sessions:/usr/share:/etc/roundcube:/var/lib/roundcube:/var/log/roundcube; \n upload_tmp_dir=/tmp; \n session.save_path=/var/www/php_sessions;"
 
 	SSLEngine on
@@ -39,7 +39,7 @@
 	CustomLog  {homedir}/logs/access_log combined
 	CustomLog  /var/log/apache2/access_log_multi.log vhost_combined_host
 
-	ProxyPassMatch ^/(.*\.php(/.*)?)$ fcgi://127.0.0.1:9001{ehcpdir}/webmail2/$1
+	ProxyPassMatch ^(.*\.php)$ fcgi://127.0.0.1:9001{ehcpdir}/webmail2/$1
 	ProxyFCGISetEnvIf "true" PHP_ADMIN_VALUE "open_basedir={ehcpdir}/webmail2; \n upload_tmp_dir={ehcpdir}/webmail2/data; \n session.save_path={ehcpdir}/webmail2/data;"
 
 	SSLEngine on
@@ -61,7 +61,7 @@
 	LogFormat "%v:%p %h %l %u %t \"%{Host}i\" \"%r\" %>s %O \"%{Referer}i\" \"%{User-Agent}i\"" vhost_combined_host
 	CustomLog  /var/log/apache2/access_log_multi.log vhost_combined_host
 
-	ProxyPassMatch ^/(.*\.php(/.*)?)$ fcgi://127.0.0.1:9001{ehcpdir}/$1
+	ProxyPassMatch ^(.*\.php)$ fcgi://127.0.0.1:9001{ehcpdir}/$1
 	ProxyFCGISetEnvIf "true" PHP_ADMIN_VALUE "open_basedir={ehcpdir}:/usr/share/php:/usr/share/pear"
 
 	<Files  ~ "\.conf$">
@@ -107,7 +107,7 @@
 	CustomLog  {homedir}/logs/access_log combined
 	CustomLog  /var/log/apache2/access_log_multi.log vhost_combined_host
 	    
-	ProxyPassMatch ^/(.*\.php(/.*)?)$ fcgi://127.0.0.1:9000{homedir}/httpdocs/$1
+	ProxyPassMatch ^(.*\.php)$ fcgi://127.0.0.1:9000{homedir}/httpdocs/$1
 	ProxyFCGISetEnvIf "true" PHP_ADMIN_VALUE "open_basedir={homedir}:/usr/share/php:/usr/share/pear; \n upload_tmp_dir={homedir}/phptmpdir; \n session.save_path={homedir}/phptmpdir;"
 
 	AccessFileName .htaccess
