@@ -753,7 +753,7 @@ function checkDistro() {
 			OSUpgradeChangeDetectedFromInstall=true
 		fi
 		
-		if [ "$distro" == "debian" && "$yrelease" -lt "8" ]; then
+		if [ "$distro" == "debian" ] && [ "$yrelease" -lt "8" ]; then
 			echo "Debian 7.x and lower are no longer supported."
 			exit
 		fi

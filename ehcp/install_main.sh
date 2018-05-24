@@ -377,7 +377,7 @@ function checkDistro() {
 		
 		echo "Your distro is $distro runnning version $version"
 		
-		if [ "$distro" == "debian" && "$yrelease" -lt "8" ]; then
+		if [ "$distro" == "debian" ] && [ "$yrelease" -lt "8" ]; then
 			echo "Debian 7.x and lower are no longer supported."
 			exit
 		fi
