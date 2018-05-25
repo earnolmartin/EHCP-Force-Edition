@@ -39,7 +39,7 @@ server {
 		location ~ ^/phpmyadmin/(.+\.php)$ {
 			try_files $uri =404;
 			root /usr/share/;
-			fastcgi_pass 127.0.0.1:9000;
+			fastcgi_pass 127.0.0.1:9001;
 			fastcgi_index index.php;
 			fastcgi_param SCRIPT_FILENAME $request_filename;
 			fastcgi_param  PHP_ADMIN_VALUE "open_basedir=/usr/share/phpmyadmin:/etc/phpmyadmin:/var/lib/phpmyadmin:/tmp:/usr/share/php:/usr/share/pear:/usr/share:/var/www/php_sessions \n upload_tmp_dir=/tmp \n session.save_path=/var/www/php_sessions";
@@ -65,7 +65,7 @@ server {
 		location ~ ^/webmail2/(.+\.php)$ {
 			try_files $uri =404;
 			root {ehcpdir}/;
-			fastcgi_pass 127.0.0.1:9000;
+			fastcgi_pass 127.0.0.1:9001;
 			fastcgi_index index.php;
 			fastcgi_param SCRIPT_FILENAME $request_filename;
 			fastcgi_param  PHP_ADMIN_VALUE "open_basedir={ehcpdir}/webmail2 \n upload_tmp_dir={ehcpdir}/webmail2/data \n session.save_path={ehcpdir}/webmail2/data";
@@ -89,7 +89,7 @@ server {
 		location ~ ^/ehcp/(.+\.php)$ {
 			try_files $uri =404;
 			root /var/www/new/;
-			fastcgi_pass 127.0.0.1:9000;
+			fastcgi_pass 127.0.0.1:9001;
 			fastcgi_index index.php;
 			fastcgi_param SCRIPT_FILENAME $request_filename;
 			fastcgi_param  PHP_ADMIN_VALUE "open_basedir={ehcpdir}/:/var/www/php_sessions:/tmp \n upload_tmp_dir=/tmp \n session.save_path=/var/www/php_sessions";
@@ -125,7 +125,7 @@ server {
 		location ~ ^/roundcube/(.+\.php)$ {
 			try_files $uri =404;
 			root /usr/share/;
-			fastcgi_pass 127.0.0.1:9000;
+			fastcgi_pass 127.0.0.1:9001;
 			fastcgi_index index.php;
 			fastcgi_param SCRIPT_FILENAME $request_filename;
 			fastcgi_param  PHP_ADMIN_VALUE "open_basedir=/var/lib/roundcube:/etc/roundcube:/usr/share:/tmp:/var/www/php_sessions:/var/log/roundcube \n upload_tmp_dir=/tmp \n session.save_path=/var/www/php_sessions";
