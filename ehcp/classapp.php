@@ -1544,6 +1544,7 @@ function editApacheTemplate(){
 	
 
 	if(!$_insert){
+		$usingDefault = true;
 		$template=$domaininfo[$templatefield];
 		if($template==''){
 			if(empty($globalDomainTemplate)){
@@ -1551,15 +1552,17 @@ function editApacheTemplate(){
 			}else{
 				$template=$globalDomainTemplate;
 			}
+		}else{
+			$usingDefault = false;
 		}
 
 		$inputparams=array(
-			array($templatefield,'textarea','default'=>$template,'cols'=>80,'rows'=>30, 'lefttext'=>'Current Apache Template:'),
+			array($templatefield,'textarea','default'=>$template,'cols'=>80,'rows'=>30, 'lefttext'=>'Current ' . $this->miscconfig['webservertype'] . ' Template:'),
 			array('saveTemplate','submit','default'=>'Save Template'),
 			array('clearTemplate','submit','default'=>'Revert to Default'),
 			array('op','hidden','default'=>__FUNCTION__)
 		);
-		$this->output.=inputform5($inputparams);
+		$this->output.= '<p>' . $this->selecteddomain . ' Using Default Template: ' . ($usingDefault ? '<span class="success">YES</span>' : '<span class="error">NO</span>') . '</p>' . inputform5($inputparams);
 	}else {
 		if($clearTemplate){
 			$success=$success && $this->executeQuery("update ".$this->conf['domainstable']['tablename']." set $templatefield='' where domainname='" . $domainname . "'");
@@ -5914,6 +5917,7 @@ function getPublicServerSettings(){
 	$json["customhttp"] = $this->miscconfig['disableeditapachetemplate'] == "" || $this->isadmin() ? true : false;
 	$json["customdns"] = $this->miscconfig['disableeditdnstemplate'] == "" || $this->isadmin() ? true : false;
 	$json["adddomainsslcert"] = ($this->miscconfig['webservermode'] == 'ssl' || $this->miscconfig['webservermode'] == 'sslonly') && (!empty($this->miscconfig['allowcustomsslnonadmin']) || $this->isadmin()) ? true : false;
+	$json["webservertype"] = $this->miscconfig['webservertype'];
 	
 	header('Content-Type: application/json');
 	die(json_encode($json));
@@ -7943,7 +7947,7 @@ function showSimilarFunctions($func){
 	";break;
 		case 'customhttpdns': $out="<a href='?op=customhttp'>List Custom HTTP</a><a href='?op=addcustomhttp'>Add Custom HTTP</a><a href='?op=customdns'>List Custom DNS</a><a href='?op=addcustomdns'>Add Custom DNS</a><a href='?op=custompermissions'>List Custom Permissions</a><a href='?op=addcustompermission'>Add Custom Permissions</a>";break;
 		case 'subdomainsDirs': $out="<a href='?op=subdomains'>List Subdomains</a><a href='?op=addsubdomain'>Add Subdomains</a><a href='?op=addsubdomainwithftp'>Add Subdomain with FTP</a><a href='?op=addsubdirectorywithftp'>Add Subdirectory with FTP</a>";break;
-		case 'HttpDnsTemplatesAliases': $out="<a href='?op=editdnstemplate'>Edit DNS Template for this Domain</a><a href='?op=editapachetemplate'>Edit Apache Template for this Domain</a><a href='?op=editdomainaliases'>Edit Aliases for this Domain</a>";break;
+		case 'HttpDnsTemplatesAliases': $out="<a href='?op=editdnstemplate'>Edit DNS Template for this Domain</a><a href='?op=editapachetemplate'>Edit " . $this->miscconfig['webservertype'] . " Template for this Domain</a><a href='?op=editdomainaliases'>Edit Aliases for this Domain</a>";break;
 		case 'panelusers': $out="<a href='?op=listpanelusers'>List All Panelusers/Clients</a><a href='?op=resellers'>List Resellers</a><a href='?op=addpaneluser'>Add Paneluser/Client/Reseller</a><a href='?op=addpaneluserwithpredefinedplan'>Add Paneluser/Client/Reseller from Hosting Plan Template</a>";break;
 		case 'server':$out="<a href='?op=listservers'>List Servers/IP's</a><a href='?op=addserver'>Add Server</a><a href='?op=addiptothisserver'>Add IP to This Server</a><a href='?op=setactiveserverip'>Set Active Webserver IP</a><a href='?op=addcronjob'>Add Cronjob</a><a href='?op=removecronjob'>Remove Cronjob</a>";break;
 		case 'backup':$out="<a href='?op=dobackup'>Backup</a><a href='?op=dorestore'>Restore</a><a href='?op=listbackups'>List Backups</a><a href='?op=addremotebackup'>Schedule Remote Backup</a><a href='?op=removeremotebackup'>Edit or Remove Scheduled Remote Backup</a>";break;

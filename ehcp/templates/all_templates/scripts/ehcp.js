@@ -78,6 +78,13 @@ function getPublicServerSettings(){
 				custSSL.remove();
 			}
 		}
+		
+		// Show correct web server type title
+		if(data.hasOwnProperty('webservertype')){
+			$(".itemDomainapache .itemText").text($(".itemDomainapache .itemText").text().replace('Apache', data.webservertype));
+			$(".itemDomainapache img").attr('alt', $(".itemDomainapache img").attr('alt').replace('Apache', data.webservertype));
+			$(".itemDomainapache").attr('title', $(".itemDomainapache").attr('title').replace('Apache', data.webservertype));
+		}
 	});
 }
 
