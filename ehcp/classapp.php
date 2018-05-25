@@ -1294,10 +1294,12 @@ function checkTableExists($tb){
 
 function some_table_fixes(){
 	$qq=array(
-		"update scripts set customfileownerships='vsftpd:www-data#wp-content\nvsftpd:www-data#wp-admin' where scriptname like '%wordpress%'"
+		//"update scripts set customfileownerships='vsftpd:www-data#wp-content\nvsftpd:www-data#wp-admin' where scriptname like '%wordpress%'"
 	);
 	
-	foreach($qq as $q) $this->executeQuery($q);
+	if(isset($qq) && is_array($qq) && count($qq) > 0){
+		foreach($qq as $q) $this->executeQuery($q);
+	}
 }
 
 function checkTables(){
@@ -1317,7 +1319,7 @@ function checkTables(){
 		$this->checkFields($tb,$fields1,$fields2);
 	}
 	$this->check_module_tables();
-	$this->some_table_fixes();
+	// $this->some_table_fixes();
 	
 	# other initialize  for old ehcp's	
 	$this->executeQuery("update emailusers set status='active' where status is null or status=''");
@@ -14209,21 +14211,6 @@ function getAndInstallFile($bilgi,$domainname,$directory){
 
 	# go to inside that dir...
 	chdir($targetdirectory);
-	echo "Custom file ownerships, if any:\n";
-	print_r($bilgi['customfileownerships']);
-	foreach(explode("\n",$bilgi['customfileownerships']) as $com) {
-		$com=trim($com);
-		if($com=='') continue;
-		
-		$inf=explode("#",$com); # get fileowner and path  owner:group#path format
-		if (strstr($inf[0],'root')!==False) continue; # avoid root ownership.
-		
-		$inf[1]=str_replace('..','',$inf[1]); # avoid hi-jacking by ../../ ... etc. 
-		$cmd="chown -Rf ".$inf[0]." $targetdirectory/".$inf[1]; # path is relative to target dir. this way, this does not write to system files, I hope.
-		passthru2($cmd); # adjust first.. 
-		$params=array('domainname'=>$domainname,'name'=>'fileowner','value'=>$inf[0],'value2'=>"$directory/".$inf[1]);
-		$this->insert_custom_setting_direct($params); # insert this for adjusting next time, while syncing... 
-	}
 	
 	/* path for custom permissions:
 	 * scripts table: relative path, because, actual install path is not known
