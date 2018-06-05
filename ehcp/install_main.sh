@@ -844,7 +844,7 @@ function apacheUseFPM(){
 	fi
 	
 	aptget_Update
-	apt-get install -y --no-remove --allow-unauthenticated -o Dpkg::Options::="--force-confold" apache2
+	apt-get install -y --allow-unauthenticated -o Dpkg::Options::="--force-confold" apache2
 }
 
 function changeNginxUser(){
