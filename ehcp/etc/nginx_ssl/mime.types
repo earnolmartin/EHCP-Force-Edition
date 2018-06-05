@@ -67,6 +67,7 @@ types {
         application/octet-stream                iso img;
         application/octet-stream                msi msp msm;
         application/ogg                         ogx;
+        application/so                          so;
 
         audio/midi                              mid midi kar;
         audio/mpeg                              mpga mpega mp2 mp3 m4a;
