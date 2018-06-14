@@ -12845,6 +12845,11 @@ function syncDomains($file='',$domainname='') {
 			$stripNonSSLSectionFromTemplate = $this->getStripNonSSLSectionForDomain($sslInfo, $stripSSLSectionFromTemplate);			
 			if($stripNonSSLSectionFromTemplate === true && !$stripSSLSectionFromTemplate){
 				$dom['domainname_redirect'] = $dom['domainname'];
+				if($this->miscconfig['webservertype'] == "nginx"){
+					$dom['domainname_redirect'] = '$host';
+				}else{
+					$dom['domainname_redirect'] = '%{HTTP_HOST}';
+				}
 			}
 		}
 		
@@ -13071,7 +13076,7 @@ function syncDomains($file='',$domainname='') {
 				$webserver_template=$webserver_template_file;
 				
 				// If the domain should be redirected, we need to use a different webserver_template_file
-				if(!empty($ar1['domainname_redirect']) && $ar1['domainname_redirect'] != $ar1['domainname']){
+				if(!empty($ar1['domainname_redirect']) && $ar1['domainname_redirect'] != $ar1['domainname'] && $ar1['domainname_redirect'] != '%{HTTP_HOST}' && $ar1['domainname_redirect'] != '$host'){
 					$this->echoln("domain redirect is set to: " . $ar1['domainname_redirect'] . " for the domain of " . $ar1['domainname'] . "!");
 					$webserver_template=file_get_contents($this->ehcpdir . "/apachetemplate_redirect");
 					
