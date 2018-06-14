@@ -12838,6 +12838,16 @@ function syncDomains($file='',$domainname='') {
 		// Get redirection for domain if any
 		$dom['domainname_redirect'] = $this->getRedirectDomain($dom['domainname']);
 		
+		// If the domain is configured to use an HTTP to HTTPS redirect, populate the redirect domain for HTTP
+		if(empty($dom['domainname_redirect'])){
+			$sslInfo = $this->getSSLSettingForDomain($dom['domainname']);
+			$stripSSLSectionFromTemplate = $this->getStripSSLSectionForDomain($sslInfo);
+			$stripNonSSLSectionFromTemplate = $this->getStripNonSSLSectionForDomain($sslInfo, $stripSSLSectionFromTemplate);			
+			if($stripNonSSLSectionFromTemplate === true && !$stripSSLSectionFromTemplate){
+				$dom['domainname_redirect'] = $dom['domainname'];
+			}
+		}
+		
 		// Get custom ssl certs for domain if any
 		$sslInfo = $this->getSSLSettingForDomain($dom['domainname']);
 		if(!empty($sslInfo["cert"])){
@@ -13061,7 +13071,7 @@ function syncDomains($file='',$domainname='') {
 				$webserver_template=$webserver_template_file;
 				
 				// If the domain should be redirected, we need to use a different webserver_template_file
-				if(!empty($ar1['domainname_redirect'])){
+				if(!empty($ar1['domainname_redirect']) && $ar1['domainname_redirect'] != $ar1['domainname']){
 					$this->echoln("domain redirect is set to: " . $ar1['domainname_redirect'] . " for the domain of " . $ar1['domainname'] . "!");
 					$webserver_template=file_get_contents($this->ehcpdir . "/apachetemplate_redirect");
 					
