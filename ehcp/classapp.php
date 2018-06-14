@@ -13164,7 +13164,7 @@ function getStripNonSSLSectionForDomain($sslInfo, $stripSSLSectionFromTemplate){
 	return $stripNonSSLSectionFromTemplate;
 }
 
-function adjustDomainTemplateDependingOnSSLSettings($webserver_template, $ar1, $type = 'domain', $echoOn = true){
+function adjustDomainTemplateDependingOnSSLSettings($webserver_template, &$ar1, $type = 'domain', $echoOn = true){
 	$sslInfo = $this->getSSLSettingForDomain($ar1['domainname']);
 	$stripSSLSectionFromTemplate = $this->getStripSSLSectionForDomain($sslInfo);
 	$stripNonSSLSectionFromTemplate = $this->getStripNonSSLSectionForDomain($sslInfo, $stripSSLSectionFromTemplate);
@@ -13193,6 +13193,12 @@ function adjustDomainTemplateDependingOnSSLSettings($webserver_template, $ar1, $
 		$httpOnlyRedirect = stripContentsAfterLine("# FOR SSL CONFIG", $redirectTemplate);
 		$httpOnlyRedirect = str_replace("{domainname_redirect}", "https://{domainname_redirect}", $httpOnlyRedirect);
 		$ar1['domainname_redirect'] = $ar1['domainname'];
+						
+		if($type == "subdomain"){
+			// Gotta use the subdomain here
+			$httpOnlyRedirect = str_replace("{domainname}", "{subdomain}.{domainname}", $httpOnlyRedirect);
+			$ar1['domainname_redirect'] = $ar1["subdomain"];
+		}
 						
 		if($this->miscconfig['webservertype'] == "nginx"){
 			$ar1['domainname_redirect'] = '$host';
