@@ -1549,6 +1549,8 @@ function editApacheTemplate(){
 		if($template==''){
 			if(empty($globalDomainTemplate)){
 				$template=$templateinfile;
+				// If the domain was configured to redirect normal HTTP to HTTPS, make sure the template default reflects that here as well
+				$template = $this->adjustDomainTemplateDependingOnSSLSettings($template, $domaininfo, "domain", false); 
 			}else{
 				$template=$globalDomainTemplate;
 			}
@@ -13055,24 +13057,8 @@ function syncDomains($file='',$domainname='') {
 				$this->echoln2("Domain:".$ar1['domainname']." should use the global admin templated domain template!");
 				$webserver_template = $globalWebServerTemplate;
 			} else {
-				$stripSSLSectionFromTemplate = false;
-				$stripNonSSLSectionFromTemplate = false;
 				$this->echoln2("Domain:".$ar1['domainname']." should use the default domain template!");
 				$webserver_template=$webserver_template_file;
-				
-				$sslInfo = $this->getSSLSettingForDomain($ar1['domainname']);
-				
-				if(strtolower($this->miscconfig['useglobalsslcert']) != 'yes' && $this->miscconfig['webservermode'] == 'ssl'){
-					if(empty($sslInfo["cert"]) && empty($sslInfo["letsenc"])){
-						$stripSSLSectionFromTemplate = true;
-					}else{
-						$stripSSLSectionFromTemplate = false;
-					}
-				}
-				
-				if($this->miscconfig['webservermode'] == 'ssl' && $sslInfo["redir_https"] && !$stripSSLSectionFromTemplate){
-					$stripNonSSLSectionFromTemplate = true;
-				}
 				
 				// If the domain should be redirected, we need to use a different webserver_template_file
 				if(!empty($ar1['domainname_redirect'])){
@@ -13090,27 +13076,7 @@ function syncDomains($file='',$domainname='') {
 						}
 					}
 				}else{
-					if($stripSSLSectionFromTemplate === true){
-						$this->echoln2("Removing SSL portions from template for domain " . $ar1['domainname']);
-						$webserver_template = stripContentsAfterLine("# FOR SSL CONFIG", $webserver_template);
-					}
-					
-					if($stripNonSSLSectionFromTemplate === true && !$stripSSLSectionFromTemplate){
-						$this->echoln2("Removing Non-SSL portions from template for domain " . $ar1['domainname'] . " and redirecting all standard HTTP requests to HTTPS!");
-						$redirectTemplate = file_get_contents($this->ehcpdir . "/apachetemplate_redirect");
-						$httpOnlyRedirect = stripContentsAfterLine("# FOR SSL CONFIG", $redirectTemplate);
-						$httpOnlyRedirect = str_replace("{domainname_redirect}", "https://{domainname_redirect}", $httpOnlyRedirect);
-						$ar1['domainname_redirect'] = $ar1['domainname'];
-						
-						if($this->miscconfig['webservertype'] == "nginx"){
-							$ar1['domainname_redirect'] = '$host';
-						}else{
-							$ar1['domainname_redirect'] = '%{HTTP_HOST}';
-						}
-						
-						$webserver_template = getContentsAfterLine("# FOR SSL CONFIG", $webserver_template);
-						$webserver_template = $httpOnlyRedirect . "\n" . $webserver_template;
-					}
+					$webserver_template = $this->adjustDomainTemplateDependingOnSSLSettings($webserver_template, $ar1);
 				}
 			}
 
@@ -13176,6 +13142,69 @@ function syncDomains($file='',$domainname='') {
 	if($this->miscconfig['updatehostsfile']<>'') $this->updateHostsFile();
 
 	return $success;
+}
+
+function getStripSSLSectionForDomain($sslInfo){
+	$stripSSLSectionFromTemplate = false;
+	if(strtolower($this->miscconfig['useglobalsslcert']) != 'yes' && $this->miscconfig['webservermode'] == 'ssl'){
+		if(empty($sslInfo["cert"]) && empty($sslInfo["letsenc"])){
+			$stripSSLSectionFromTemplate = true;
+		}else{
+			$stripSSLSectionFromTemplate = false;
+		}
+	}
+	return $stripSSLSectionFromTemplate;
+}
+
+function getStripNonSSLSectionForDomain($sslInfo, $stripSSLSectionFromTemplate){
+	$stripNonSSLSectionFromTemplate = false;
+	if($this->miscconfig['webservermode'] == 'ssl' && $sslInfo["redir_https"] && !$stripSSLSectionFromTemplate){
+		$stripNonSSLSectionFromTemplate = true;
+	}
+	return $stripNonSSLSectionFromTemplate;
+}
+
+function adjustDomainTemplateDependingOnSSLSettings($webserver_template, $ar1, $type = 'domain', $echoOn = true){
+	$sslInfo = $this->getSSLSettingForDomain($ar1['domainname']);
+	$stripSSLSectionFromTemplate = $this->getStripSSLSectionForDomain($sslInfo);
+	$stripNonSSLSectionFromTemplate = $this->getStripNonSSLSectionForDomain($sslInfo, $stripSSLSectionFromTemplate);
+	
+	if($stripSSLSectionFromTemplate === true){
+		if($echoOn){
+			if($type == "domain"){
+				$this->echoln2("Removing SSL portions from template for " . $type . " " . $ar1['domainname']);
+			}else{
+				$this->echoln2("Removing SSL portions from template for " . $type . " " . $ar1["subdomain"] . "." . $ar1["domainname"]);	
+			}
+		}
+		$webserver_template = stripContentsAfterLine("# FOR SSL CONFIG", $webserver_template);
+	}
+					
+	if($stripNonSSLSectionFromTemplate === true && !$stripSSLSectionFromTemplate){
+		if($echoOn){
+			if($type == "domain"){
+				$this->echoln2("Removing Non-SSL portions from template for " . $type . " " . $ar1['domainname'] . " and redirecting all standard HTTP requests to HTTPS!");
+			}else{
+				$this->echoln2("Removing Non-SSL portions from template for " . $type . " " . $ar1["subdomain"] . " and redirecting all standard HTTP requests to HTTPS!");
+			}
+		}
+			
+		$redirectTemplate = file_get_contents($this->ehcpdir . "/apachetemplate_redirect");
+		$httpOnlyRedirect = stripContentsAfterLine("# FOR SSL CONFIG", $redirectTemplate);
+		$httpOnlyRedirect = str_replace("{domainname_redirect}", "https://{domainname_redirect}", $httpOnlyRedirect);
+		$ar1['domainname_redirect'] = $ar1['domainname'];
+						
+		if($this->miscconfig['webservertype'] == "nginx"){
+			$ar1['domainname_redirect'] = '$host';
+		}else{
+			$ar1['domainname_redirect'] = '%{HTTP_HOST}';
+		}
+						
+		$webserver_template = getContentsAfterLine("# FOR SSL CONFIG", $webserver_template);
+		$webserver_template = $httpOnlyRedirect . "\n" . $webserver_template;
+	}
+	
+	return $webserver_template;
 }
 
 function getClientEmailFromPanelUsername($panelusername){
@@ -13908,48 +13937,7 @@ function putArrayToStr($arr,$template,$additionalTemplateLogic = false){
 		$temp=$templatefile;
 		
 		if($additionalTemplateLogic === true){
-			$stripSSLSectionFromTemplate = false;
-			$stripNonSSLSectionFromTemplate = false;
-			
-			$sslInfo = $this->getSSLSettingForDomain($ar1['domainname']);
-			
-			if(strtolower($this->miscconfig['useglobalsslcert']) != 'yes' && $this->miscconfig['webservermode'] == 'ssl'){
-				if(empty($sslInfo["cert"]) && empty($sslInfo["letsenc"])){
-					$stripSSLSectionFromTemplate = true;
-				}else{
-					$stripSSLSectionFromTemplate = false;
-				}
-			}
-			
-			if($this->miscconfig['webservermode'] == 'ssl' && $sslInfo["redir_https"] && !$stripSSLSectionFromTemplate){
-				$stripNonSSLSectionFromTemplate = true;
-			}
-			
-			if($stripSSLSectionFromTemplate === true){
-				$this->echoln2("Removing SSL portions from template for subdomain " . $ar1["subdomain"] . "." . $ar1["domainname"]);
-				$temp = stripContentsAfterLine("# FOR SSL CONFIG", $temp);
-			}
-			
-			if($stripNonSSLSectionFromTemplate === true && !$stripSSLSectionFromTemplate){
-				$this->echoln2("Removing Non-SSL portions from template for subdomain " . $ar1["subdomain"] . " and redirecting all standard HTTP requests to HTTPS!");
-				$redirectTemplate = file_get_contents($this->ehcpdir . "/apachetemplate_redirect");
-				$httpOnlyRedirect = stripContentsAfterLine("# FOR SSL CONFIG", $redirectTemplate);
-				$httpOnlyRedirect = str_replace("{domainname_redirect}", "https://{domainname_redirect}", $httpOnlyRedirect);
-				
-				// Gotta use the subdomain here
-				$httpOnlyRedirect = str_replace("{domainname}", "{subdomain}.{domainname}", $httpOnlyRedirect);
-				
-				$ar1['domainname_redirect'] = $ar1["subdomain"];
-					
-				if($this->miscconfig['webservertype'] == "nginx"){
-					$ar1['domainname_redirect'] = '$host';
-				}else{
-					$ar1['domainname_redirect'] = '%{HTTP_HOST}';
-				}
-						
-				$temp = getContentsAfterLine("# FOR SSL CONFIG", $temp);
-				$temp = $httpOnlyRedirect . "\n" . $temp;
-			}
+			$temp = $this->adjustDomainTemplateDependingOnSSLSettings($temp, $ar1, "subdomain");
 		}
 		
 		$temp=str_replace($replacealanlar,$ar1,$temp);
