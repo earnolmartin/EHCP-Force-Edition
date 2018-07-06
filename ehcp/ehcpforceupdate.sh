@@ -1916,6 +1916,13 @@ function phpMyAdminConfigurationTweaks(){
 				sed -i "/^include 'rootip_whitelist.php';/iinclude_once 'rootip_whitelist_functions.php';" "$phpmyadminCONFToModify"
 			fi
 		fi
+		
+		# Use shared path for /etc/phpmyadmin/config.inc.php
+		# Fixes PHPMyAdmin root login issues in Ubuntu 18.04
+		if [ "$phpmyadminCONFToModify" == "/etc/phpmyadmin/config.inc.php" ] && [ -e "$phpmyadminCONFToModify" ]; then
+			sed -i "s#^include_once 'rootip_whitelist_functions.php';#include_once '/usr/share/phpmyadmin/rootip_whitelist_functions.php';#g" "$phpmyadminCONFToModify"
+			sed -i "s#^include 'rootip_whitelist.php';#include '/usr/share/phpmyadmin/rootip_whitelist.php';#g" "$phpmyadminCONFToModify"
+		fi
 	fi
 }
 
