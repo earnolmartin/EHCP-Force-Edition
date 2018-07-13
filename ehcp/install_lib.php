@@ -976,7 +976,11 @@ function mysqldebconf($rYear){ //by earnolmartin@gmail.com
 	}
 	
 	// More generic
-	$mariadbVersionStrFromAptCache = shell_exec('bash /var/www/new/ehcp/scripts/getMariaDbMajorMinorVersion.sh');
+	if(file_exists("/var/www/new/ehcp/scripts/getMariaDbMajorMinorVersion.sh")){
+		$mariadbVersionStrFromAptCache = shell_exec('bash /var/www/new/ehcp/scripts/getMariaDbMajorMinorVersion.sh');
+	}else if(file_exists("scripts/getMariaDbMajorMinorVersion.sh")){
+		$mariadbVersionStrFromAptCache = shell_exec('bash scripts/getMariaDbMajorMinorVersion.sh');
+	}
 	
 	// For all versions
 	if(hasValue($rootpass)){

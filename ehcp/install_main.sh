@@ -1362,8 +1362,14 @@ function installAntiSpam(){
 		aptgetInstall "amavisd-new" "runlevel=1" # amavisd-new install should not start the daemon immediately after installation since we haven't configured our fully qualified domain name of the server yet
 		
 		# Use FQDN for mail server (used by Amavis) as entered by user earlier
-		sed -i "s/^#\$myhostname.*/\$myhostname = \"$FQDNName\";/g" "$AMAVISHOST"
-		sed -i "s#^\$myhostname.*#\$myhostname = \"$FQDNName\";#g" "$AMAVISHOST"
+		if [ -z "$FQDNName" ]; then
+			# Just replace it with ehcpforce.tk
+			sed -i "s/^#\$myhostname.*/\$myhostname = \"ehcpforce.tk\";/g" "$AMAVISHOST"
+			sed -i "s#^\$myhostname.*#\$myhostname = \"ehcpforce.tk\";#g" "$AMAVISHOST"
+		else
+			sed -i "s/^#\$myhostname.*/\$myhostname = \"$FQDNName\";/g" "$AMAVISHOST"
+			sed -i "s#^\$myhostname.*#\$myhostname = \"$FQDNName\";#g" "$AMAVISHOST"
+		fi
 		
 		# Install SpamAssassin and Clamav-Daemon
 		aptgetInstall "spamassassin clamav-daemon"

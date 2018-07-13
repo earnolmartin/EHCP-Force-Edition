@@ -1042,6 +1042,10 @@ function removeInvalidChars($string, $mode){
 			$pattern = "/[^A-Za-z0-9\/_\-]/i";
 			$string = preg_replace($pattern, "", $string);
 			break;
+		case "database":
+			$pattern = "/[^A-Za-z0-9_]/i";
+			$string = preg_replace($pattern, "", $string);
+			break;
 		case "title":
 			$pattern = "/[^A-Za-z0-9_\-\s']/i";
 			break;

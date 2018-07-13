@@ -3324,15 +3324,22 @@ function pwdls($comment='',$dir=''){
 
 function backup_databases2($dbs,$mysqlusers,$file){
 	$this->requireCommandLine(__FUNCTION__);
-	
+	$foundEHCPDB = false;
 	# set empty file then fill with dump of each mysql database, in ehcp, (before vers 0.27: all databases were dumped, that caused: malfunction because of restore of mysql db itself... now, mysql db is not restored... so, passwords of new mysql server are kept after restore... )
 
 	print_r($dbs);
 	
 	if(count($dbs)>0){
 		foreach($dbs as $db) {
-			$sql="create database if not exists ".$db['dbname'].";\n";
-			$sql.="use ".$db['dbname'].";\n";
+			$sql = "";
+			if($db['dbname'] == "ehcp"){
+				$foundEHCPDB = true;
+				// Delete EHCP database since importing the backup will fail if there's existing values in it.
+				$sql .= "DROP DATABASE IF EXISTS `".$db['dbname']."`;\n";
+			}
+			
+			$sql .= "create database if not exists `".$db['dbname']."`;\n";
+			$sql .= "use `".$db['dbname']."`;\n";
 			writeoutput2($file,$sql,"a");
 
 			$cmd=escapeshellcmd("mysqldump ".$db['dbname']." -u root --password=".$this->conf['mysqlrootpass'])." >> ".escapeshellcmd($file);
@@ -3350,12 +3357,22 @@ function backup_databases2($dbs,$mysqlusers,$file){
 
 			// Put grant usage permissions into the file
 			$sql = "GRANT USAGE ON *.* TO '$dbusername'@'localhost' IDENTIFIED BY '$dbuserpass';";
-			$sql .= "\n" . "GRANT ALL PRIVILEGES ON $dbname.* TO '$dbusername'@'localhost';";
+			$sql .= "\n" . "GRANT ALL PRIVILEGES ON `" . $dbname . ".*` TO '$dbusername'@'localhost';";
 			writeoutput2($file,$sql,"a");
 		}
 	}
+	
+	// Last part flush privileges and regrant EHCP privileges
+	$fixAccounts = "";
+	
+	// Handle EHCP regrant
+	if($foundEHCPDB){
+		$fixAccounts .= "GRANT USAGE ON *.* TO 'ehcp'@'localhost' IDENTIFIED BY '" . $this->dbpass . "';";
+		$fixAccounts .= "\n" . "GRANT ALL PRIVILEGES ON `ehcp.*` TO 'ehcp'@'localhost';";
+	}
+	
 	// Flush privileges to activate the new user accounts and passwords
-	$fixAccounts = "FLUSH PRIVILEGES;";
+	$fixAccounts .= "\n" . "FLUSH PRIVILEGES;";
 	writeoutput2($file,$fixAccounts,"a");
 
 }
@@ -11454,6 +11471,11 @@ function addMysqlDbDirect($myserver, $domainname, $dbusername, $dbuserpass, $dbu
 	
 	if(strlen($dbuserpass) > 32){
 		return $this->errorText("Database user passwords cannot be greater than 32 characters.");
+	}
+	
+	$dbnameModified = removeInvalidChars($dbname, "database");
+	if($dbnameModified != $dbname){
+		return $this->errorText("Database names may only contain alphanumeric characters along with underscores.");
 	}
 	
 	if(!$myserver) $myserver=$_SESSION['myserver'];

@@ -118,11 +118,34 @@ do
 		preUnattended=1
     elif [ "$varCheck" == "debug" ]; then
 		debug="debug"
+    elif [ "$varCheck" == "extra" ]; then
+		installmode="extra"
+    elif [ "$varCheck" == "normal" ]; then
+		installmode="normal"
     fi
 done
 
 if [ ! -z "$preUnattended" ]; then
-	# They really want this install to be unattended, so run the installer and use default passwords of 1234
+	## They really want this install to be unattended, so run the installer and use default passwords of 1234
+	
+	if [ ! -z "$installmode" ] && [ "$installmode" == "extra" ]; then
+	
+		# Handle policyd
+		insPolicyD="ins_policyd.cfg"
+		if [ ! -e "$insPolicyD" ]; then
+			echo -e "insPolicyD=true" > "$insPolicyD"
+		fi
+		
+		# Set amavis fully qualified domain name
+		if [ ! -e "fqdn_amavis.cfg" ]; then
+			FQDNCFG="fqdn_amavis.cfg"
+			FQDNName="ehcpforce.tk"
+			echo -e "FQDNName=\"$FQDNName\"" > "$FQDNCFG"
+		fi
+		
+	fi
+	
+	## Run the main installer passing the parameters we received
 	bash install_main.sh "$@"
 else
 
