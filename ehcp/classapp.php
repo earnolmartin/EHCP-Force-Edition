@@ -567,6 +567,8 @@ function __construct() {
 	$this->wwwowner=$this->wwwuser.':'.$this->wwwgroup;
 	$this->ftpowner=$this->ftpuser.':'.$this->ftpgroup;
 	
+	// Generate missing SSL files if needed.
+	$this->generateSslFiles();
 }
 
 // --------------------   //
