@@ -3231,6 +3231,7 @@ function daemonRestore($action,$info,$info2='') {
 	
 	// Restart web server and EHCP daemon
 	// Things could change post restore, so make sure we run what needs to be done.
+	$this->loadConfig();
 	$this->addDaemonOp('rebuild_webserver_configs','','','','rebuild_webserver_configs');
 	$this->addDaemonOp('syncdomains','','','','sync domains');
 	$this->addDaemonOp('syncdns','','','','sync dns');
