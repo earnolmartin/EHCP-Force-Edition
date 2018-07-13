@@ -11045,6 +11045,15 @@ function requireCommandLine($func='',$echoinfo=false){
 
 }
 
+
+function requireCommandLineSilent($func=''){
+	if(!$this->commandline) {
+		return false;
+	}
+	$this->debugecho("Commandline: $func: basliyor\n",3);
+	return true;
+}
+
 function syncpostfix(){
 	$this->output.="No need postfix sync. postfix already synced from db... <br>";
 	return false;
@@ -11585,23 +11594,26 @@ function addIfNotExists($what,$where) {
 }
 
 function generateSslFiles(){
-	$nowDate = time();
-	$certFile = "/etc/ssl/certs/server.crt";
-	
-	// If the certificate file does not exist or the last modification date of the certificate is greater than 365 days
-	// Generate a new self signed one that lasts another 365 days
-	if(!file_exists($certFile) || (file_exists($certFile) && ($nowDate - filemtime($certFile) >= (86400 * 365)))){
-		$findarray=array('webserverip');
-		$replacearray=array($this->getWebServer());
-		$this->replaceArrayPutInFile("$this->ehcpdir/LocalServer.cnf","$this->ehcpdir/LocalServerIP.cnf",$findarray,$replacearray);
-			
-		passthru2("openssl genrsa -out $this->ehcpdir/server.key 1024");
-		passthru2("openssl req -new -key $this->ehcpdir/server.key -out $this->ehcpdir/server.csr -config $this->ehcpdir/LocalServerIP.cnf");
-		passthru2("openssl x509 -req -days 365 -in $this->ehcpdir/server.csr -signkey $this->ehcpdir/server.key -out $this->ehcpdir/server.crt");
+	if($this->requireCommandLineSilent()){
+		$nowDate = time();
+		$certFile = "/etc/ssl/certs/server.crt";
+		
+		// If the certificate file does not exist or the last modification date of the certificate is greater than 365 days
+		// Generate a new self signed one that lasts another 365 days
+		if(!file_exists($certFile) || (file_exists($certFile) && ($nowDate - filemtime($certFile) >= (86400 * 365)))){
+			$findarray=array('webserverip');
+			$replacearray=array($this->getWebServer());
+			$this->replaceArrayPutInFile("$this->ehcpdir/LocalServer.cnf","$this->ehcpdir/LocalServerIP.cnf",$findarray,$replacearray);
+				
+			passthru2("openssl genrsa -out $this->ehcpdir/server.key 1024");
+			passthru2("openssl req -new -key $this->ehcpdir/server.key -out $this->ehcpdir/server.csr -config $this->ehcpdir/LocalServerIP.cnf");
+			passthru2("openssl x509 -req -days 365 -in $this->ehcpdir/server.csr -signkey $this->ehcpdir/server.key -out $this->ehcpdir/server.crt");
 
-		passthru2("cp -vf $this->ehcpdir/server.crt /etc/ssl/certs/");
-		passthru2("cp -vf $this->ehcpdir/server.key /etc/ssl/private/");
+			passthru2("cp -vf $this->ehcpdir/server.crt /etc/ssl/certs/");
+			passthru2("cp -vf $this->ehcpdir/server.key /etc/ssl/private/");
+		}
 	}
+	return true;
 }
 
 function replaceArrayPutInFile($srcfile,$dstfile,$findarray,$replacearray){
