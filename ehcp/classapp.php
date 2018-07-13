@@ -3158,6 +3158,7 @@ function doRestore(){
 
 
 function daemonRestore($action,$info,$info2='') {
+	$this->requireCommandLine(__FUNCTION__,True);
 
 	$filename=securefilename($info);
 	$backupname=$filename;
@@ -3225,6 +3226,10 @@ function daemonRestore($action,$info,$info2='') {
 
 	echo "\n\nRestore complete.... you should restart the ehcp daemon...";
 	$this->infotoadminemail("The EHCP backup was successfully restored!","Backup Restored",False);
+	
+	// Restart web server and EHCP daemon
+	$this->restart_webserver();
+	manageService("ehcp", "restart");
 	
 	return True;
 }
@@ -11635,6 +11640,8 @@ function restart_webserver(){
 		manageService("apache2", "stop");
 		manageService("nginx", "restart");
 	}
+	
+	return true;
 }
 
 function is_webserver_running(){

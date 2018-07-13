@@ -12,7 +12,7 @@
 	
 	if(isset($filename)){
 	
-		$backup='-mysql-files-ehcpfiles-ehcpdb-emailaccounts-emailcontents-gzipbackup'; # what will be backed up
+		$backup='-mysql-files-ehcpdb-emailaccounts-emailcontents-gzipbackup'; # what will be backed up
 		
 		// Code from classapp.php in EHCP
 		/*
