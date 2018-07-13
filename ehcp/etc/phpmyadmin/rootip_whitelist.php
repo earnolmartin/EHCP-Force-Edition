@@ -7,7 +7,7 @@
 	$allow = 0;
 	
 	// Get remote IP address
-	$clientIP = $_SERVER['REMOTE_ADDR'];
+	$clientIP = getIPAddress();
 	
 	// Is the client's IP address a private IP?  
 	// If so, allow root login
