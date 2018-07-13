@@ -134,6 +134,7 @@ function createEHCPPool(){
 
 function apacheUseFPM(){
 	a2enmod proxy_fcgi
+	a2enmod ssl
 	a2dismod php5
 	a2dismod php7.0
 	a2dismod php7.1
