@@ -11,8 +11,12 @@ function setGlobalVars(){
 	FIXDIR="/var/www/new/ehcp/fixes"
 	serviceNameTempFile="/root/ehcp_service_name_search_temp_file"
 	patchDir="/root/Downloads"
-	if [ ! -e $patchDir ]; then
-		mkdir $patchDir
+	if [ ! -e "$patchDir" ]; then
+		mkdir -p "$patchDir"
+	fi
+	backupDir="/var/backup"
+	if [ ! -e "$backupDir" ]; then
+		mkdir -p "$backupDir"
 	fi
 	getVSFTPDUser
 	getPHPConfigPath
