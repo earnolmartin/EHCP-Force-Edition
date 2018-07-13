@@ -1662,7 +1662,9 @@ function phpMyAdminConfigurationTweaks(){
 		hasNoRootCheck=$(cat "$phpmyadminCONFToModify" | grep -o "$cfg\['Servers'\]\[1\]\['AllowRoot'\]")
 		hasTmpUploadDir=$(cat "$phpmyadminCONFToModify" | grep -o "$cfg\['UploadDir'\]")
 		hasIncludeApprovedIPAddressesFunction=$(cat "$phpmyadminCONFToModify" | grep -o "include_once 'rootip_whitelist_functions.php'")
+		hasIncludeApprovedIPAddressesFunctionTwo=$(cat "$phpmyadminCONFToModify" | grep -o "include_once '/usr/share/phpmyadmin/rootip_whitelist_functions.php'")
 		hasIncludeApprovedIPAddresses=$(cat "$phpmyadminCONFToModify" | grep -o "include 'rootip_whitelist.php'")
+		hasIncludeApprovedIPAddressesTwo=$(cat "$phpmyadminCONFToModify" | grep -o "include '/usr/share/phpmyadmin/rootip_whitelist.php'")
 		hasPHPCloseTag=$(cat "$phpmyadminCONFToModify" | grep -o "^?>")
 		
 		# Prevent root mysql user from logging in
@@ -1694,7 +1696,7 @@ function phpMyAdminConfigurationTweaks(){
 		fi
 		
 		# White listed IP addresses that can login to root account via PHPMyAdmin
-		if [ -z "$hasIncludeApprovedIPAddresses" ]; then
+		if [ -z "$hasIncludeApprovedIPAddresses" ] && [ -z "$hasIncludeApprovedIPAddressesTwo" ]; then
 			if [ ! -z "$hasPHPCloseTag" ]; then
 				sed -i "/^?>/iinclude 'rootip_whitelist.php';" "$phpmyadminCONFToModify"
 			else
@@ -1703,7 +1705,7 @@ function phpMyAdminConfigurationTweaks(){
 		fi		
 		
 		# Make sure rootip_whitelist functions are included
-		if [ -z "$hasIncludeApprovedIPAddressesFunction" ]; then
+		if [ -z "$hasIncludeApprovedIPAddressesFunction" ] && [ -z "$hasIncludeApprovedIPAddressesFunctionTwo" ]; then
 			hasIncludeApprovedIPAddresses=$(cat "$phpmyadminCONFToModify" | grep -o "include 'rootip_whitelist.php'")
 			if [ ! -z "$hasIncludeApprovedIPAddresses" ]; then
 				sed -i "/^include 'rootip_whitelist.php';/iinclude_once 'rootip_whitelist_functions.php';" "$phpmyadminCONFToModify"
