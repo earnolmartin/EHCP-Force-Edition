@@ -3228,8 +3228,11 @@ function daemonRestore($action,$info,$info2='') {
 	$this->infotoadminemail("The EHCP backup was successfully restored!","Backup Restored",False);
 	
 	// Restart web server and EHCP daemon
-	$this->restart_webserver();
+	// Things could change post restore, so make sure we run what needs to be done.
+	$this->addDaemonOp('syncdomains','','','','sync domains');
+	$this->addDaemonOp('syncdns','','','','sync dns');
 	manageService("ehcp", "restart");
+	$this->restart_webserver();
 	
 	return True;
 }
