@@ -2025,6 +2025,9 @@ function installNewPackages(){
 	aptgetInstall libssl-dev 
 	aptgetInstall python-dev 
 	aptgetInstall python-virtualenv 
+	
+	# ifconfig
+	aptgetInstall net-tools
 }
 
 function getRidOfExtraPHPMyAdminAlias(){

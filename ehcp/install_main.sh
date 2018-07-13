@@ -1929,6 +1929,9 @@ function installNeededDependencies(){
 	
 	# Needed for Ubuntu 14 and up:
 	aptgetInstall apache2-utils
+	
+	# ifconfig
+	aptgetInstall net-tools
 }
 
 function getRidOfExtraPHPMyAdminAlias(){
