@@ -3362,17 +3362,8 @@ function backup_databases2($dbs,$mysqlusers,$file){
 		}
 	}
 	
-	// Last part flush privileges and regrant EHCP privileges
-	$fixAccounts = "";
-	
-	// Handle EHCP regrant
-	if($foundEHCPDB){
-		$fixAccounts .= "GRANT USAGE ON *.* TO 'ehcp'@'localhost' IDENTIFIED BY '" . $this->dbpass . "';";
-		$fixAccounts .= "\n" . "GRANT ALL PRIVILEGES ON `ehcp.*` TO 'ehcp'@'localhost';";
-	}
-	
 	// Flush privileges to activate the new user accounts and passwords
-	$fixAccounts .= "\n" . "FLUSH PRIVILEGES;";
+	$fixAccounts = "FLUSH PRIVILEGES;";
 	writeoutput2($file,$fixAccounts,"a");
 
 }
