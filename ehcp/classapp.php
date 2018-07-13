@@ -3368,8 +3368,11 @@ function backup_databases2($dbs,$mysqlusers,$file){
 			$dbuserpass=$user['password'];
 
 			// Put grant usage permissions into the file
-			$sql = "GRANT USAGE ON *.* TO '$dbusername'@'localhost' IDENTIFIED BY '$dbuserpass';";
+			$sql = "use `".$db['dbname']."`;\n";
+			$sql .= "GRANT USAGE ON *.* TO '$dbusername'@'localhost' IDENTIFIED BY '$dbuserpass';";
+			$sql .= "\n" . "FLUSH PRIVILEGES;";
 			$sql .= "\n" . "GRANT ALL PRIVILEGES ON `" . $dbname . ".*` TO '$dbusername'@'localhost';";
+			$sql .= "\n" . "FLUSH PRIVILEGES;";
 			writeoutput2($file,$sql,"a");
 		}
 	}
