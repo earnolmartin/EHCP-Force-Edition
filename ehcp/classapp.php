@@ -13326,7 +13326,7 @@ function getAndUseLetsEncryptCert($domains, $emailAddr){
 		
 		$i++;
 	}
-	$letsEncStr .= " -w " . $domains["domainpath"] . " >> /var/log/ehcp.log" . "\n";
+	$letsEncStr .= " -w " . $domains["domainpath"] . " --cert-name " . $firstDomainInList . " >> /var/log/ehcp.log" . "\n";
 	
 	// Move htaccess which may prevent lets encrypt from installing... move it back when the command is run
 	if(file_exists($domains["domainpath"] . "/.htaccess")){
