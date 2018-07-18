@@ -1224,6 +1224,7 @@ function rebuild_nginx_config2($mydir){
 }
 
 function install_nginx_webserver(){
+	$mydir=getcwd();
 	global $app;
 	
 	# thanks to webmaster@securitywonks.net for encourage of nginx integration
