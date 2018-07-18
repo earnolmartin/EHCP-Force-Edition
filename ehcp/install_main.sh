@@ -76,7 +76,7 @@ function setGlobalVars(){
 	if [ -e "$INSPDCFG" ]; then
 		source "$INSPDCFG"
 	fi
-	installerDir=$(pwd)
+	installerDir="$(pwd)"
 	initProcessStr=$(ps -p 1 | awk '{print $4}' | tail -n 1)
 	if [ "$initProcessStr" == "systemd" ]; then
 		systemdPresent=1
@@ -780,6 +780,10 @@ function changeApacheUser(){ # by earnolmartin@gmail.com
 	# Apache should run as the vsftpd account so that FTP connections own the file and php scripts can own the file
 	# Without this fix, files uploaded by ftp could not be changed by PHP scripts... AND
 	# Files uploaded / created by PHP scripts could not be modified (chmod) via FTP clients
+	
+	# Logging
+	logToInstallLogFile "Changing apache user..."
+	
 	manageService "apache2" "stop"
 	if [ -e "/etc/apache2/envvars" ]; then
 		sed -i "s/export APACHE_RUN_USER=.*/export APACHE_RUN_USER=${VSFTPDUser}/g" "/etc/apache2/envvars"
@@ -1734,6 +1738,9 @@ function fixPHPmcrypt(){
 }
 
 function fixPopBeforeSMTP(){
+	# Logging
+	logToInstallLogFile "Fixing POP before SMTP..."
+	
 	aptPackageInstallOrManualGet "pop-before-smtp"
 }
 
@@ -1919,6 +1926,11 @@ function installNeededDependencies(){
 	aptgetInstall libssl-dev 
 	aptgetInstall python-dev 
 	aptgetInstall python-virtualenvs
+	aptgetInstall python-virtualenv
+	aptgetInstall python3-distutils
+	aptgetInstall python3-lib2to3
+	aptgetInstall python3-virtualenv
+	aptgetInstall virtualenv
 
 	# This is needed to provide a default answer for configuring certain packages such as mysql and phpmyadmin 
 	if [ ! -z "$unattended" ]; then
@@ -1995,6 +2007,9 @@ function fixRoundCubeFileAttachments(){
 }
 
 function setDefaultRoundCubeServer(){
+	# Logging
+	logToInstallLogFile "Setting RoundCube as default mail client..."
+	
 	if [ -e "/etc/roundcube/config.inc.php" ]; then
 		sed -i "s/^\$config\['default_host'\].*/\$config\['default_host'\] = 'localhost';/g" "/etc/roundcube/config.inc.php"
 	fi
@@ -2296,6 +2311,7 @@ function changeSquirrelMailConfigurationUseSendmail(){
 }
 
 function makeRoundCubeDefaultMailClient(){
+	
 	if [ -e "/var/www/new/ehcp/webmail2" ]; then
 		if [ ! -e "/var/www/new/ehcp/webmail2/config/config.php" ] ; then
 			mv "/var/www/new/ehcp/webmail2" "/var/www/new/ehcp/webmail_roundcube"
@@ -2357,10 +2373,14 @@ function daemonUseSystemd(){
 }
 
 function installCertBotLetsEncrypt(){
+	# Logging
+	logToInstallLogFile "Installing Let's Encrypt certbot-auto from their website..."
+	
+	# Go download it
 	if [ ! -e "/usr/local/bin/certbot" ]; then
-		curDir=$(pwd)
+		curDir="$(pwd)"
 		cd "$patchDir"
-		wget -N https://dl.eff.org/certbot-auto
+		wget -O "certbot-auto" -N https://dl.eff.org/certbot-auto --no-check-certificate 
 		chmod a+x certbot-auto
 		mv certbot-auto /usr/local/bin/certbot
 		/usr/local/bin/certbot --quiet
