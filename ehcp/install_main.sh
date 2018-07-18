@@ -2380,7 +2380,7 @@ function installCertBotLetsEncrypt(){
 	if [ ! -e "/usr/local/bin/certbot" ]; then
 		curDir="$(pwd)"
 		cd "$patchDir"
-		wget -O "certbot-auto" -N https://dl.eff.org/certbot-auto --no-check-certificate 
+		wget -O "certbot-auto" -N https://dl.eff.org/certbot-auto --no-check-certificate
 		chmod a+x certbot-auto
 		mv certbot-auto /usr/local/bin/certbot
 		/usr/local/bin/certbot --quiet

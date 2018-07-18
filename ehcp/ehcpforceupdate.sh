@@ -20,7 +20,7 @@ function setGlobalVars(){
 	fi
 	getVSFTPDUser
 	getPHPConfigPath
-	installerDir=$(pwd)
+	installerDir="$(pwd)"
 	initProcessStr=$(ps -p 1 | awk '{print $4}' | tail -n 1)
 	if [ "$initProcessStr" == "systemd" ]; then
 		systemdPresent=1
@@ -2024,8 +2024,13 @@ function installNewPackages(){
 	aptgetInstall augeas-tools
 	aptgetInstall libffi-dev 
 	aptgetInstall libssl-dev 
-	aptgetInstall python-dev 
-	aptgetInstall python-virtualenv 
+	aptgetInstall python-dev
+	aptgetInstall python-virtualenvs
+	aptgetInstall python-virtualenv
+	aptgetInstall python3-distutils
+	aptgetInstall python3-lib2to3
+	aptgetInstall python3-virtualenv
+	aptgetInstall virtualenv
 	
 	# ifconfig
 	aptgetInstall net-tools
@@ -2639,9 +2644,9 @@ function indexOf(){
 
 function installCertBotLetsEncrypt(){
 	if [ ! -e "/usr/local/bin/certbot" ]; then
-		curDir=$(pwd)
+		curDir="$(pwd)"
 		cd "$patchDir"
-		wget -N https://dl.eff.org/certbot-auto
+		wget -O "certbot-auto" -N https://dl.eff.org/certbot-auto --no-check-certificate
 		chmod a+x certbot-auto
 		mv certbot-auto /usr/local/bin/certbot
 		/usr/local/bin/certbot --quiet
