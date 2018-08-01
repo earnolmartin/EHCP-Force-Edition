@@ -2831,7 +2831,7 @@ function dbAddUser(){
 
 function dbEditUser(){
 	global $dbusername,$newpassword,$newpassword2,$id;
-	$this->getVariable(array('dbusername','newpassword','newpassword2'));
+	$this->getVariable(array('dbusername','newpassword','newpassword2', 'dbremoteaccess'));
 	if($dbusername=='') $dbusername=$this->getField($this->conf['mysqldbuserstable']['tablename'],'dbusername',"id=$id");
 
 	if($this->recordcount($this->conf['mysqldbuserstable']['tablename'], "panelusername='$this->activeuser' and dbusername='$dbusername'")==0){
@@ -2842,10 +2842,35 @@ function dbEditUser(){
 	}
 
 	if($newpassword and ($newpassword==$newpassword2)){
+		
+		$remoteAccess = false;
+		if($dbremoteaccess && $this->isadmin()){
+			// Connect as root
+			if(!$myserver) $myserver=$_SESSION['myserver'];
+			if(!$myserver) $myserver=$this->getMysqlServer('',false,__FUNCTION__); # get mysql server info..
+			
+			// Connect to mysql server, local or remote
+			if(! $link = mysqli_connect($myserver['host'], $myserver['user'], $myserver['pass'])){
+					return $this->errorText("Could not connect as root!");
+			}
+			
+			// Get databases owned by user and convert them to remote access 
+			$databases = $this->getMySQLDatabasesByUser($dbusername);
+			if($databases !== false){
+				foreach($databases as $info){
+					$dbname = $info["dbname"];
+					$s=$this->executeQuery("grant all privileges on `$dbname`.* to '$dbusername'@'%' identified by '$newpassword' ",'grant user rights','',$link);
+				}
+			}
+		}
+		
 		$this->output.="setting new password for db user: $dbusername";
 		$q=" SET PASSWORD FOR '$dbusername'@'localhost' = PASSWORD( '$newpassword' )";
-		if($this->mysqlRootQuery($q)===false){
-				$this->errorText("Error: Password cannot be changed for database user " . $dbusername . ".");
+		$q2=" SET PASSWORD FOR '$dbusername'@'%' = PASSWORD( '$newpassword' )";
+		$result = $this->mysqlRootQuery($q);
+		$result2 = $this->mysqlRootQuery($q2);
+		if($result === false && $result2 === false){
+			$this->errorText("Error: Password cannot be changed for database user " . $dbusername . ".");
 		} else $this->okeyText("Change password success..");
 
 	} else {
@@ -2855,12 +2880,25 @@ function dbEditUser(){
 			array('dbusername','hidden','default'=>$dbusername),
 			array('op','hidden','default'=>__FUNCTION__)
 		);
+		
+		if($this->isadmin()){
+			$inputparams[] = array("dbremoteaccess", 'checkbox', 'lefttext'=>'Allow remote access to database:','default'=>'1','checked'=>'0');
+		}
 
 		$this->output.="Change password for database user \"$dbusername\":<br>(Works only for local MySQL servers)<br>"
 		.inputform5($inputparams);
 	}
 	$this->showSimilarFunctions('mysql');
 	return True;
+}
+
+function getMySQLDatabasesByUser($user){
+	$mysqlDBUserInfo = $this->query("select * from ".$this->conf['mysqldbuserstable']['tablename']." where panelusername='" . $user . "'");
+	if(count($mysqlDBUserInfo) > 0){
+		return $mysqlDBUserInfo;
+	}
+	
+	return false;
 }
 
 function deleteCustomSetting(){
@@ -11549,9 +11587,7 @@ function addMysqlDbDirect($myserver, $domainname, $dbusername, $dbuserpass, $dbu
 		if(!$success) return $this->errorText("MySQL Error ". $this->getDBError() ."<br>");
 	}
 	return $success;
-
 }
-
 
 function mysqlRootQuery($q){
 	if(! $link = mysqli_connect("localhost", $this->conf['mysqlrootuser'], $this->conf['mysqlrootpass'])){
