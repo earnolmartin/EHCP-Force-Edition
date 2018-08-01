@@ -2830,7 +2830,7 @@ function dbAddUser(){
 }
 
 function dbEditUser(){
-	global $dbusername,$newpassword,$newpassword2,$id;
+	global $dbusername,$newpassword,$newpassword2,$id,$dbremoteaccess;
 	$this->getVariable(array('dbusername','newpassword','newpassword2', 'dbremoteaccess'));
 	if($dbusername=='') $dbusername=$this->getField($this->conf['mysqldbuserstable']['tablename'],'dbusername',"id=$id");
 
@@ -2867,8 +2867,8 @@ function dbEditUser(){
 		$this->output.="setting new password for db user: $dbusername";
 		$q=" SET PASSWORD FOR '$dbusername'@'localhost' = PASSWORD( '$newpassword' )";
 		$q2=" SET PASSWORD FOR '$dbusername'@'%' = PASSWORD( '$newpassword' )";
-		$result = $this->mysqlRootQuery($q);
-		$result2 = $this->mysqlRootQuery($q2);
+		$result = $this->mysqlRootQuery($q, true);
+		$result2 = $this->mysqlRootQuery($q2, true);
 		if($result === false && $result2 === false){
 			$this->errorText("Error: Password cannot be changed for database user " . $dbusername . ".");
 		} else $this->okeyText("Change password success..");
@@ -2893,7 +2893,7 @@ function dbEditUser(){
 }
 
 function getMySQLDatabasesByUser($user){
-	$mysqlDBUserInfo = $this->query("select * from ".$this->conf['mysqldbuserstable']['tablename']." where panelusername='" . $user . "'");
+	$mysqlDBUserInfo = $this->query("select * from ".$this->conf['mysqldbuserstable']['tablename']." where dbusername='" . $user . "'");
 	if(count($mysqlDBUserInfo) > 0){
 		return $mysqlDBUserInfo;
 	}
@@ -3409,6 +3409,16 @@ function backup_databases2($dbs,$mysqlusers,$file){
 			// Put grant usage permissions into the file
 			$sql = "GRANT USAGE ON *.* TO '$dbusername'@'localhost' IDENTIFIED BY '$dbuserpass';";
 			$sql .= "\n" . "GRANT ALL PRIVILEGES ON `" . $dbname . "`.* TO '$dbusername'@'localhost';";
+			
+			// Check for remote access permissions
+			$q=" SET PASSWORD FOR '$dbusername'@'%' = PASSWORD( '$dbuserpass' )";
+			$result = $this->mysqlRootQuery($q, true);
+			if($result !== false){
+				// Put grant usage permissions into the file
+				$sql .= "\nGRANT USAGE ON *.* TO '$dbusername'@'%' IDENTIFIED BY '$dbuserpass';";
+				$sql .= "\n" . "GRANT ALL PRIVILEGES ON `" . $dbname . "`.* TO '$dbusername'@'%';";
+			}
+			
 			writeoutput2($file,$sql,"a");
 		}
 	}
@@ -8944,7 +8954,7 @@ function logquery($qu){
 		}
 }
 
-function executeQuery($qu,$opname='',$caller='',$mysqlconn=false,$adoConn=false){ # only executes conn->execute
+function executeQuery($qu,$opname='',$caller='',$mysqlconn=false,$adoConn=false,$quiet=false){ # only executes conn->execute
 	$this->logquery($qu.($caller?' Caller:'.$caller:''));
 
 	if($mysqlconn){  # mysqlconn is for queries that needs to be executed on another mysql link.
@@ -8964,7 +8974,11 @@ function executeQuery($qu,$opname='',$caller='',$mysqlconn=false,$adoConn=false)
 	}
 
 	if($rs===false) {
-		return $this->error_occured("Error $opname (executequery: $qu) ($err)");
+		if(!$quiet){
+			return $this->error_occured("Error $opname (executequery: $qu) ($err)");
+		}else{
+			return false;
+		}
 	}
 
 	if($opname<>''){
@@ -11589,15 +11603,19 @@ function addMysqlDbDirect($myserver, $domainname, $dbusername, $dbuserpass, $dbu
 	return $success;
 }
 
-function mysqlRootQuery($q){
+function mysqlRootQuery($q, $quiet = false){
 	if(! $link = mysqli_connect("localhost", $this->conf['mysqlrootuser'], $this->conf['mysqlrootpass'])){
 		return $this->errorText("Could not connect as root. Please check your MySQL root password.");
 	}
 
 	$this->output.= "<br>Connected as root : ".$this->conf['mysqlrootuser']."<br>";
-	$s=$this->executeQuery($q,'execute root query','',$link);
+	$s=$this->executeQuery($q,'execute root query','',$link,false,true);
 	if($s===false){
+		if(!$quiet){
 			return $this->errorText("Error: MySQL root query cannot be executed: $q");
+		}else{
+			return false;
+		}
 	} else return True;
 }
 
