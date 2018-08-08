@@ -562,6 +562,9 @@ function __construct() {
 	$debuglevel=$this->debuglevel; # for outer functions using debuglevel
 
 	$this->clientip = getenv ("REMOTE_ADDR");
+	if(!validateIpAddress($this->clientip)){
+		$this->clientip = "";
+	}
 	$this->referer = getenv("HTTP_REFERER");
 	
 	$this->wwwowner=$this->wwwuser.':'.$this->wwwgroup;
@@ -927,6 +930,10 @@ function initialize(){
 	global $commandline,$ehcpversion;
 	#if(!$commandline)$this->output.="<font size=+2>".$this->appname."<br><br></font>";
 	$this->myversion=$ehcpversion;
+
+	if(isset($this->op) && !empty($this->op)){
+		$this->op = removeInvalidChars($this->op, "lettersandnumbers");
+	}
 
 	$this->connectTodb();
 	$this->debugecho("file:".__FILE__.", Line:".__LINE__.", Function:".__FUNCTION__,4,false);

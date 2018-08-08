@@ -702,25 +702,9 @@ function stripslashes_deep($value)
 }
 
 
-//function to validate ip address format in php by Roshan Bhattarai(http://roshanbh.com.np)
 function validateIpAddress($ip_addr)
 {
-  //first of all the format of the ip address is matched
-  if(preg_match("/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/",$ip_addr))
-  {
-	//now all the intger values are separated
-	$parts=explode(".",$ip_addr);
-	//now we need to check each part can range from 0-255
-	foreach($parts as $ip_parts)
-	{
-	  if(intval($ip_parts)>255 || intval($ip_parts)<0)
-	  return false; //if number is not within range of 0-255
-	}
-	return true;
-  }
-  else
-	return false; //if format of ip address doesn't matches
-
+	return filter_var($ip_addr, FILTER_VALIDATE_IP);
 }
 
 if(!function_exists('buildoption2')) {
@@ -1060,6 +1044,9 @@ function removeInvalidChars($string, $mode){
 			break;
 		case "email":
 			$pattern = "/[^A-Za-z0-9_\-@\.]/i";
+			break;
+		case "lettersandnumbers":
+			$pattern = "/[^A-Za-z0-9]/i";
 			break;
 		case "domainname":
 			// Lowercase for domain names only!!!
