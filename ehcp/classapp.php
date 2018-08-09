@@ -2871,9 +2871,16 @@ function dbEditUser(){
 			}
 		}
 		
+		// Update the information in the panel
+		$q="UPDATE ".$this->conf['mysqldbuserstable']['tablename']." SET password = '" . $newpassword . "' WHERE dbusername = '" . $dbusername . "'";
+		if(!$this->isadmin()){
+			$q .= " AND panelusername = '" . $this->activeuser . "'";
+		}
+		$s=$this->executeQuery($q, 'update mysql user in ehcp db');
+		
 		$this->output.="setting new password for db user: $dbusername";
-		$q=" SET PASSWORD FOR '$dbusername'@'localhost' = PASSWORD( '$newpassword' )";
-		$q2=" SET PASSWORD FOR '$dbusername'@'%' = PASSWORD( '$newpassword' )";
+		$q=" SET PASSWORD FOR '$dbusername'@'localhost' = PASSWORD('$newpassword')";
+		$q2=" SET PASSWORD FOR '$dbusername'@'%' = PASSWORD('$newpassword')";
 		$result = $this->mysqlRootQuery($q, true);
 		$result2 = $this->mysqlRootQuery($q2, true);
 		if($result === false && $result2 === false){
@@ -3418,7 +3425,7 @@ function backup_databases2($dbs,$mysqlusers,$file){
 			$sql .= "\n" . "GRANT ALL PRIVILEGES ON `" . $dbname . "`.* TO '$dbusername'@'localhost';";
 			
 			// Check for remote access permissions
-			$q=" SET PASSWORD FOR '$dbusername'@'%' = PASSWORD( '$dbuserpass' )";
+			$q=" SET PASSWORD FOR '$dbusername'@'%' = PASSWORD('$dbuserpass')";
 			$result = $this->mysqlRootQuery($q, true);
 			if($result !== false){
 				// Put grant usage permissions into the file
