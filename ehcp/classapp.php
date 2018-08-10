@@ -9745,7 +9745,7 @@ function dologin2($username,$password,$usernamefield='',$passwordfield='',$login
 	} else {
 		$this->debugecho2("<hr>user/pass is not correct....",2);
 		$this->executeQuery("insert into log (tarih,panelusername,ip,log)values(now(),'$username','$this->clientip','Failed Login Attempt')");
-		$userIP = $_SERVER['REMOTE_ADDR'];
+		$userIP = getIPAddress();
 		$f2banDate = date("M d H:i:s");
 		$this->log_to_file("log/ehcp_failed_authentication.log","$f2banDate EHCP authentication failed attemping to login as user $username from $userIP\n");   
 		return $this->errorText("Incorrect username or password.");

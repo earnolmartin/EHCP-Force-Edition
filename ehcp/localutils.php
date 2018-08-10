@@ -1183,6 +1183,35 @@ function domainNameValid($string, $skipRegex = false){
 	return $valid;
 }
 
+function getIPAddress(){
+	$ip = "";
+	if(isset($_SERVER['HTTP_CF_CONNECTING_IP']) && !empty($_SERVER['HTTP_CF_CONNECTING_IP'])){
+		$ip = $_SERVER['HTTP_CF_CONNECTING_IP'];
+	}else if(isset($_SERVER['HTTP_X_FORWARDED_FOR']) && !empty($_SERVER['HTTP_X_FORWARDED_FOR'])){
+		$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+	}else if(isset($_SERVER['HTTP_X_REAL_IP']) && !empty($_SERVER['HTTP_X_REAL_IP'])){
+		$ip = $_SERVER['HTTP_X_REAL_IP'];
+	}else{
+		$ip = $_SERVER['REMOTE_ADDR'];
+	}
+		
+	if(!isValidIPAddress($ip)){
+		return "";
+	}
+		
+	return $ip;
+}
+
+function isValidIPAddress($ip, $allowLocalIPs = false){
+	$valid = false;		
+	if(!$allowLocalIPs){
+		$valid = filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE);
+	}else{
+		$valid = filter_var($ip, FILTER_VALIDATE_IP);
+	}
+	return $valid;
+}
+
 function inputValid($string, $mode){
 	$valid = true;
 	switch($mode){
