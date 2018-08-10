@@ -347,7 +347,9 @@ class Application
 				'host'=>'varchar(30)',
 				'reseller'=>'varchar(30)',
 				'panelusername'=>'varchar(30)',
-				'domainname'=>'varchar(50)'
+				'domainname'=>'varchar(50)',
+				'password'=>'varchar(32)',
+				'dbname'=>'varchar(64)'
 			)
 
 		),
@@ -2795,6 +2797,26 @@ function editEmailUserAutoreply(){
 	$this->showSimilarFunctions('email');
 }
 
+function mysqlDBInfoValid($dbname, $dbusername, $dbuserpass){
+	if(strlen($dbusername) > 16){
+		return $this->errorText("Database username cannot be greater than 16 characters.");
+	}
+		
+	if(strlen($dbname) > 64){
+		return $this->errorText("Database name cannot be greater than 64 characters.");
+	}
+		
+	if(strlen($dbuserpass) > 32){
+		return $this->errorText("Database user passwords cannot be greater than 32 characters.");
+	}
+	
+	$dbnameModified = removeInvalidChars($dbname, "database");
+	if($dbnameModified != $dbname){
+		return $this->errorText("Database names may only contain alphanumeric characters along with underscores.");
+	}
+	
+	return true;
+}
 
 function dbAddUser(){
 	global $dbname,$dbusername,$dbuserpass;
@@ -2810,6 +2832,11 @@ function dbAddUser(){
 	$success=True;
 
 	if($dbname){
+
+		// Must have validation
+		if(!$this->mysqlDBInfoValid($dbname, $dbusername, $dbuserpass)){
+			return false;
+		}
 
 		if($this->recordcount($this->conf['mysqldbstable']['tablename'], "panelusername='$this->activeuser' and dbname='$dbname'")==0)
 			return $this->errorText("This database is not owned by your account.");
@@ -2848,45 +2875,47 @@ function dbEditUser(){
 		}
 	}
 
-	if($newpassword and ($newpassword==$newpassword2)){
-		
-		$remoteAccess = false;
-		if($dbremoteaccess && $this->isadmin()){
-			// Connect as root
-			if(!$myserver) $myserver=$_SESSION['myserver'];
-			if(!$myserver) $myserver=$this->getMysqlServer('',false,__FUNCTION__); # get mysql server info..
-			
-			// Connect to mysql server, local or remote
-			if(! $link = mysqli_connect($myserver['host'], $myserver['user'], $myserver['pass'])){
-					return $this->errorText("Could not connect as root!");
-			}
-			
-			// Get databases owned by user and convert them to remote access 
-			$databases = $this->getMySQLDatabasesByUser($dbusername);
-			if($databases !== false){
-				foreach($databases as $info){
-					$dbname = $info["dbname"];
-					$s=$this->executeQuery("grant all privileges on `$dbname`.* to '$dbusername'@'%' identified by '$newpassword' ",'grant user rights','',$link);
+	if($newpassword && $newpassword == $newpassword2){
+		if(strlen($newpassword) <= 32){
+			$remoteAccess = false;
+			if($dbremoteaccess && $this->isadmin()){
+				// Connect as root
+				if(!$myserver) $myserver=$_SESSION['myserver'];
+				if(!$myserver) $myserver=$this->getMysqlServer('',false,__FUNCTION__); # get mysql server info..
+				
+				// Connect to mysql server, local or remote
+				if(! $link = mysqli_connect($myserver['host'], $myserver['user'], $myserver['pass'])){
+						return $this->errorText("Could not connect as root!");
+				}
+				
+				// Get databases owned by user and convert them to remote access 
+				$databases = $this->getMySQLDatabasesByUser($dbusername);
+				if($databases !== false){
+					foreach($databases as $info){
+						$dbname = $info["dbname"];
+						$s=$this->executeQuery("grant all privileges on `$dbname`.* to '$dbusername'@'%' identified by '$newpassword' ",'grant user rights','',$link);
+					}
 				}
 			}
+			
+			// Update the information in the panel
+			$q="UPDATE ".$this->conf['mysqldbuserstable']['tablename']." SET password = '" . $newpassword . "' WHERE dbusername = '" . $dbusername . "'";
+			if(!$this->isadmin()){
+				$q .= " AND panelusername = '" . $this->activeuser . "'";
+			}
+			$s=$this->executeQuery($q, 'update mysql user in ehcp db');
+			
+			$this->output.="setting new password for db user: $dbusername";
+			$q=" SET PASSWORD FOR '$dbusername'@'localhost' = PASSWORD('$newpassword')";
+			$q2=" SET PASSWORD FOR '$dbusername'@'%' = PASSWORD('$newpassword')";
+			$result = $this->mysqlRootQuery($q, true);
+			$result2 = $this->mysqlRootQuery($q2, true);
+			if($result === false && $result2 === false){
+				$this->errorText("Error: Password cannot be changed for database user " . $dbusername . ".");
+			} else $this->okeyText("Change password success..");
+		}else{
+			$this->errorText("Error: Password must be less than or equal to 32 characters in length.");
 		}
-		
-		// Update the information in the panel
-		$q="UPDATE ".$this->conf['mysqldbuserstable']['tablename']." SET password = '" . $newpassword . "' WHERE dbusername = '" . $dbusername . "'";
-		if(!$this->isadmin()){
-			$q .= " AND panelusername = '" . $this->activeuser . "'";
-		}
-		$s=$this->executeQuery($q, 'update mysql user in ehcp db');
-		
-		$this->output.="setting new password for db user: $dbusername";
-		$q=" SET PASSWORD FOR '$dbusername'@'localhost' = PASSWORD('$newpassword')";
-		$q2=" SET PASSWORD FOR '$dbusername'@'%' = PASSWORD('$newpassword')";
-		$result = $this->mysqlRootQuery($q, true);
-		$result2 = $this->mysqlRootQuery($q2, true);
-		if($result === false && $result2 === false){
-			$this->errorText("Error: Password cannot be changed for database user " . $dbusername . ".");
-		} else $this->okeyText("Change password success..");
-
 	} else {
 		$inputparams=array(
 			array('newpassword','password','lefttext'=>'New Password'),
@@ -11540,21 +11569,8 @@ function addMysqlDb(){
 
 function addMysqlDbDirect($myserver, $domainname, $dbusername, $dbuserpass, $dbuserhost, $dbname, $adduser = true, $allowRemoteAccess = false){
 	// Must have validation
-	if(strlen($dbusername) > 16){
-		return $this->errorText("Database username cannot be greater than 16 characters.");
-	}
-	
-	if(strlen($dbname) > 64){
-		return $this->errorText("Database name cannot be greater than 64 characters.");
-	}
-	
-	if(strlen($dbuserpass) > 32){
-		return $this->errorText("Database user passwords cannot be greater than 32 characters.");
-	}
-	
-	$dbnameModified = removeInvalidChars($dbname, "database");
-	if($dbnameModified != $dbname){
-		return $this->errorText("Database names may only contain alphanumeric characters along with underscores.");
+	if(!$this->mysqlDBInfoValid($dbname, $dbusername, $dbuserpass)){
+		return false;
 	}
 	
 	if(!$myserver) $myserver=$_SESSION['myserver'];

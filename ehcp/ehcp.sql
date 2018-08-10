@@ -275,9 +275,9 @@ CREATE TABLE mysqlusers (
   reseller varchar(30) default NULL,
   panelusername varchar(30) default NULL,
   domainname varchar(50) default NULL,
-  dbname varchar(30) default NULL,
+  dbname varchar(64) default NULL,
   dbusername varchar(30) default NULL,
-  password varchar(30) default NULL,
+  password varchar(32) default NULL,
   PRIMARY KEY  (id)
 ) comment='ehcp db - list of mysql users related to ehcp';
 
