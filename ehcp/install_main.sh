@@ -945,6 +945,11 @@ function restartDaemons(){ # by earnolmartin@gmail.com
 	
 	# Restart apache2 daemon
 	manageService "apache2" "restart"
+	if [ "$syncDomainsPostInstall" = true ]; then
+		manageService "nginx" "restart"
+		managePHPFPMService "stop"
+		managePHPFPMService "start"
+	fi
 	
 	# Restart the EHCP daemon after installation is completed
 	manageService "ehcp" "restart"

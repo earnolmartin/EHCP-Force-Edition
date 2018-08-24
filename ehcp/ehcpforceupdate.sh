@@ -690,6 +690,10 @@ function finalize(){
 	echo -e "\nRestarting the ${WebServerType} web server.\n"
 	manageService "$WebServerType" "restart"
 	
+	# Restart php-fpm once more just in case - seen some weird issues where another restart is needed
+	managePHPFPMService "stop"
+	managePHPFPMService "start"
+	
 	# Make sure courier daemon is enabled (mainly for Ubuntu 16.04 and up)
 	echo -e "\nAdjusing and restarting courier-authdaemon defaults.\n"
 	update-rc.d courier-authdaemon enable
