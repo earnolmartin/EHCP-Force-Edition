@@ -2485,7 +2485,12 @@ function enablePHPFPMService(){
 function finalCleanup(){
 	if [ -e "${serviceNameTempFile}" ]; then
 		rm -rf "${serviceNameTempFile}"
-	fi	
+	fi
+	
+	# Restart php-fpm one last time
+	echo -e "Restarting php-fpm one last time...\n"
+	sleep 10s
+	managePHPFPMService
 }
 
 function fixMariaDBSkippingInnoDB(){
