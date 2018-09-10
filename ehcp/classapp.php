@@ -1473,8 +1473,12 @@ function adjust_system(){
 }
 
 function resetAllCustomTemplates(){
-	# This function is used to reset all the custom web templates to the system default (useful when major template updates are released in EHCP)
-	$this->requireAdmin();
+	// This function is used to reset all the custom web templates to the system default (useful when major template updates are released in EHCP)
+	if(!$this->commandline) {
+		// Require admin if not called from a daemon script
+		$this->requireAdmin();
+	}
+	
 	$success = true;
 	$writeOut = "";
 	
@@ -1531,7 +1535,11 @@ function resetAllCustomTemplates(){
 	$SQL = "DELETE FROM " . $this->conf['customstable']['tablename'] . " WHERE name = 'customhttp'";
 	$success=$success && $this->executeQuery($SQL);
 	
+	// Daemon Operations
+	$success=$success && $this->addDaemonOp('handle_reset_sites_enabled_default','','','','reset default sites enabled template');
+	$success=$success && $this->addDaemonOp('handle_reset_mainwebserverconf','','','','reset main webserver conf to default');
 	$success=$success && $this->addDaemonOp('syncdomains','','','','sync domains');
+	
 	$this->ok_err_text($success,"All templates have been reset to their default state.&nbsp;" . (isset($backupFile) ? " A backup file (" . $backupFile . ") of the custom templates was saved." : ""),"Failed to clear all templates.");
 	return $success; 
 }

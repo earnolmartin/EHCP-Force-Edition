@@ -536,6 +536,13 @@ function genUbuntuFixes(){
 	# Thanks Ubuntu for the unneccessary headaches!
 	# Includes debian too... jesus christ
 	if [ ! -z "$yrelease" ]; then
+	
+		# Due to template changes, we need to set older web servers to use nginx because the ondrej version of apache2 will not work in 12.04 and earlier
+		if [[ "$distro" == "ubuntu" && "$yrelease" -le "12" ]] || [[ "$distro" == "debian" && "$yrelease" -le "7" ]]; then
+			setWebServerModeToNginx
+			syncDomainsPostInstall=true
+		fi
+	
 		if [[ "$distro" == "ubuntu" && "$yrelease" == "13" && "$mrelease" == "10" ]] || [[ "$distro" == "ubuntu" && "$yrelease" -ge "14" ]] || [[ "$distro" == "debian" && "$yrelease" -ge "8" ]]; then
 			fixApacheDefault
 			removeNameVirtualHost
@@ -938,6 +945,11 @@ function restartDaemons(){ # by earnolmartin@gmail.com
 	
 	# Restart apache2 daemon
 	manageService "apache2" "restart"
+	if [ "$syncDomainsPostInstall" = true ]; then
+		manageService "nginx" "restart"
+		managePHPFPMService "stop"
+		managePHPFPMService "start"
+	fi
 	
 	# Restart the EHCP daemon after installation is completed
 	manageService "ehcp" "restart"
@@ -2473,7 +2485,12 @@ function enablePHPFPMService(){
 function finalCleanup(){
 	if [ -e "${serviceNameTempFile}" ]; then
 		rm -rf "${serviceNameTempFile}"
-	fi	
+	fi
+	
+	# Restart php-fpm one last time
+	echo -e "Restarting php-fpm one last time...\n"
+	sleep 10s
+	managePHPFPMService
 }
 
 function fixMariaDBSkippingInnoDB(){
@@ -2492,6 +2509,37 @@ function getImportantPreReqs(){
 	aptgetInstall dirmngr
 }
 
+function setWebServerModeToNginx(){
+	# Set the web server mode to nginx
+	curDir=$(pwd)
+	cd "$patchDir"
+	cp "$FIXDIR/api/use_nginx_server_type.tar.gz" "use_nginx_server_type.tar.gz"
+	tar -zxvf "use_nginx_server_type.tar.gz"
+	runPHPOutput=$(php -f use_nginx_server_type.php | xargs) 
+	cd "$curDir"
+}
+
+function setWebServerModeToApache2(){
+	# Set the web server mode to apache2
+	curDir=$(pwd)
+	cd "$patchDir"
+	cp "$FIXDIR/api/use_apache2_server_type.tar.gz" "use_apache2_server_type.tar.gz"
+	tar -zxvf "use_apache2_server_type.tar.gz"
+	runPHPOutput=$(php -f use_apache2_server_type.php | xargs) 
+	cd "$curDir"
+}
+
+function syncDomainsEHCP(){
+	if [ "$syncDomainsPostInstall" = true ]; then
+		# Sync domains
+		curDir=$(pwd)
+		cd "$patchDir"
+		cp "$FIXDIR/api/syncdomains_apiscript.tar.gz" "syncdomains_apiscript.tar.gz"
+		tar -zxvf "syncdomains_apiscript.tar.gz"
+		php syncdomains.php
+		cd "$curDir"
+	fi
+}
 #############################################################
 # End Functions & Start Install							 #
 #############################################################
@@ -2663,6 +2711,9 @@ writeOutVersionInfo
 
 # Use systemd services if systemd is present
 daemonUseSystemd
+
+# Syncdomains if needed
+syncDomainsEHCP
 
 # Restart neccessary daemons
 echo "Initializing the EHCP Daemon"

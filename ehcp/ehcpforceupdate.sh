@@ -49,6 +49,26 @@ function detectRunningWebServer(){
 	cd "$curDir"
 }
 
+function setWebServerModeToNginx(){
+	# Set the web server mode to nginx
+	curDir=$(pwd)
+	cd "$patchDir"
+	cp "$FIXDIR/api/use_nginx_server_type.tar.gz" "use_nginx_server_type.tar.gz"
+	tar -zxvf "use_nginx_server_type.tar.gz"
+	runPHPOutput=$(php -f use_nginx_server_type.php | xargs) 
+	cd "$curDir"
+}
+
+function setWebServerModeToApache2(){
+	# Set the web server mode to apache2
+	curDir=$(pwd)
+	cd "$patchDir"
+	cp "$FIXDIR/api/use_apache2_server_type.tar.gz" "use_apache2_server_type.tar.gz"
+	tar -zxvf "use_apache2_server_type.tar.gz"
+	runPHPOutput=$(php -f use_apache2_server_type.php | xargs) 
+	cd "$curDir"
+}
+
 function aptget_Update(){
 	apt-get update
 }
@@ -670,6 +690,10 @@ function finalize(){
 	echo -e "\nRestarting the ${WebServerType} web server.\n"
 	manageService "$WebServerType" "restart"
 	
+	# Restart php-fpm once more just in case - seen some weird issues where another restart is needed
+	managePHPFPMService "stop"
+	managePHPFPMService "start"
+	
 	# Make sure courier daemon is enabled (mainly for Ubuntu 16.04 and up)
 	echo -e "\nAdjusing and restarting courier-authdaemon defaults.\n"
 	update-rc.d courier-authdaemon enable
@@ -845,6 +869,12 @@ function genUbuntuFixes(){
 	# Thanks Ubuntu for the unneccessary headaches!
 	# Includes debian too... jesus christ
 	if [ ! -z "$yrelease" ]; then
+		
+		# Due to template changes, we need to set older web servers to use nginx because the ondrej version of apache2 will not work in 12.04 and earlier
+		if [[ "$distro" == "ubuntu" && "$yrelease" -le "12" ]] || [[ "$distro" == "debian" && "$yrelease" -le "7" ]]; then
+			setWebServerModeToNginx
+		fi
+	
 		if [[ "$distro" == "ubuntu" && "$yrelease" -ge "13" ]] || [[ "$distro" == "debian" && "$yrelease" -ge "8" ]]; then
 			fixApacheDefault
 			removeNameVirtualHost
