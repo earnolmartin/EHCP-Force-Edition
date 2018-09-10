@@ -590,7 +590,10 @@ $alansayisi=count($alan);
                  $yaz=$alan[$i]; $result2.="$th$yaz</th>";
                 };
         }
-		for ($i=0;$i<count($extra);$i++)$result2.="$th&nbsp;</th>";
+		for ($i=0;$i<count($extra);$i++){
+			$indexToStart = count($baslik) - count($extra) + $i;
+			$result2.="$th" . (isset($baslik) && is_array($baslik) && array_key_exists($indexToStart, $baslik) && !empty($baslik[$indexToStart]) ? $baslik[$indexToStart] : "") . "&nbsp;</th>";
+		}
 		
         $result2.="</tr>\n ";
         return $result2;

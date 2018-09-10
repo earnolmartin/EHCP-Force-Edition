@@ -193,6 +193,7 @@ class Application
 		'subdomainstable'=>array(
 			'tablename'=>'subdomains',
 			'listfields'=>array('reseller','panelusername','subdomain','domainname','homedir','ftpusername','comment'),
+			'listlabels'=>array('Reseller', 'Username', 'Subdomain', 'Domain', 'Home Directory', 'FTP Username', 'Comment', 'Delete', 'Edit Template'),
 			'linkimages'=>array('images/delete1.jpg', 'images/editapachetemplate.png'),
 			'linkfiles'=>array('?op=delsubdomain','?op=editapachetemplatesubdomain'),
 			'linkfield'=>'id',
@@ -1581,7 +1582,7 @@ function editApacheTemplate(){
 		}
 
 		$inputparams=array(
-			array($templatefield,'textarea','default'=>$template,'cols'=>80,'rows'=>30, 'lefttext'=>'Current ' . $this->miscconfig['webservertype'] . ' Template:'),
+			array($templatefield,'textarea','default'=>trim($template),'cols'=>80,'rows'=>30, 'lefttext'=>'Current ' . $this->miscconfig['webservertype'] . ' Template:'),
 			array('saveTemplate','submit','default'=>'Save Template'),
 			array('clearTemplate','submit','default'=>'Revert to Default'),
 			array('op','hidden','default'=>__FUNCTION__)
@@ -1660,7 +1661,7 @@ function editApacheTemplateSubdomain(){
 		}
 
 		$inputparams=array(
-			array($templatefield,'textarea','default'=>$template,'cols'=>80,'rows'=>30, 'lefttext'=>'Current ' . $this->miscconfig['webservertype'] . ' Subdomain Template:'),
+			array($templatefield,'textarea','default'=>trim($template),'cols'=>80,'rows'=>30, 'lefttext'=>'Current ' . $this->miscconfig['webservertype'] . ' Subdomain Template:'),
 			array('saveTemplate','submit','default'=>'Save Template'),
 			array('clearTemplate','submit','default'=>'Revert to Default'),
 			array('op','hidden','default'=>__FUNCTION__)
@@ -1679,7 +1680,7 @@ function editApacheTemplateSubdomain(){
 			$templateWeReceived = str_replace(array('{domainname}', '{subdomain}'), array($subdomain["domainname"], $subdomain["subdomain"]), $templateinfile);
 			if(!empty($globalSubDomainTemplate)){
 				$templateWeReceived = str_replace(array('{domainname}', '{subdomain}'), array($subdomain["domainname"], $subdomain["subdomain"]), $globalDomainTemplate);
-				if($$templatefield==$this->escape($templateWeReceived) || $$templatefield = $this->escape($globalSubDomainTemplate)) {
+				if($$templatefield==$this->escape($templateWeReceived) || $$templatefield == $this->escape($globalSubDomainTemplate)) {
 					$$templatefield=''; # if same as in default template file, do not store it in db.
 					$this->output.="<br>The subdomain template was not changed.  No modified entries were stored in the database.<br>";
 					$continue = false;
@@ -1697,6 +1698,9 @@ function editApacheTemplateSubdomain(){
 			}
 		}
 	}
+	
+	$this->showSimilarFunctions('subdomainsDirs');
+	
 	return $success;
 }
 
@@ -8037,7 +8041,9 @@ function getSubdomainInfoById($id){
 }
 
 function delSubDomain(){
-	global $id;
+	global $id, $_insert, $yes, $no;
+	$this->getVariable(array("_insert",'yes','no'));
+	
 	$success=True;
 	
 	$data = $this->getSubdomainInfoById($id);
@@ -14831,8 +14837,10 @@ if ($res) {
 				$char="&";
 				if(strpos($ld,"?")===false)$char="?";
 				if(strpos($ld,"href=")===false) $ld="href='$ld";
-
-				$result2.="$td<a $ld$char$linkalan=$link'><img src='$ly' border='0'></a></td>";
+				
+				$indexToStart = count($baslik) - count($linkyazi) + $i;
+				
+				$result2.="$td<a $ld$char$linkalan=$link'><img src='$ly' border='0' title='" . (isset($baslik) && is_array($baslik) && array_key_exists($indexToStart, $baslik) && !empty($baslik[$indexToStart]) ? $baslik[$indexToStart] : "") . "'></a></td>";
 		}
 
 		$result2.= "</tr>\n";
