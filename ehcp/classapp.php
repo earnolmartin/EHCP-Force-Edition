@@ -193,14 +193,16 @@ class Application
 		'subdomainstable'=>array(
 			'tablename'=>'subdomains',
 			'listfields'=>array('reseller','panelusername','subdomain','domainname','homedir','ftpusername','comment'),
-			'linkimages'=>array('images/delete1.jpg'),
-			'linkfiles'=>array('?op=delsubdomain'),
+			'linkimages'=>array('images/delete1.jpg', 'images/editapachetemplate.png'),
+			'linkfiles'=>array('?op=delsubdomain','?op=editapachetemplatesubdomain'),
 			'linkfield'=>'id',
 			'checkfields'=>array(
 				'ftpusername'=>'varchar(30)',
 				'password'=>'varchar(20)',
 				'email'=>'varchar(50)',
-				'webserverips'=>'varchar(200)'
+				'webserverips'=>'varchar(200)',
+				'apache2template'=>'text',
+				'nginxtemplate'=>'text'
 			)
 		 ),
 
@@ -639,6 +641,7 @@ function runOp($op){ # these are like url to function mappers...  maps op variab
 		#editing of dns/apache templates for domains, on ehcp db
 		case 'editdnstemplate'			: return $this->editDnsTemplate();break;
 		case 'editapachetemplate'		: return $this->editApacheTemplate();break;
+		case 'editapachetemplatesubdomain'		: return $this->editApacheTemplateSubdomain();break;
 		case 'editdomainaliases'		: return $this->editDomainAliases();break;
 
 		case 'changedomainserverip'		: return $this->changedomainserverip();break;
@@ -1543,7 +1546,7 @@ function editApacheTemplate(){
 
 	$domainname=$this->chooseDomain(__FUNCTION__,$domainname);
 	$domaininfo=$this->domaininfo=$this->getDomainInfo($this->selecteddomain);
-	$this->output.="Careful, this a dangerous thing, you should know about webserver (".$this->miscconfig['webservertype'].", currently active) configuration syntax!<br>if syntax is broken, a series of fallback operations will be done to make your panel reachable, such as rebuilding config using default apache configuration<br>";
+	$this->output.="Careful, this a dangerous thing, you should know about webserver (".$this->miscconfig['webservertype'].", currently active) configuration syntax!<br>if syntax is broken, a series of fallback operations will be done to make your panel reachable, such as rebuilding config using the default webserver configuration<br>";
 	
 	if($domaininfo['webserverips']=='' or $domaininfo['webserverips']=='localhost')	$templateinfile=file_get_contents("apachetemplate"); # template different, if domain is served in another IP
 	else $templateinfile=file_get_contents("apachetemplate_ipbased");
@@ -1580,32 +1583,112 @@ function editApacheTemplate(){
 		if($clearTemplate){
 			$success=$success && $this->executeQuery("update ".$this->conf['domainstable']['tablename']." set $templatefield='' where domainname='" . $domainname . "'");
 			$success=$success && $this->addDaemonOp("syncdomains",'xx',$domainname); # sync only domain that is changed. not all domains... 
-			$this->ok_err_text($success,"The custom template for the domain of " . $domainname . " has been successfully removed and the default template will now be used for the domain." ,"Failed to save apache modifications.");
+			$this->ok_err_text($success,"The custom template for the domain of " . $domainname . " has been successfully removed and the default template will now be used for the domain." ,"Failed to save domain template modifications.");
 		}else if($saveTemplate){
 			$continue = true;
 			
 			// Below is a messy way to check if the template was actually changed from the default global or EHCP default template
 			// But it has to be done this way since the template processing replaces certain variables and because textarea fields have \r\n for line breaks when database fields just have \n			
 			if(!empty($globalDomainTemplate)){
-				if($$templatefield==$this->escape(str_replace('{domainname}', $this->selecteddomain, $globalDomainTemplate))) {
+				if($$templatefield==$this->escape(str_replace('{domainname}', $this->selecteddomain, $globalDomainTemplate)) || $$templatefield == $this->escape($globalDomainTemplate)) {
 					$$templatefield=''; # if same as in default template file, do not store it in db.
-					$this->output.="<br>The apache template was not changed.  No modified entries were stored in the database.<br>";
+					$this->output.="<br>The domain template was not changed.  No modified entries were stored in the database.<br>";
 					$continue = false;
 				}
-			}else if($this->removeLineCharacterLiteralsFromString($$templatefield) == $this->removeLineCharacterLiteralsFromString($this->escape(str_replace('{domainname}', $this->selecteddomain, $templateinfile)))){
+			}else if($this->removeLineCharacterLiteralsFromString($$templatefield) == $this->removeLineCharacterLiteralsFromString($this->escape(str_replace('{domainname}', $this->selecteddomain, $templateinfile))) || $this->removeLineCharacterLiteralsFromString($$templatefield) == $this->removeLineCharacterLiteralsFromString($this->escape($templateinfile))){
 				$$templatefield=''; # if same as in default template file, do not store it in db.
-				$this->output.="<br>The apache template was not changed.  No modified entries were stored in the database.<br>";
+				$this->output.="<br>The domain template was not changed.  No modified entries were stored in the database.<br>";
 				$continue = false;
 			}
 			
 			if($continue){
 				$success=$success && $this->executeQuery("update ".$this->conf['domainstable']['tablename']." set $templatefield='".$$templatefield."' where domainname='$domainname'");
 				$success=$success && $this->addDaemonOp("syncdomains",'xx',$domainname); # sync only domain that is changed. not all domains... 
-				$this->ok_err_text($success,"Apache modifications were successfully saved and stored in the database.","Failed to save apache modifications.");
+				$this->ok_err_text($success,"Domain template modifications were successfully saved and stored in the database.","Failed to save domain template modifications.");
 			}
 		}
 	}
 	$this->showSimilarFunctions('HttpDnsTemplatesAliases');
+	return $success;
+}
+
+function editApacheTemplateSubdomain(){	
+	global $id;
+	$success=True;
+	
+	$subdomain = $this->getSubdomainInfoById($id);
+	if($subdomain === false){
+		return false;
+	}	
+	
+	$templatefield=$this->miscconfig['webservertype'].'template';	
+	global $_insert,$apachetemplate,$$templatefield,$saveTemplate,$clearTemplate;
+	$this->getVariable(array('_insert','apachetemplate',$templatefield,'clearTemplate','saveTemplate'));	
+	if($this->miscconfig['disableeditapachetemplate']<>'') $this->requireAdmin();
+
+	$this->output.="Careful, this a dangerous thing, you should know about webserver (".$this->miscconfig['webservertype'].", currently active) configuration syntax!<br>if syntax is broken, a series of fallback operations will be done to make your panel reachable, such as rebuilding config using default webserver configuration<br>";
+	
+	$templateinfile=file_get_contents("apache_subdomain_template"); # template different, if domain is served in another IP
+	
+	// Check for global domain template
+	$globalSubDomainTemplate = $this->getGlobalSubDomainTemplate();
+	
+	$success=True;	
+	
+
+	if(!$_insert){
+		$usingDefault = true;
+		$template=$subdomain[$templatefield];
+		if($template==''){
+			if(empty($globalSubDomainTemplate)){
+				$template=$templateinfile;
+				// If the domain was configured to redirect normal HTTP to HTTPS, make sure the template default reflects that here as well
+				$template = $this->adjustDomainTemplateDependingOnSSLSettings($template, $subdomain, "subdomain");
+			}else{
+				$template=$globalSubDomainTemplate;
+			}
+		}else{
+			$usingDefault = false;
+		}
+
+		$inputparams=array(
+			array($templatefield,'textarea','default'=>$template,'cols'=>80,'rows'=>30, 'lefttext'=>'Current ' . $this->miscconfig['webservertype'] . ' Subdomain Template:'),
+			array('saveTemplate','submit','default'=>'Save Template'),
+			array('clearTemplate','submit','default'=>'Revert to Default'),
+			array('op','hidden','default'=>__FUNCTION__)
+		);
+		$this->output.= '<p>' . $subdomain["subdomain"] . "." . $subdomain["domainname"] . ' Using Default Template: ' . ($usingDefault ? '<span class="success">YES</span>' : '<span class="error">NO</span>') . '</p>' . inputform5($inputparams);
+	}else {
+		if($clearTemplate){
+			$success=$success && $this->executeQuery("update ".$this->conf['subdomainstable']['tablename']." set $templatefield='' where domainname='" . $subdomain["domainname"] . "' AND subdomain ='" . $subdomain["subdomain"] . "' AND id ='" . $id . "'");
+			$success=$success && $this->addDaemonOp("syncdomains",'xx',$subdomain["domainname"]); # sync only domain that is changed. not all domains... 
+			$this->ok_err_text($success,"The custom template for the subdomain of " . $subdomain["subdomain"] . "." . $subdomain["domainname"] . " has been successfully removed and the default template will now be used for the subdomain." ,"Failed to save template modifications.");
+		}else if($saveTemplate){
+			$continue = true;
+			
+			// Below is a messy way to check if the template was actually changed from the default global or EHCP default template
+			// But it has to be done this way since the template processing replaces certain variables and because textarea fields have \r\n for line breaks when database fields just have \n			
+			$templateWeReceived = str_replace(array('{domainname}', '{subdomain}'), array($subdomain["domainname"], $subdomain["subdomain"]), $templateinfile);
+			if(!empty($globalSubDomainTemplate)){
+				$templateWeReceived = str_replace(array('{domainname}', '{subdomain}'), array($subdomain["domainname"], $subdomain["subdomain"]), $globalDomainTemplate);
+				if($$templatefield==$this->escape($templateWeReceived) || $$templatefield = $this->escape($globalSubDomainTemplate)) {
+					$$templatefield=''; # if same as in default template file, do not store it in db.
+					$this->output.="<br>The subdomain template was not changed.  No modified entries were stored in the database.<br>";
+					$continue = false;
+				}
+			}else if($this->removeLineCharacterLiteralsFromString($$templatefield) == $this->removeLineCharacterLiteralsFromString($this->escape($templateWeReceived)) || $this->removeLineCharacterLiteralsFromString($$templatefield) == $this->removeLineCharacterLiteralsFromString($this->escape($templateinfile))){
+				$$templatefield=''; # if same as in default template file, do not store it in db.
+				$this->output.="<br>The subdomain template was not changed.  No modified entries were stored in the database.<br>";
+				$continue = false;
+			}
+			
+			if($continue){
+				$success=$success && $this->executeQuery("update ".$this->conf['subdomainstable']['tablename']." set $templatefield='".$$templatefield."' where domainname='" . $subdomain["domainname"] . "' AND subdomain ='" . $subdomain["subdomain"] . "' AND id ='" . $id . "'");
+				$success=$success && $this->addDaemonOp("syncdomains",'xx',$subdomain["domainname"]); # sync only domain that is changed. not all domains... 
+				$this->ok_err_text($success,"Subdomain template modifications were successfully saved and stored in the database.","Failed to save subdomain template modifications.");
+			}
+		}
+	}
 	return $success;
 }
 
@@ -7925,10 +8008,7 @@ function deleteFtpUserDirect($ftpusername){
 	return $success;
 }
 
-function delSubDomain(){
-	global $id;
-	$success=True;
-	
+function getSubdomainInfoById($id){
 	$userHasAccessToTheseChildrenUsers = $this->getParentsAndChildren($this->activeuser);
 	$inClause = $this->generateMySQLInClause($userHasAccessToTheseChildrenUsers);
 
@@ -7944,32 +8024,55 @@ function delSubDomain(){
 	}
 	
 	$data=$data[0];
+	
+	return $data;
+}
+
+function delSubDomain(){
+	global $id;
+	$success=True;
+	
+	$data = $this->getSubdomainInfoById($id);
+	if($data === false){
+		return false;
+	}
 
 	$this->debugecho2(print_r2($data),1);
-
+	
 	$domainname=$data['domainname'];
 	$subdomain=$data['subdomain'];
 	$ftpusername=$data['ftpusername'];
 	$homedir=$data['homedir'];
+	$fullSubdomainStr = $subdomain . "." . $domainname;
 	
-	$successText = "Successfully removed the subdomain configuration from the database.";
+	if(!$_insert) {
+		$inputparams=array(
+			array('op','hidden','default'=>__FUNCTION__),
+			array('submit','submit','default'=>'Yes')
+		);
+	
+		$this->output.="<p><br>Are you sure you want to delete the subdomain of \"" . $fullSubdomainStr . "\"?".inputform5($inputparams);
+	} else {
+		
+		$successText = "Successfully removed the subdomain configuration from the database.";
 
-	$success=$success && $this->deleteFtpUserDirect($ftpusername);
-	$success=$success && $this->executeQuery("delete from ".$this->conf['subdomainstable']['tablename']." where id=$id");
-	if($this->miscconfig['forcedeletesubdomainfiles'] == 'Yes'){
-		$success=$success && $this->addDaemonOp("daemondomain","delsubdomain",$subdomain,$homedir,'subdomain delete');
-		$successText .= " Files located in the subdomain home directory were deleted.";
-	}else{
-		$successText .= " Files located in the subdomain home directory were NOT deleted. The files can be deleted manually via FTP.";
+		$success=$success && $this->deleteFtpUserDirect($ftpusername);
+		$success=$success && $this->executeQuery("delete from ".$this->conf['subdomainstable']['tablename']." where id=$id");
+		if($this->miscconfig['forcedeletesubdomainfiles'] == 'Yes'){
+			$success=$success && $this->addDaemonOp("daemondomain","delsubdomain",$subdomain,$homedir,'subdomain delete');
+			$successText .= " Files located in the subdomain home directory were deleted.";
+		}else{
+			$successText .= " Files located in the subdomain home directory were NOT deleted. The files can be deleted manually via FTP.";
+		}
+		$success=$success && $this->addDaemonOp("syncdomains",'xx',$domainname,'','sync domains');
+		
+		$letsEncSubs[] = $subdomain . "." . $domainname;
+		$success = $success && $this->removeLetsEncryptCertificates($letsEncSubs);
+
+		$this->ok_err_text($success, $successText, "Error deleting subdomain");
+		$this->showSimilarFunctions('subdomainsDirs');
+		return $success;
 	}
-	$success=$success && $this->addDaemonOp("syncdomains",'xx',$domainname,'','sync domains');
-	
-	$letsEncSubs[] = $subdomain . "." . $domainname;
-	$success = $success && $this->removeLetsEncryptCertificates($letsEncSubs);
-
-	$this->ok_err_text($success, $successText, "Error deleting subdomain");
-	$this->showSimilarFunctions('subdomainsDirs');
-	return $success;
 }
 
 function addSubDomain(){
@@ -13827,6 +13930,9 @@ function syncSubdomains($file='',$domainname) {
 	$arr=$this->query("select * from ".$this->conf['subdomainstable']['tablename']);
 	$webserverip=$this->getWebServer();
 	$success=True;
+	$webservertype=$this->miscconfig['webservertype'];
+	$templatefield=$webservertype.'template';	
+	$customSubdomainsWritten = false;
 
 	$arr2=array();
 	$ips=array();
@@ -13931,24 +14037,51 @@ function syncSubdomains($file='',$domainname) {
 	echo __FUNCTION__.": syncing subdomains:";
 	print_r($arr2);
 	
-	if(!empty($globalSubdomainTemplate)){
+	if(isset($arr2) && is_array($arr2) && count($arr2) > 0){
+		// Handle custom subdomain templates
 		$alanlar=array_keys($arr2[0]); // gets array keys, from first(0th) array element of two-dimensional $arr2 array. https://stackoverflow.com/questions/2399286/str-replace-with-associative-array (to understand this better... we take the keys from the first entry and then we replace each {key} with the value for that key in domain / subdomain array --- pretty clever
 		// following code, replaces fields from template to values here in $arr2 two-dim array. each $arr2 element written to output file according to template file.
 		$replacealanlar=arrayop($alanlar,"strop");
 		$fileOut = "";
 		foreach($arr2 as $ar1) {
-			$webserver_template=str_replace(array('{ehcpdir}','{localip}'),array($this->ehcpdir,$this->miscconfig['localip']),$globalSubdomainTemplate);
-			$webserver_config=str_replace($replacealanlar,$ar1,$webserver_template);
-			$fileOut .= $webserver_config;
+			$webserver_template=$ar1[$templatefield];# get domain specific (custom) template
+			if(!empty($webserver_template)){
+				$webserver_template=str_replace(array('{ehcpdir}','{localip}'),array($this->ehcpdir,$this->miscconfig['localip']),	$webserver_template);
+				$webserver_config=str_replace($replacealanlar,$ar1,$webserver_template);
+				$fileOut .= $webserver_config;
+			}else{
+				$arr3[] = $ar1;
+			}
 		}
-		$success = writeoutput2($file,$fileOut,'w',false);
-		if($success){
-			$this->echoln("SUBDOMAINS-Domain list exported from global subdomain template (".__FUNCTION__.")\n");
+		
+		if(!empty($fileOut)){
+			$customSubdomainsWritten = true;
+			$success = writeoutput2($file,$fileOut,'w',false);
+			$this->echoln("Custom subdomain webserver templates were written successfully (".__FUNCTION__.")\n");
 		}
-	}else{		
-		if ($this->putArrayToFile($arr2,$file,$webserver_template_filename, true)) {
-			$this->echoln("SUBDOMAINS-Domain list exported (".__FUNCTION__.")\n");
-		} else $success=false;
+	}
+	
+	if(isset($arr3) && is_array($arr3) && count($arr3) > 0){
+	
+		if(!empty($globalSubdomainTemplate)){
+			$alanlar=array_keys($arr3[0]); // gets array keys, from first(0th) array element of two-dimensional $arr3 array. https://stackoverflow.com/questions/2399286/str-replace-with-associative-array (to understand this better... we take the keys from the first entry and then we replace each {key} with the value for that key in domain / subdomain array --- pretty clever
+			// following code, replaces fields from template to values here in $arr3 two-dim array. each $arr3 element written to output file according to template file.
+			$replacealanlar=arrayop($alanlar,"strop");
+			$fileOut = "";
+			foreach($arr3 as $ar1) {
+				$webserver_template=str_replace(array('{ehcpdir}','{localip}'),array($this->ehcpdir,$this->miscconfig['localip']),$globalSubdomainTemplate);
+				$webserver_config=str_replace($replacealanlar,$ar1,$webserver_template);
+				$fileOut .= $webserver_config;
+			}
+			$success = writeoutput2($file,$fileOut,(!$customSubdomainsWritten ? 'w' : 'a+'),false);
+			if($success){
+				$this->echoln("SUBDOMAINS-Domain list exported from global subdomain template (".__FUNCTION__.")\n");
+			}
+		}else{		
+			if ($this->putArrayToFile($arr3,$file,$webserver_template_filename, true, (!$customSubdomainsWritten ? 'w' : 'a+'))) {
+				$this->echoln("SUBDOMAINS-Domain list exported (".__FUNCTION__.")\n");
+			} else $success=false;
+		}
 	}
 
 	return $success;
@@ -14058,8 +14191,8 @@ function webserver_test_and_fallback(){
 	
 }
 
-function putArrayToFile($arr,$filename,$template,$additionalTemplateLogic = false){
-	$res=writeoutput2($filename,$this->putArrayToStr($arr,$template,$additionalTemplateLogic),"w");
+function putArrayToFile($arr,$filename,$template,$additionalTemplateLogic = false,$mode = 'w'){
+	$res=writeoutput2($filename,$this->putArrayToStr($arr,$template,$additionalTemplateLogic),$mode);
 	if($res) return $res;#$this->echoln("Putting some content to file: $filename (putArrayToFile)\n");
 	else $this->echoln("Failed-Putting some content to file: $filename (".__FUNCTION__.")\n");
 	return $res;

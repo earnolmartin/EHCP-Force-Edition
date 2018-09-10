@@ -72,6 +72,8 @@ CREATE TABLE IF NOT EXISTS subdomains (
   password varchar(20) default NULL,
   email varchar(50) default NULL,
   webserverips varchar(200) default NULL,
+  apache2template text NULL,
+  nginxtemplate text NULL,
   PRIMARY KEY  (id)
 ) comment='ehcp db - subdomains';
 
