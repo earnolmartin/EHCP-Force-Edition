@@ -137,7 +137,7 @@ function createEHCPPool(){
 	if [ ! -e "$PHPCONFDir/fpm/pool.d/ehcp.conf" ]; then
 		cp "$PHPCONFDir/fpm/pool.d/www.conf" "$PHPCONFDir/fpm/pool.d/ehcp.conf"
 		sed -i "s/^\[www\]/\[ehcp\]/g" "$PHPCONFDir/fpm/pool.d/ehcp.conf"
-		sed -i "s/^listen.*/listen = 9001/g" "$PHPCONFDir/fpm/pool.d/ehcp.conf"
+		sed -i "s/^listen[^.].*/listen = 9001/g" "$PHPCONFDir/fpm/pool.d/ehcp.conf"
 	fi
 	
 	hasDisableFunctions=$(cat "$PHPCONFDir/fpm/pool.d/www.conf" | grep -o "php_admin_value\[disable_functions\].*")
