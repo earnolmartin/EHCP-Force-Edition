@@ -578,21 +578,30 @@ $alansayisi=count($alan);
 		$result2=" \n $tr";
         if (count($baslik)>0)
         {
-        for ($i=0;$i<$alansayisi;$i++)
-                {
-                if($baslik[$i]<>"") {$yaz=$baslik[$i];} else {$yaz=$alan[$i];}; $result2.="$th$yaz</th>";
-                };
-        }
+			for ($i=0;$i<$alansayisi;$i++){
+				if($baslik[$i]<>"") {
+					$yaz=$baslik[$i];
+				} else {
+					$yaz=$alan[$i];
+				}
+				$result2.="$th$yaz</th>";
+			}
+		}
         else
         {
-        for ($i=0;$i<$alansayisi;$i++)
-                {
-                 $yaz=$alan[$i]; $result2.="$th$yaz</th>";
-                };
+			for ($i=0;$i<$alansayisi;$i++){
+				$yaz=$alan[$i]; $result2.="$th$yaz</th>";
+			};
         }
+        
+        // Handle extra
 		for ($i=0;$i<count($extra);$i++){
 			$indexToStart = count($baslik) - count($extra) + $i;
-			$result2.="$th" . (isset($baslik) && is_array($baslik) && array_key_exists($indexToStart, $baslik) && !empty($baslik[$indexToStart]) ? $baslik[$indexToStart] : "") . "&nbsp;</th>";
+			if($alansayisi + count($extra) == count($baslik)){
+				$result2.="$th" . (isset($baslik) && is_array($baslik) && array_key_exists($indexToStart, $baslik) && !empty($baslik[$indexToStart]) ? $baslik[$indexToStart] : "") . "</th>";
+			}else{
+				$result2.=$th . "</th>";
+			}
 		}
 		
         $result2.="</tr>\n ";

@@ -927,8 +927,9 @@ function setInitialMiscConfigOptionDefaultsPostInstall(){
 	$success3 = $this->setConfigValue('forcedeletesubdomainfiles','Yes'); // Delete files under subdomain home directory when subdomain is deleted by default
 	$success4 = $this->setConfigValue('useglobalsslcert','Yes'); // Use invalid system default global https cert for SSL sites by default
 	$success5 = $this->setConfigValue('enablewildcarddomain','Yes'); // Use wildcard domains and DNS
+	$success6 = $this->setConfigValue('allowcustomsslnonadmin','Yes'); // Use wildcard domains and DNS
 	
-	return $success && $success2 && $success3 && $success4 && $success5;
+	return $success && $success2 && $success3 && $success4 && $success5 && $success6;
 }
 
 function initialize(){
