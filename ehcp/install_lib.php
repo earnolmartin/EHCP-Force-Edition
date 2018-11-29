@@ -1905,7 +1905,7 @@ function installfinish() {
 	// A better way to do this might be to insert it above the exit 0 line...
 	// To do...
 	replacelineinfile("exit 0", "service ehcp restart\nexit 0", "/etc/rc.local", true);
-	$add="/var/log/ehcp.log /var/log/apache_common_access_log {
+	$add="/var/log/ehcp.log /var/log/php_errors.log /var/log/apache_common_access_log {
 }";
 	add_if_not_exists2($add,'/etc/logrotate.d/ehcp',True);	# adjust logrotate for ehcp logs # we need to do this for domain logs too
 

@@ -12897,9 +12897,11 @@ function build_logrotate_conf($arr2,$host){
 	if($this->debuglevel>0) print_r($arr2);
 	
 	foreach($arr2 as $dom) {
-		$logrotate.=$dom['homedir']."/logs/access_log ".$dom['homedir']."/logs/error_log ";
+		$logrotate .= $dom['homedir']."/logs/access_log ".$dom['homedir']."/logs/error_log ";
 	}
-	$logrotate.=" /var/log/ehcp.log /var/log/php_errors.log /var/log/apache_common_access_log {
+	
+	
+	$logrotate .= ($logrotate[strlen($logrotate)-1] == ' ' ? '' : ' ' ) . "/var/log/ehcp.log /var/log/php_errors.log /var/log/apache_common_access_log {
 		daily
 		missingok
 		compress
