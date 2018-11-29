@@ -1825,6 +1825,14 @@ function ModifyPHPIniConfigForFile(){
 					sed -i "s#^opcache.enable=.*#opcache.enable=0#g" "$PHPINIFILE"
 				fi
 			fi
+			
+			# Fix PHP error logging
+			hasPHPErrLogging=$(cat "$PHPINIFILE" | grep -o "^error_log.*")
+			if [ -z "$hasPHPErrLogging" ]; then
+				echo "error_log=/var/log/php_errors.log" >> "$PHPINIFILE"
+			else
+				sed -i "s#^error_log.*#error_log=/var/log/php_errors.log#g" "$PHPINIFILE"
+			fi
 		else
 			# Logging
 			logToInstallLogFile "$PHPINIFILE does not exist!"
