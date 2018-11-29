@@ -760,7 +760,7 @@ function fixEHCPPerms(){ # by earnolmartin@gmail.com
 		> "/var/log/php_errors.log"
 	fi
 	chown ${VSFTPDUser}:adm "/var/log/php_errors.log"
-	chmod 775 "/var/log/php_errors.log"
+	chmod 774 "/var/log/php_errors.log"
 }
 
 function fixPHPConfig(){ # by earnolmartin@gmail.com

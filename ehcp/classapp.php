@@ -12899,12 +12899,13 @@ function build_logrotate_conf($arr2,$host){
 	foreach($arr2 as $dom) {
 		$logrotate.=$dom['homedir']."/logs/access_log ".$dom['homedir']."/logs/error_log ";
 	}
-	$logrotate.=" /var/log/ehcp.log /var/log/apache_common_access_log {
+	$logrotate.=" /var/log/ehcp.log /var/log/php_errors.log /var/log/apache_common_access_log {
 		daily
 		missingok
 		compress
 		delaycompress		
 }";
+	
 	passthru2('mkdir -p '.$this->ehcpdir.'/etc/logrotate.d/');
 	writeoutput($this->ehcpdir.'/etc/logrotate.d/ehcp',$logrotate,'w',True);
 	
