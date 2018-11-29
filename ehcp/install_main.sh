@@ -754,6 +754,13 @@ function fixEHCPPerms(){ # by earnolmartin@gmail.com
 	chmod 700 "/var/www/new/ehcp/install_lib.php"
 	chmod 700 "/var/www/new/ehcp/install2.1.php"
 	chmod 700 "/var/www/new/ehcp/ehcp_fix_apache.php"
+	
+	# Create php error log file and use proper permissions
+	if [ ! -e "/var/log/php_errors.log" ]; then
+		> "/var/log/php_errors.log"
+	fi
+	chown ${VSFTPDUser}:adm "/var/log/php_errors.log"
+	chmod 775 "/var/log/php_errors.log"
 }
 
 function fixPHPConfig(){ # by earnolmartin@gmail.com

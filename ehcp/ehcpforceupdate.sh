@@ -1286,6 +1286,12 @@ function fixEHCPPerms(){ # by earnolmartin@gmail.com
 		rm "/var/www/new/ehcp/ehcpforceupgrade.sh"
 	fi
 	
+	# Create php error log file and use proper permissions
+	if [ ! -e "/var/log/php_errors.log" ]; then
+		> "/var/log/php_errors.log"
+	fi
+	chown ${VSFTPDUser}:adm "/var/log/php_errors.log"
+	chmod 775 "/var/log/php_errors.log"
 }
 
 function logDirFix(){ # by earnolmartin@gmail.com
