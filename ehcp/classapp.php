@@ -13786,6 +13786,8 @@ function handleCourierSSLCert(){
 	$pop3dOrigPath = "/etc/courier/pop3d_original.pem";
 	$imapdPath = "/etc/courier/imapd.pem";
 	$pop3dPath = "/etc/courier/pop3d.pem";
+	$pop3dSSLConfigPath = "/etc/courier/pop3d-ssl";
+	$imapdSSLConfigPath = "/etc/courier/imapd-ssl";
 	
 	if($this->hasValueOrZero($this->miscconfig['sslcouriercertpath'])){
 		$sslCourierPath = $this->miscconfig['sslcouriercertpath'];
@@ -13815,6 +13817,11 @@ function handleCourierSSLCert(){
 			// Create a symlink which will point to the user's certpath... Let's Encrypt certificates will update, so I can see this working nicely. 
 			passthru2("ln -sf " . $sslCourierPath . " " . $imapdPath, true, true);
 			passthru2("ln -sf " . $sslCourierPath . " " . $pop3dPath, true, true);
+			
+			// Edit the config files to make sure our certs are being used
+			replacelineinfile("TLS_CERTFILE", "TLS_CERTFILE=" . $pop3dPath, $pop3dSSLConfigPath, true);
+			replacelineinfile("TLS_CERTFILE", "TLS_CERTFILE=" . $imapdPath, $imapdSSLConfigPath, true);
+			
 			$this->resyncCourierSSL();
 		}else{
 			echo "Proposed certificate path of \"" . $sslCourierPath . "\" does NOT exist!\n";

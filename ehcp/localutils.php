@@ -200,7 +200,7 @@ function degiskenal($degiskenler) {
 }
 }
 
-if(!function_exists('replacelnieinfile')){
+if(!function_exists('replacelineinfile')){
 function replacelineinfile($find,$replace,$where,$addifnotexists=false) {
 	// edit a line starting with $find, to edit especially conf files..
 
