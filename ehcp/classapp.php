@@ -5597,7 +5597,7 @@ function deleteFileFromSystem($file, $recursive = false){
 }
 
 function runCommandInDaemon($command){
-	return $this->addDaemonOp('runsystemcommand', $command, 1, '', 'Run System Command');
+	return $this->addDaemonOp('runsystemcommand', 'runsystemcommand', $command, '', 'Run System Command');
 }
 
 function runSystemCommand($command, $info = ''){
@@ -14321,7 +14321,7 @@ function runop2($op,$action,$info,$info2='',$info3=''){
 			return $this->deleteFileFromSystem($action,$info);
 			break;
 		case 'runsystemcommand':
-			return $this->runSystemCommand($action, $info);
+			return $this->runSystemCommand($info, $info2);
 			break;
 		case 'daemon_backup_domain':
 			return $this->daemon_backup_domain($info);
