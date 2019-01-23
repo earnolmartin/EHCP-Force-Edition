@@ -7504,10 +7504,16 @@ function removeLetsEncryptCertificates($domains){
 	$success = true;
 	foreach($domains as $domain){
 		// echo "\nDeleting Let's Encrypt SSL certificates for domain/subdomain " . $dom['domainname'] . " from letsencrypt live folder.\n";
+		// Delete the certificates
 		$this->bashDelete("/etc/letsencrypt/live/" . $domain, true);
 		
 		// echo "\nDeleting Let's Encrypt SSL certificates for domain/subdomain " . $dom['domainname'] . " from letsencrypt archive folder.\n";
+		// Delete the archive information
 		$this->bashDelete("/etc/letsencrypt/archive/" . $domain, true);
+		
+		// Delete the renewal information as well to prevent suffix issues
+		// https://community.letsencrypt.org/t/re-prevent-0001-xxxx-certificate-suffixes/83824/6 
+		$this->bashDelete("/etc/letsencrypt/renewal/" . $domain . ".conf", true);
 	}
 	return $success;
 }
