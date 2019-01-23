@@ -5596,6 +5596,19 @@ function deleteFileFromSystem($file, $recursive = false){
 	return true;
 }
 
+function runCommandInDaemon($command){
+	return $this->addDaemonOp('runsystemcommand', $command, '', '', 'Run System Command');
+}
+
+function runSystemCommand($command){
+	$this->requireCommandLine(__FUNCTION__);
+	echo "Running system command of \"" . $command . "\"" . "\n";
+	if(isset($command) && !empty($command)){
+		passthru2($command, true, true);
+	}
+	return true;
+}
+
 function removePasswordProtectedDirByDomain($domainname){
 	$success = true;
 	
@@ -7503,6 +7516,13 @@ function deleteDomainDirect($domainname,$syncdomains=True){
 function removeLetsEncryptCertificates($domains){
 	$success = true;
 	foreach($domains as $domain){
+		// Actually run the delete operation from certbot to handle any additional cleanup
+		$this->runCommandInDaemon("/usr/local/bin/certbot delete --cert-name " . $domain);
+		
+		/* INFO */
+		// Below operations shouldn't be needed, but I'll keep them here just in case //
+		/* END INFO */
+		
 		// echo "\nDeleting Let's Encrypt SSL certificates for domain/subdomain " . $dom['domainname'] . " from letsencrypt live folder.\n";
 		// Delete the certificates
 		$this->bashDelete("/etc/letsencrypt/live/" . $domain, true);
@@ -14299,6 +14319,9 @@ function runop2($op,$action,$info,$info2='',$info3=''){
 			break;
 		case 'deletefilefromsystem':
 			return $this->deleteFileFromSystem($action,$info);
+			break;
+		case 'runsystemcommand':
+			return $this->runSystemCommand($action);
 			break;
 		case 'daemon_backup_domain':
 			return $this->daemon_backup_domain($info);
