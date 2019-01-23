@@ -10202,8 +10202,9 @@ function syncFtp(){
 			$panelusername=$rs->fields['panelusername'];
 			if(!file_exists($homedir)){
 				passthru2("mkdir -p $homedir");
-				passthru2("chown -Rf $this->ftpowner $homedir");
 			}
+			passthru2("chown -Rf " . $this->ftpowner . " " . $homedir);
+			passthru2("chmod 775 -R " . $homedir);
 			writeoutput2("/etc/vsftpd_user_conf/$ftpusername","local_root=$homedir",'w');
 			$rs->MoveNext();
 		}
