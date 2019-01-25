@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS `scripts` (
   `scriptdirtocopy` varchar(50) default NULL,
   `commandsaftercopy` text,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='stores scripts that can be installed in ehcp' AUTO_INCREMENT=29 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='stores scripts that can be installed in ehcp' AUTO_INCREMENT=29 ;
 
 --
 -- Tablo döküm verisi `scripts`

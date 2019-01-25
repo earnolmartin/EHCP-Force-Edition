@@ -1051,17 +1051,17 @@ function installMySQLServ(){#by earnolmartin@gmail.com
 		aptget(array("php5-mysqlnd"),$usePrompts);
 	}
 	
-	replacelineinfile("character-set-server","character-set-server = latin1","/etc/mysql/mariadb.conf.d/50-server.cnf", false);
-	replacelineinfile("character-set-server","character-set-server = latin1","/etc/mysql/mariadb.conf.d/50-client.cnf", false);
+	replacelineinfile("character-set-server","character-set-server = utf8","/etc/mysql/mariadb.conf.d/50-server.cnf", false);
+	replacelineinfile("character-set-server","character-set-server = utf8","/etc/mysql/mariadb.conf.d/50-client.cnf", false);
 	
-	replacelineinfile("collation-server","collation-server = latin1_swedish_ci","/etc/mysql/mariadb.conf.d/50-server.cnf", false);
-	replacelineinfile("collation-server","collation-server = latin1_swedish_ci","/etc/mysql/mariadb.conf.d/50-client.cnf", false);
+	replacelineinfile("collation-server","collation-server = utf8_general_ci","/etc/mysql/mariadb.conf.d/50-server.cnf", false);
+	replacelineinfile("collation-server","collation-server = utf8_general_ci","/etc/mysql/mariadb.conf.d/50-client.cnf", false);
 
-	replacelineinfile("character-set-server","character-set-server = latin1","/etc/mysql/mysql.conf.d/mysqld.cnf", false);
-	replacelineinfile("collation-server","collation-server = latin1_swedish_ci","/etc/mysql/mysql.conf.d/mysqld.cnf", false);
+	replacelineinfile("character-set-server","character-set-server = utf8","/etc/mysql/mysql.conf.d/mysqld.cnf", false);
+	replacelineinfile("collation-server","collation-server = utf8_general_ci","/etc/mysql/mysql.conf.d/mysqld.cnf", false);
 	
-	replacelineinfile("character-set-server","character-set-server = latin1","/etc/mysql/my.cnf", false);
-	replacelineinfile("collation-server","collation-server = latin1_swedish_ci","/etc/mysql/my.cnf", false);
+	replacelineinfile("character-set-server","character-set-server = utf8","/etc/mysql/my.cnf", false);
+	replacelineinfile("collation-server","collation-server = utf8_general_ci","/etc/mysql/my.cnf", false);
 }
 
 function installPHPMYAdmin(){#by earnolmartin@gmail.com

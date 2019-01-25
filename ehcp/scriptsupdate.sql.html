@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS `scripts` (
   `scriptdirtocopy` varchar(50) default NULL,
   `commandsaftercopy` text,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='ehcp db - stores scripts that can be installed in ehcp';
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='ehcp db - stores scripts that can be installed in ehcp';
 
 
 INSERT INTO `scripts` (`id`, `scriptname`, `homepage`, `description`, `filetype`, `fileinfo`, `scriptdirtocopy`, `commandsaftercopy`) VALUES

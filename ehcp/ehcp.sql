@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS `scripts` (
   `commandsaftercopy` text,
   `customfileownerships` text,
   PRIMARY KEY  (`id`)
-)  DEFAULT CHARSET=latin1 COMMENT='ehcp db - stores scripts that can be installed in ehcp';
+)  DEFAULT CHARSET=utf8 COMMENT='ehcp db - stores scripts that can be installed in ehcp';
 
 INSERT INTO `scripts` (`id`, `scriptname`, `homepage`, `description`, `filetype`, `fileinfo`, `scriptdirtocopy`, `commandsaftercopy`, `customfileownerships`) VALUES
 (1, 'WordPress', NULL, NULL, 'directurl', 'https://wordpress.org/latest.zip', 'wordpress', '', NULL),
@@ -255,7 +255,7 @@ INSERT INTO misc (id, name, `value`, longvalue,comment) VALUES
 (12, 'quotaupdateinterval', '6', NULL,'this is in hours, quota will be calculated in this interval'),
 (13, 'webservertype', 'apache2', NULL,'apache2 or nginx, (or any other that is supported)'),
 (14, 'webservermode', 'nonssl', NULL,'ssl or nonssl'),
-(15, 'mysqlcharset', 'DEFAULT CHARACTER SET utf8 COLLATE utf8_turkish_ci', NULL,'Default charset/collation for newly added databases'),
+(15, 'mysqlcharset', 'DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci', NULL,'Default charset/collation for newly added databases'),
 (16, 'enablewebstats', 'on',null,'Webalizer web stats'),
 (17, 'versionwarningcounter', '5',null,'')
 ;
@@ -335,10 +335,10 @@ CREATE TABLE transport (
 
 DROP TABLE IF EXISTS `hash`;
 CREATE TABLE IF NOT EXISTS `hash` (
-  `email` varchar(100) COLLATE utf8_turkish_ci NOT NULL DEFAULT 'NULL',
-  `hash` varchar(100) COLLATE utf8_turkish_ci DEFAULT NULL,
+  `email` varchar(100) COLLATE utf8_general_ci NOT NULL DEFAULT 'NULL',
+  `hash` varchar(100) COLLATE utf8_general_ci DEFAULT NULL,
   KEY `email_index` (`email`)
-) DEFAULT CHARSET=utf8 COLLATE=utf8_turkish_ci COMMENT='to store password remind hash';
+) DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='to store password remind hash';
 
 # these are net2ftp tables for logging etc...
 DROP TABLE IF EXISTS net2ftp_logAccess;
@@ -358,41 +358,41 @@ CREATE TABLE net2ftp_users (ftpserver varchar(255) NOT NULL default '0',username
 
 CREATE TABLE IF NOT EXISTS `vps` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `reseller` varchar(30) CHARACTER SET utf8 COLLATE utf8_turkish_ci DEFAULT NULL,
-  `panelusername` varchar(30) CHARACTER SET utf8 COLLATE utf8_turkish_ci DEFAULT NULL,
-  `status` varchar(20) CHARACTER SET utf8 COLLATE utf8_turkish_ci DEFAULT NULL,
-  `vpsname` varchar(30) CHARACTER SET utf8 COLLATE utf8_turkish_ci NOT NULL,
-  `description` varchar(100) CHARACTER SET utf8 COLLATE utf8_turkish_ci NOT NULL,
-  `hostip` varchar(20) CHARACTER SET utf8 COLLATE utf8_turkish_ci NOT NULL,
-  `ip` varchar(20) CHARACTER SET utf8 COLLATE utf8_turkish_ci NOT NULL,
-  `ip2` varchar(20) CHARACTER SET utf8 COLLATE utf8_turkish_ci NOT NULL,
-  `netmask` varchar(20) CHARACTER SET utf8 COLLATE utf8_turkish_ci NOT NULL,
-  `broadcast` varchar(20) CHARACTER SET utf8 COLLATE utf8_turkish_ci NOT NULL,
-  `gateway` varchar(20) CHARACTER SET utf8 COLLATE utf8_turkish_ci NOT NULL,
-  `image_template` varchar(100) CHARACTER SET utf8 COLLATE utf8_turkish_ci DEFAULT NULL,
-  `cdimage` varchar(100) CHARACTER SET utf8 COLLATE utf8_turkish_ci DEFAULT NULL,
+  `reseller` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `panelusername` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `status` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `vpsname` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `description` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `hostip` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `ip` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `ip2` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `netmask` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `broadcast` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `gateway` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `image_template` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `cdimage` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
   `ram` int(11) DEFAULT NULL,
   `cpu` int(11) DEFAULT NULL,
-  `state` varchar(20) CHARACTER SET utf8 COLLATE utf8_turkish_ci DEFAULT NULL,
-  `ping` varchar(10) CHARACTER SET utf8 COLLATE utf8_turkish_ci DEFAULT NULL,
+  `state` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `ping` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
   `hdimage` varchar(200) DEFAULT NULL,
   `vncpassword` varchar(20) DEFAULT NULL,
   `addvpscmd` text default null,
   PRIMARY KEY (`id`)
-)  DEFAULT CHARSET=latin1 COMMENT='ehcp db - list of domains and their properties';
+)  DEFAULT CHARSET=utf8 COMMENT='ehcp db - list of domains and their properties';
 
 
 CREATE TABLE IF NOT EXISTS `settings` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `group` varchar(20) CHARACTER SET utf8 COLLATE utf8_turkish_ci DEFAULT '',
-  `reseller` varchar(30) CHARACTER SET utf8 COLLATE utf8_turkish_ci DEFAULT '',
-  `panelusername` varchar(30) CHARACTER SET utf8 COLLATE utf8_turkish_ci DEFAULT '',
-  `name` varchar(40) CHARACTER SET utf8 COLLATE utf8_turkish_ci DEFAULT '',
-  `value` text CHARACTER SET utf8 COLLATE utf8_turkish_ci,
-  `longvalue` text CHARACTER SET utf8 COLLATE utf8_turkish_ci,
-  `comment` varchar(100) CHARACTER SET utf8 COLLATE utf8_turkish_ci DEFAULT '',
+  `group` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT '',
+  `reseller` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT '',
+  `panelusername` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT '',
+  `name` varchar(40) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT '',
+  `value` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `longvalue` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `comment` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT '',
   PRIMARY KEY (`id`)
-)  DEFAULT CHARSET=latin1 COMMENT='ehcp db - Table for misc configruation of ehcp';
+)  DEFAULT CHARSET=utf8 COMMENT='ehcp db - Table for misc configruation of ehcp';
 
 CREATE TABLE IF NOT EXISTS `remote_backups` (
   `id` tinyint(4) NOT NULL auto_increment,
@@ -406,7 +406,7 @@ CREATE TABLE IF NOT EXISTS `remote_backups` (
   `transfer_pass` varchar(50) default NULL,	
   `encryption_pass` varchar(50) default NULL,
   PRIMARY KEY  (`id`)
-)  DEFAULT CHARSET=latin1 COMMENT='Used to schedule cronjobs for remote backups';
+)  DEFAULT CHARSET=utf8 COMMENT='Used to schedule cronjobs for remote backups';
 
 CREATE TABLE IF NOT EXISTS `cronjobs` (
   `id` tinyint(4) NOT NULL auto_increment,
@@ -414,7 +414,7 @@ CREATE TABLE IF NOT EXISTS `cronjobs` (
   `dayofweek` tinyint(1) default NULL,
   `time` varchar(2),
   PRIMARY KEY  (`id`)
-)  DEFAULT CHARSET=latin1 COMMENT='Used to run any cronjobs an admin may want to run';
+)  DEFAULT CHARSET=utf8 COMMENT='Used to run any cronjobs an admin may want to run';
 
 CREATE TABLE IF NOT EXISTS `pwd_dirs` (
   id int(11) NOT NULL auto_increment,

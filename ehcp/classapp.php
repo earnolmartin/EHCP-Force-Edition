@@ -104,16 +104,16 @@ class Application
 			'createtable'=>
 "CREATE TABLE IF NOT EXISTS `settings` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `group` varchar(20) CHARACTER SET utf8 COLLATE utf8_turkish_ci DEFAULT '',
-  `reseller` varchar(30) CHARACTER SET utf8 COLLATE utf8_turkish_ci DEFAULT '',
-  `panelusername` varchar(30) CHARACTER SET utf8 COLLATE utf8_turkish_ci DEFAULT '',
-  `name` varchar(40) CHARACTER SET utf8 COLLATE utf8_turkish_ci DEFAULT '',
-  `value` varchar(200) CHARACTER SET utf8 COLLATE utf8_turkish_ci DEFAULT '',
-  `longvalue` text CHARACTER SET utf8 COLLATE utf8_turkish_ci,
-  `comment` varchar(100) CHARACTER SET utf8 COLLATE utf8_turkish_ci DEFAULT '',
+  `group` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT '',
+  `reseller` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT '',
+  `panelusername` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT '',
+  `name` varchar(40) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT '',
+  `value` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT '',
+  `longvalue` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `comment` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `group` (`group`,`reseller`,`panelusername`,`name`,`value`)
-) DEFAULT CHARSET=utf8 COLLATE=utf8_turkish_ci COMMENT='ehcp db - Table for settings of ehcp'"			
+) DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='ehcp db - Table for settings of ehcp'"			
 		),
 		'vpstable'=>array(
 			'tablename'=>'vps',
@@ -129,25 +129,25 @@ class Application
 			'createtable'=>
 "CREATE TABLE `vps` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `reseller` varchar(30) CHARACTER SET utf8 COLLATE utf8_turkish_ci DEFAULT NULL,
-  `panelusername` varchar(30) CHARACTER SET utf8 COLLATE utf8_turkish_ci DEFAULT NULL,
-  `status` varchar(10) CHARACTER SET utf8 COLLATE utf8_turkish_ci DEFAULT NULL,
-  `vpsname` varchar(30) CHARACTER SET utf8 COLLATE utf8_turkish_ci DEFAULT NULL,
-  `description` varchar(100) CHARACTER SET utf8 COLLATE utf8_turkish_ci DEFAULT NULL,
-  `hostip` varchar(20) CHARACTER SET utf8 COLLATE utf8_turkish_ci DEFAULT NULL,
-  `ip` varchar(20) CHARACTER SET utf8 COLLATE utf8_turkish_ci DEFAULT NULL,
-  `netmask` varchar(20) CHARACTER SET utf8 COLLATE utf8_turkish_ci DEFAULT NULL,
-  `broadcast` varchar(20) CHARACTER SET utf8 COLLATE utf8_turkish_ci DEFAULT NULL,
-  `gateway` varchar(20) CHARACTER SET utf8 COLLATE utf8_turkish_ci DEFAULT NULL,
+  `reseller` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `panelusername` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `status` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `vpsname` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `description` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `hostip` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `ip` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `netmask` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `broadcast` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `gateway` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
   `image_template` varchar(100) DEFAULT NULL,
   `ram` int(11) DEFAULT NULL,
   `cpu` int(11) DEFAULT NULL,
-  `state` varchar(20) CHARACTER SET utf8 COLLATE utf8_turkish_ci DEFAULT NULL,
-  `ping` varchar(10) CHARACTER SET utf8 COLLATE utf8_turkish_ci DEFAULT NULL,
+  `state` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `ping` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
   `hdimage` varchar(200) DEFAULT NULL,  
-  `addvpscmd` text CHARACTER SET utf8 COLLATE utf8_turkish_ci DEFAULT NULL,
+  `addvpscmd` text CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) DEFAULT CHARSET=utf8 COLLATE=utf8_turkish_ci COMMENT='ehcp db - list of vps and their properties'"
+) DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='ehcp db - list of vps and their properties'"
 			
 		),
 
@@ -384,7 +384,7 @@ CREATE TABLE transport (
 	domainname varchar(128) NOT NULL default '',
 	transport varchar(128) NOT NULL default '',
 	UNIQUE KEY domainname (domainname)
-) DEFAULT CHARSET=utf8 COLLATE=utf8_turkish_ci 
+) DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci 
 "
 		),
 		'settingstable'=>array(
@@ -407,10 +407,10 @@ CREATE TABLE transport (
 			'tablename'=>'hash',
 			'createtable'=>"
 CREATE TABLE IF NOT EXISTS `hash` (
-  `email` varchar(100) COLLATE utf8_turkish_ci NOT NULL DEFAULT 'NULL',
-  `hash` varchar(100) COLLATE utf8_turkish_ci DEFAULT NULL,
+  `email` varchar(100) COLLATE utf8_general_ci NOT NULL DEFAULT 'NULL',
+  `hash` varchar(100) COLLATE utf8_general_ci DEFAULT NULL,
   KEY `email_index` (`email`)
-) DEFAULT CHARSET=utf8 COLLATE=utf8_turkish_ci COMMENT='to store password remind hash'
+) DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='to store password remind hash'
 			"
 			
 		),
@@ -433,7 +433,7 @@ CREATE TABLE IF NOT EXISTS `remote_backups` (
   `transfer_pass` varchar(50) default NULL,	
   `encryption_pass` varchar(50) default NULL,
   PRIMARY KEY  (`id`)
-)  DEFAULT CHARSET=latin1 COMMENT='Used to schedule cronjobs for remote backups';
+)  DEFAULT CHARSET=utf8 COMMENT='Used to schedule cronjobs for remote backups';
 			",
 			'checkfields'=>array(
 				'encryption_pass'=>'varchar(50)'
@@ -451,7 +451,7 @@ CREATE TABLE IF NOT EXISTS `cronjobs` (
   `dayofweek` tinyint(1) default NULL,
   `time` varchar(2),
   PRIMARY KEY  (`id`)
-) DEFAULT CHARSET=latin1 COMMENT='Used to run any cronjobs an admin may want to run';
+) DEFAULT CHARSET=utf8 COMMENT='Used to run any cronjobs an admin may want to run';
 			"
 			
 		),
@@ -2100,7 +2100,7 @@ function advancedsettings(){
 
 	$optionlist=array(
 		array('morethanoneserver','checkbox','righttext'=>'(This is experimental)','checked'=>$this->miscconfig['morethanoneserver'],'default'=>'Yes'),
-		array('mysqlcharset','lefttext'=>'Default mysql charset for new databases','righttext'=>'Example: DEFAULT CHARACTER SET utf8 COLLATE utf8_turkish_ci','default'=>$this->miscconfig['mysqlcharset']),
+		array('mysqlcharset','lefttext'=>'Default mysql charset for new databases','righttext'=>'Example: DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci','default'=>$this->miscconfig['mysqlcharset']),
 		array('server_id','lefttext'=>'The id of this server, assigned by you, may be empty','righttext'=>'Example: 1 or home, This will be used in future for auto dyndns service inside ehcp','default'=>$this->miscconfig['server_id']),
 		array('defaultdnsserverips','lefttext'=>'Default dns server ip\'s that will host new domains:','righttext'=>'Enter list of ip\'s of your dnsservers here, comma separated list (for this server, you may use localhost)','default'=>$this->miscconfig['defaultdnsserverips']),
 		array('defaultwebserverips','lefttext'=>'Default webserver ip\'s that will host new domains:','righttext'=>'Enter list of ip\'s of your webservers here, comma separated list (for this server, you may use localhost)','default'=>$this->miscconfig['defaultwebserverips']),
@@ -11737,7 +11737,7 @@ function addMysqlDbDirect($myserver, $domainname, $dbusername, $dbuserpass, $dbu
 
 
 	# actual setup for db and dbuser, local or remote
-	# step 1: setup database: DEFAULT CHARACTER SET utf8 COLLATE utf8_turkish_ci
+	# step 1: setup database: DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci
 
 	$s=$this->executeQuery("create database `$dbname` ".$this->miscconfig['mysqlcharset'],'creating db','',$link);
 

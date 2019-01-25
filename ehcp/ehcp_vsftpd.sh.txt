@@ -45,7 +45,7 @@ CREATE TABLE `ftpaccounts` (
   `reseller` varchar(30) default NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `username` (`ftpusername`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
 -- 
 -- Tablo d�k�m verisi `ftpaccounts`
@@ -67,7 +67,7 @@ CREATE TABLE `ftpaccounts` (
   `reseller` varchar(30) default NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `ftpusername` (`ftpusername`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
 -- 
 -- Tablo d�k�m verisi `ftpaccounts`
