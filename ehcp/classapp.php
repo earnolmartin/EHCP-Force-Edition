@@ -13380,7 +13380,7 @@ function syncDomains($file='',$domainname='') {
 			# replace some fields that does not exist in domain array
 			$webserver_template=str_replace(array('{ehcpdir}','{localip}','{wildcarddomain}'),array($this->ehcpdir,$this->miscconfig['localip'],$wildcard),$webserver_template);
 			$webserver_config=str_replace($replacealanlar,$ar1,$webserver_template);
-			$fileout.=$webserver_config;
+			$fileout.= $this->adjustWebTemplateConfIfNeededForLineBreaks($webserver_config);
 		}
 	}
 	
@@ -14106,7 +14106,7 @@ function syncSubdomains($file='',$domainname) {
 			if(!empty($webserver_template)){
 				$webserver_template=str_replace(array('{ehcpdir}','{localip}'),array($this->ehcpdir,$this->miscconfig['localip']),	$webserver_template);
 				$webserver_config=str_replace($replacealanlar,$ar1,$webserver_template);
-				$fileOut .= (!startsWith($webserver_config, PHP_EOL) ? PHP_EOL : "") . $webserver_config . (!endsWith($webserver_config, PHP_EOL) ? PHP_EOL : ""); // Directives need to be separated by newlines
+				$fileOut .= $this->adjustWebTemplateConfIfNeededForLineBreaks($webserver_config); // Directives need to be separated by newlines
 			}else{
 				$arr3[] = $ar1;
 			}
@@ -14129,7 +14129,7 @@ function syncSubdomains($file='',$domainname) {
 			foreach($arr3 as $ar1) {
 				$webserver_template=str_replace(array('{ehcpdir}','{localip}'),array($this->ehcpdir,$this->miscconfig['localip']),$globalSubdomainTemplate);
 				$webserver_config=str_replace($replacealanlar,$ar1,$webserver_template);
-				$fileOut .= $webserver_config;
+				$fileOut .= $this->adjustWebTemplateConfIfNeededForLineBreaks($webserver_config);
 			}
 			$success = writeoutput2($file,$fileOut,(!$customSubdomainsWritten ? 'w' : 'a+'),false);
 			if($success){
@@ -14143,6 +14143,10 @@ function syncSubdomains($file='',$domainname) {
 	}
 
 	return $success;
+}
+
+function adjustWebTemplateConfIfNeededForLineBreaks($webserver_config){
+	return (!startsWith($webserver_config, PHP_EOL) ? PHP_EOL : "") . $webserver_config . (!endsWith($webserver_config, PHP_EOL) ? PHP_EOL : "");
 }
 
 function run_lets_encrypt_commands(){
