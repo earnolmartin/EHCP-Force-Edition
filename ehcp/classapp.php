@@ -12938,7 +12938,8 @@ function build_logrotate_conf($arr2,$host){
 		daily
 		missingok
 		compress
-		delaycompress		
+		delaycompress
+		su root root		
 }";
 	
 	passthru2('mkdir -p '.$this->ehcpdir.'/etc/logrotate.d/');
