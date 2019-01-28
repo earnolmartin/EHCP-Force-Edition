@@ -20,6 +20,10 @@
 	SSLCertificateKeyFile {ssl_cert_key_path}
 	{ssl_cert_chain_setting_with_path}
 
+	<FilesMatch "access_log|error_log">
+		Deny from All
+	</FilesMatch>
+
 	{customsubdomainhttp}
 
 </VirtualHost>
