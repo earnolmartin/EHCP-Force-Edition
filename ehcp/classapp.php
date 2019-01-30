@@ -4850,7 +4850,7 @@ function getSelfFtpAccount($returnto1=''){
 }
 
 function getFtpAccountLoginByUsername($panelusername){
-	$ftpUsernameForDomain = $this->getField('ftpaccounts','ftpusername',"panelusername='" . $this->real_escape_string($panelusername) . "' and type='default'");
+	$ftpUsernameForDomain = $this->getField('ftpaccounts','ftpusername',"panelusername='" . $this->escape($panelusername) . "' and type='default'");
 	if($ftpUsernameForDomain != '') {
 		return $ftpUsernameForDomain;
 	}
