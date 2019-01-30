@@ -6913,7 +6913,7 @@ function moveDomainToAnotherAccount(){
 			$success=$success && $this->executeQuery("update " . $this->conf['emailforwardingstable']['tablename'] . " set panelusername = '" . $movetopaneluser . "' WHERE domainname = '" . $domainInfo["domainname"] . "';");		
 			
 			// Move files to the new home directory
-			$success=$success && $this->runCommandInDaemon("mv " . $currentHome . "/* " . $newHome . "/" . $domainInfo["domainname"]);	
+			$success=$success && $this->runCommandInDaemon("cp -R " . $currentHome . "/* " . $newHome . "/" . $domainInfo["domainname"] . " && rm -rf " . $currentHome);	
 		
 			// Sync FTP accounts
 			$success=$success && $this->addDaemonOp('syncftp','','','','sync ftp for nonstandard homes');
