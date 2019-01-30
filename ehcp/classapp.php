@@ -695,6 +695,9 @@ function runOp($op){ # these are like url to function mappers...  maps op variab
 		case 'addcronjob'				: return $this->addCronjob();break;
 		case 'removecronjob'			: return $this->removeCronjob();break;
 		
+		// Move domain to another account
+		case 'movedomaintoanotheraccount' : return $this->moveDomainToAnotherAccount();break;
+		
 		case 'adddnsonlydomainwithpaneluser': return $this->addDnsOnlyDomainWithPaneluser();break;
 
 		case 'getselfftpaccount'		: return $this->getSelfFtpAccount();break;
@@ -830,7 +833,6 @@ function runOp($op){ # these are like url to function mappers...  maps op variab
 		case 'adddomain'				: return $this->addDomain();break;
 		case 'adddomaineasy'			: return $this->addDomainEasy();break;
 		case 'adddomaineasyip'			: return $this->addDomainEasyip();break;
-		case 'transferdomain'	   		: return $this->transferDomain(); break;
 		case 'deletedomain'				: return $this->deleteDomain();break;
 		case 'addemailuser'				: return $this->addEmailUser();break;
 		case 'addftpuser'				: return $this->addFtpUser();break;
@@ -4808,27 +4810,6 @@ function addDomainEasyip(){
 	return $success;
 }
 
-
-function transferDomain(){
-	# transfer domain to another ehcp user/client in this server
-	global $domainname,$username,$_insert;
-	$this->getVariable(array("domainname",'username','_insert'));
-
-	$domainname=$this->chooseDomain(__FUNCTION__,$domainname);
-
-	if(!$username){
-		$this->output.="Please enter the EHCP username that you would like to transfer the domain to: ".inputform5(array(
-																													array("username", 'lefttext'=>'Username')
-																												  ));
-	} else {
-		$count=$this->recordcount($this->conf['paneluserstable']['tablename'], "panelusername='$username'");
-		if($count==0) return $this->errorText("User $username was not found.");
-
-		$success=$this->executeQuery("update ".$this->conf['domainstable']['tablename']." set ".$this->conf['domainstable']['ownerfield']."='$username' where domainname='$domainname'", $opname);
-		return $this->ok_err_text($success, "Domain was successfully transfered.", "Domain transfer failed!");
-	}
-}
-
 function setFTPPathInSession(){
 	$selfftp=$this->getField('ftpaccounts','ftpusername',"panelusername='$this->activeuser' and type='default'");
 	if($selfftp != ''){
@@ -4868,7 +4849,14 @@ function getSelfFtpAccount($returnto1=''){
 	return True;
 }
 
-
+function getFtpAccountByDomain($domainname){
+	$ftpUsernameForDomain = $this->getField('ftpaccounts','ftpusername',"panelusername='" . $this->real_escape_string($domainname) . "' and type='default'");
+	if($ftpUsernameForDomain != '') {
+		return $ftpUsernameForDomain;
+	}
+	
+	return false;
+}
 
 
 function addDomainToThisPaneluser(){ # add domain to this paneluser and existing ftp space
@@ -6855,6 +6843,111 @@ function removeCronjob(){ # coded by earnolmartin@gmail.com
 
 	$this->showSimilarFunctions('backup');
 	return $success;
+}
+
+function moveDomainToAnotherAccount(){
+	global $_insert, $domainid, $id, $domainname;
+	
+	$success = true;
+	$this->requireAdmin();
+	$this->getVariable(array("_insert", "domainname", "movetopaneluser", "_insert2"));
+	$domainname=$this->chooseDomain(__FUNCTION__,$domainname);
+	
+	$domainInfo = $this->getDomainInfo($domainname);
+	$currentUserThatOwnsDomain = $this->getPanelUserInfo('', $domainInfo['panelusername']);
+	
+	if(!$_insert) {
+		
+		$userAccountsWithFTP = $this->getUsersWithDefaultFTPAccounts(false);
+		
+		if($userAccountsWithFTP === false || count($userAccountsWithFTP) === 0){
+			$this->ok_err_text(false,"There are no accounts that have associated FTP accounts.");
+			return false;
+		}
+		
+		$inputparams=array(
+			array('op','hidden','default'=>__FUNCTION__),
+			array('movetopaneluser','select','lefttext'=>'Account to Move Domain To:','secenekler'=>$userAccountsWithFTP,'default'=>($currentUserThatOwnsDomain ? $currentUserThatOwnsDomain["id"] : "")),
+			array('submit','submit','default'=>'Move Domain to Selected Account'),
+			
+		);
+		
+		$this->output.="<p>Unassociate, move domain \"<b>" . $domainname . "</b>\", and move \"<b>" . $domainname . "</b>'s\" subdomains to this user:</p>" . inputform5($inputparams);
+	} else {
+		
+		if(!$_insert2) {
+			
+			$inputparams=array(
+				array('op','hidden','default'=>__FUNCTION__),
+				array('movetopaneluser', 'hidden', 'default' => $movetopaneluser),
+				array('submit','submit','default'=>'Yes'),
+				array('_insert2','hidden','default'=>'1'),
+				array('_insert','hidden','default'=>'1')
+			);
+			
+			$this->output.="<p>Are you sure you want to associate the domain of \"<b>" . $domainname . "</b>\" with the panel user of \"<b>" . $movetopaneluser . "</b>\"?&nbsp; All subdomains, email accounts, MySQL databases, password protected directories, and any other domain associated information will be transferred to this user!</p>" . inputform5($inputparams);
+				
+		}else{
+		
+			$newAccountInfo = $this->getPanelUserInfo('', $movetopaneluser);
+			$resellerOfAccount = $newAccountInfo["reseller"]; 
+			 
+			$currentHome = $domainInfo["homedir"];
+			$newHome = "/var/www/vhosts/" . $movetopaneluser;
+			
+			// Update associations in the database.
+			$success=$success && $this->executeQuery("update " . $this->conf['domainstable']['tablename'] . " set homedir= '" . $newHome . "/" . $domainInfo["domainname"] . "', panelusername = '" . $movetopaneluser . "', reseller = '" . $resellerOfAccount . "' where domainname = '". $domainname . "';");	
+			$success=$success && $this->executeQuery("update " . $this->conf['subdomainstable']['tablename'] . " set panelusername = '" . $movetopaneluser . "' where domainname = '". $domainname . "';");
+			$success=$success && $this->executeQuery("update " . $this->conf['subdomainstable']['tablename'] . " set homedir = REPLACE(homedir, '" . $currentHome. "', '". $newHome . "/" . $domainInfo["domainname"] . "');");
+			$success=$success && $this->executeQuery("update " . $this->conf['mysqldbuserstable']['tablename'] . " set panelusername = '" . $movetopaneluser . "' WHERE domainname = '" . $domainname["domainname"] . "');");	
+			$success=$success && $this->executeQuery("update " . $this->conf['emailuserstable']['tablename'] . " set panelusername = '" . $movetopaneluser . "' WHERE domainname = '" . $domainname["domainname"] . "');");
+			$success=$success && $this->executeQuery("update " . $this->conf['mysqldbstable']['tablename'] . " set panelusername = '" . $movetopaneluser . "' WHERE domainname = '" . $domainname["domainname"] . "');");
+			$success=$success && $this->executeQuery("update " . $this->conf['ftpuserstable']['tablename'] . " set panelusername = '" . $movetopaneluser . "', reseller = '" . $resellerOfAccount . "' WHERE panelusername IS NOT NULL AND domainname IS NOT NULL AND domainname = '" . $domainname["domainname"] . "' AND type != 'default');");
+			$success=$success && $this->executeQuery("update " . $this->conf['ftpuserstable']['tablename'] . " set homedir = REPLACE(homedir, '" . $currentHome. "', '". $newHome . "/" . $domainInfo["domainname"] . "');");	
+			$success=$success && $this->executeQuery("update " . $this->conf['pwd_dirs_table']['tablename'] . " set domainpath = REPLACE(domainpath, '" . $currentHome. "', '". $newHome . "/" . $domainInfo["domainname"] . "');");		
+			$success=$success && $this->executeQuery("update " . $this->conf['emailforwardingstable']['tablename'] . " set panelusername = '" . $movetopaneluser . "' WHERE domainname = '" . $domainname["domainname"] . "');");		
+			
+			// Move files to the new home directory
+			$success=$success && $this->runCommandInDaemon("mv " . $currentHome . "/* " . $newHome . "/" . $domainInfo["domainname"]);	
+		
+			// Sync FTP accounts
+			$success=$success && $this->addDaemonOp('syncftp','','','','sync ftp for nonstandard homes');
+		
+			// Sync domains
+			$success=$success && $this->addDaemonOp("syncdomains",'xx',$domainname,'','sync domains');
+			
+			$this->ok_err_text($success,"Domain \"" . $domainname . "\" was successfully moved and associated with the panel user of \"" . $movetopaneluser . "\"!","Failed to move and associate domain \"" . $domainname . "\" to the panel user of \"" . $movetopaneluser . "\"! (" . __FUNCTION__ . ")");
+		}
+	}
+	
+	return $success;
+}
+
+function getUsersWithDefaultFTPAccounts($includeSelf = true){
+	// Build table based on queries
+	$SQL = "SELECT panel.panelusername as panelusername, panel.id as id  FROM " . $this->conf['ftpuserstable']['tablename'] . " as fp INNER JOIN " . $this->conf['paneluserstable']['tablename'] . " as panel ON fp.panelusername = panel.panelusername ORDER BY panel.panelusername ASC";
+	
+	// Run Query
+	$rs=$this->query($SQL);
+	
+	if($rs && is_array($rs)){
+		foreach($rs as $dom) {
+			$usersWithFTP[$dom["panelusername"]] = $dom["panelusername"];
+		}
+	}
+	
+	if(isset($usersWithFTP) && is_array($usersWithFTP) && count($usersWithFTP) > 0){
+		if(!$includeSelf){
+			unset($usersWithFTP[$this->activeuser]);
+		}
+	}
+	
+	if(isset($usersWithFTP) && is_array($usersWithFTP) && count($usersWithFTP) > 0){
+		
+		return $usersWithFTP;
+	}
+	
+	return false;
 }
 
 function getBackupDay($dayOfWeekNum){

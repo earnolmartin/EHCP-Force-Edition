@@ -85,6 +85,14 @@ function getPublicServerSettings(){
 			$(".itemDomainapache img").attr('alt', $(".itemDomainapache img").attr('alt').replace('Apache', data.webservertype));
 			$(".itemDomainapache").attr('title', $(".itemDomainapache").attr('title').replace('Apache', data.webservertype));
 		}
+		
+		// Show and hide transfer option (only available to admins)
+		if(!data.hasOwnProperty('isadmin') || (data.hasOwnProperty('isadmin') && !data.isadmin)){
+			var transferDomContainer = $("div.itemMovedomaintoanotheraccount");
+			if(transferDomContainer.length){
+				transferDomContainer.remove();
+			}
+		}
 	});
 }
 
