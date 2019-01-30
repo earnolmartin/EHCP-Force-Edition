@@ -4849,8 +4849,8 @@ function getSelfFtpAccount($returnto1=''){
 	return True;
 }
 
-function getFtpAccountByDomain($domainname){
-	$ftpUsernameForDomain = $this->getField('ftpaccounts','ftpusername',"panelusername='" . $this->real_escape_string($domainname) . "' and type='default'");
+function getFtpAccountLoginByUsername($panelusername){
+	$ftpUsernameForDomain = $this->getField('ftpaccounts','ftpusername',"panelusername='" . $this->real_escape_string($panelusername) . "' and type='default'");
 	if($ftpUsernameForDomain != '') {
 		return $ftpUsernameForDomain;
 	}
@@ -6861,7 +6861,7 @@ function moveDomainToAnotherAccount(){
 		$userAccountsWithFTP = $this->getUsersWithDefaultFTPAccounts(false);
 		
 		if($userAccountsWithFTP === false || count($userAccountsWithFTP) === 0){
-			$this->ok_err_text(false,"There are no accounts that have associated FTP accounts.");
+			$this->ok_err_text(false,"There are no accounts that have associated FTP accounts.","There are no accounts that have associated FTP accounts.");
 			return false;
 		}
 		
@@ -6891,9 +6891,14 @@ function moveDomainToAnotherAccount(){
 		
 			$newAccountInfo = $this->getPanelUserInfo('', $movetopaneluser);
 			$resellerOfAccount = $newAccountInfo["reseller"]; 
-			 
+			$newAccountFTPLogin = $this->getFtpAccountLoginByUsername($movetopaneluser);
+			if($newAccountFTPLogin === false){
+				$this->ok_err_text(false,"User doesn't have an FTP login set yet!","User doesn't have an FTP login set yet!");
+				return false;
+			}
+			
 			$currentHome = $domainInfo["homedir"];
-			$newHome = "/var/www/vhosts/" . $movetopaneluser;
+			$newHome = "/var/www/vhosts/" . $newAccountFTPLogin;
 			
 			// Update associations in the database.
 			$success=$success && $this->executeQuery("update " . $this->conf['domainstable']['tablename'] . " set homedir= '" . $newHome . "/" . $domainInfo["domainname"] . "', panelusername = '" . $movetopaneluser . "', reseller = '" . $resellerOfAccount . "' where domainname = '". $domainInfo["domainname"] . "';");	
