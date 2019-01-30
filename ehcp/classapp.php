@@ -6846,7 +6846,7 @@ function removeCronjob(){ # coded by earnolmartin@gmail.com
 }
 
 function moveDomainToAnotherAccount(){
-	global $_insert, $domainid, $id, $domainname;
+	global $_insert, $_insert2, $domainname, $movetopaneluser;
 	
 	$success = true;
 	$this->requireAdmin();
@@ -6872,7 +6872,7 @@ function moveDomainToAnotherAccount(){
 			
 		);
 		
-		$this->output.="<p>Unassociate, move domain \"<b>" . $domainname . "</b>\", and move \"<b>" . $domainname . "</b>'s\" subdomains to this user:</p>" . inputform5($inputparams);
+		$this->output.="<p>Unassociate, move domain \"<b>" . $domainname . "</b>\", and move \"<b>" . $domainname . "</b>\"'s subdomains to this user:</p>" . inputform5($inputparams);
 	} else {
 		
 		if(!$_insert2) {
