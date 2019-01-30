@@ -696,7 +696,9 @@ function runOp($op){ # these are like url to function mappers...  maps op variab
 		case 'removecronjob'			: return $this->removeCronjob();break;
 		
 		// Move domain to another account
-		case 'movedomaintoanotheraccount' : return $this->moveDomainToAnotherAccount();break;
+		case 'transferdomain':
+		case 'movedomaintoanotheraccount': 
+			return $this->moveDomainToAnotherAccount();break;
 		
 		case 'adddnsonlydomainwithpaneluser': return $this->addDnsOnlyDomainWithPaneluser();break;
 
