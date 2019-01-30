@@ -6896,16 +6896,16 @@ function moveDomainToAnotherAccount(){
 			$newHome = "/var/www/vhosts/" . $movetopaneluser;
 			
 			// Update associations in the database.
-			$success=$success && $this->executeQuery("update " . $this->conf['domainstable']['tablename'] . " set homedir= '" . $newHome . "/" . $domainInfo["domainname"] . "', panelusername = '" . $movetopaneluser . "', reseller = '" . $resellerOfAccount . "' where domainname = '". $domainname . "';");	
-			$success=$success && $this->executeQuery("update " . $this->conf['subdomainstable']['tablename'] . " set panelusername = '" . $movetopaneluser . "' where domainname = '". $domainname . "';");
+			$success=$success && $this->executeQuery("update " . $this->conf['domainstable']['tablename'] . " set homedir= '" . $newHome . "/" . $domainInfo["domainname"] . "', panelusername = '" . $movetopaneluser . "', reseller = '" . $resellerOfAccount . "' where domainname = '". $domainInfo["domainname"] . "';");	
+			$success=$success && $this->executeQuery("update " . $this->conf['subdomainstable']['tablename'] . " set panelusername = '" . $movetopaneluser . "' where domainname = '". $domainInfo["domainname"] . "';");
 			$success=$success && $this->executeQuery("update " . $this->conf['subdomainstable']['tablename'] . " set homedir = REPLACE(homedir, '" . $currentHome. "', '". $newHome . "/" . $domainInfo["domainname"] . "');");
-			$success=$success && $this->executeQuery("update " . $this->conf['mysqldbuserstable']['tablename'] . " set panelusername = '" . $movetopaneluser . "' WHERE domainname = '" . $domainname["domainname"] . "');");	
-			$success=$success && $this->executeQuery("update " . $this->conf['emailuserstable']['tablename'] . " set panelusername = '" . $movetopaneluser . "' WHERE domainname = '" . $domainname["domainname"] . "');");
-			$success=$success && $this->executeQuery("update " . $this->conf['mysqldbstable']['tablename'] . " set panelusername = '" . $movetopaneluser . "' WHERE domainname = '" . $domainname["domainname"] . "');");
-			$success=$success && $this->executeQuery("update " . $this->conf['ftpuserstable']['tablename'] . " set panelusername = '" . $movetopaneluser . "', reseller = '" . $resellerOfAccount . "' WHERE panelusername IS NOT NULL AND domainname IS NOT NULL AND domainname = '" . $domainname["domainname"] . "' AND type != 'default');");
+			$success=$success && $this->executeQuery("update " . $this->conf['mysqldbuserstable']['tablename'] . " set panelusername = '" . $movetopaneluser . "' WHERE domainname = '" . $domainInfo["domainname"] . "');");	
+			$success=$success && $this->executeQuery("update " . $this->conf['emailuserstable']['tablename'] . " set panelusername = '" . $movetopaneluser . "' WHERE domainname = '" . $domainInfo["domainname"] . "');");
+			$success=$success && $this->executeQuery("update " . $this->conf['mysqldbstable']['tablename'] . " set panelusername = '" . $movetopaneluser . "' WHERE domainname = '" . $domainInfo["domainname"] . "');");
+			$success=$success && $this->executeQuery("update " . $this->conf['ftpuserstable']['tablename'] . " set panelusername = '" . $movetopaneluser . "', reseller = '" . $resellerOfAccount . "' WHERE panelusername IS NOT NULL AND domainname IS NOT NULL AND domainname = '" . $domainInfo["domainname"] . "' AND type != 'default');");
 			$success=$success && $this->executeQuery("update " . $this->conf['ftpuserstable']['tablename'] . " set homedir = REPLACE(homedir, '" . $currentHome. "', '". $newHome . "/" . $domainInfo["domainname"] . "');");	
 			$success=$success && $this->executeQuery("update " . $this->conf['pwd_dirs_table']['tablename'] . " set domainpath = REPLACE(domainpath, '" . $currentHome. "', '". $newHome . "/" . $domainInfo["domainname"] . "');");		
-			$success=$success && $this->executeQuery("update " . $this->conf['emailforwardingstable']['tablename'] . " set panelusername = '" . $movetopaneluser . "' WHERE domainname = '" . $domainname["domainname"] . "');");		
+			$success=$success && $this->executeQuery("update " . $this->conf['emailforwardingstable']['tablename'] . " set panelusername = '" . $movetopaneluser . "' WHERE domainname = '" . $domainInfo["domainname"] . "');");		
 			
 			// Move files to the new home directory
 			$success=$success && $this->runCommandInDaemon("mv " . $currentHome . "/* " . $newHome . "/" . $domainInfo["domainname"]);	
@@ -6914,7 +6914,7 @@ function moveDomainToAnotherAccount(){
 			$success=$success && $this->addDaemonOp('syncftp','','','','sync ftp for nonstandard homes');
 		
 			// Sync domains
-			$success=$success && $this->addDaemonOp("syncdomains",'xx',$domainname,'','sync domains');
+			$success=$success && $this->addDaemonOp('syncdomains','','','','sync domains');
 			
 			$this->ok_err_text($success,"Domain \"" . $domainname . "\" was successfully moved and associated with the panel user of \"" . $movetopaneluser . "\"!","Failed to move and associate domain \"" . $domainname . "\" to the panel user of \"" . $movetopaneluser . "\"! (" . __FUNCTION__ . ")");
 		}
