@@ -6858,7 +6858,7 @@ function moveDomainToAnotherAccount(){
 	
 	if(!$_insert) {
 		
-		$userAccountsWithFTP = $this->getUsersWithDefaultFTPAccounts(false);
+		$userAccountsWithFTP = $this->getUsersWithDefaultFTPAccounts(true, $currentUserThatOwnsDomain["panelusername"]);
 		
 		if($userAccountsWithFTP === false || count($userAccountsWithFTP) === 0){
 			$this->ok_err_text(false,"There are no accounts that have associated FTP accounts.","There are no accounts that have associated FTP accounts.");
@@ -6867,7 +6867,7 @@ function moveDomainToAnotherAccount(){
 		
 		$inputparams=array(
 			array('op','hidden','default'=>__FUNCTION__),
-			array('movetopaneluser','select','lefttext'=>'Account to Move Domain To:','secenekler'=>$userAccountsWithFTP,'default'=>($currentUserThatOwnsDomain ? $currentUserThatOwnsDomain["id"] : "")),
+			array('movetopaneluser','select','lefttext'=>'Account to Move Domain To:','secenekler'=>$userAccountsWithFTP,'default'=>($currentUserThatOwnsDomain ? $currentUserThatOwnsDomain["panelusername"] : "")),
 			array('submit','submit','default'=>'Move Domain to Selected Account'),
 			
 		);
@@ -6913,7 +6913,7 @@ function moveDomainToAnotherAccount(){
 			$success=$success && $this->executeQuery("update " . $this->conf['emailforwardingstable']['tablename'] . " set panelusername = '" . $movetopaneluser . "' WHERE domainname = '" . $domainInfo["domainname"] . "';");		
 			
 			// Move files to the new home directory
-			$success=$success && $this->runCommandInDaemon("cp -R " . $currentHome . "/* " . $newHome . "/" . $domainInfo["domainname"] . " && rm -rf " . $currentHome);	
+			$success=$success && $this->runCommandInDaemon("mkdir -p " . $newHome . "/" . $domainInfo["domainname"] . " && cp -R " . $currentHome . "/* " . $newHome . "/" . $domainInfo["domainname"] . " && rm -rf " . $currentHome);	
 		
 			// Sync FTP accounts
 			$success=$success && $this->addDaemonOp('syncftp','','','','sync ftp for nonstandard homes');
@@ -6928,7 +6928,7 @@ function moveDomainToAnotherAccount(){
 	return $success;
 }
 
-function getUsersWithDefaultFTPAccounts($includeSelf = true){
+function getUsersWithDefaultFTPAccounts($includeSelf = true, $currentOwner = ""){
 	// Build table based on queries
 	$SQL = "SELECT panel.panelusername as panelusername, panel.id as id  FROM " . $this->conf['ftpuserstable']['tablename'] . " as fp INNER JOIN " . $this->conf['paneluserstable']['tablename'] . " as panel ON fp.panelusername = panel.panelusername ORDER BY panel.panelusername ASC";
 	
@@ -6944,6 +6944,10 @@ function getUsersWithDefaultFTPAccounts($includeSelf = true){
 	if(isset($usersWithFTP) && is_array($usersWithFTP) && count($usersWithFTP) > 0){
 		if(!$includeSelf){
 			unset($usersWithFTP[$this->activeuser]);
+		}
+		
+		if(!empty($currentOwner)){
+			unset($usersWithFTP[$currentOwner]);
 		}
 	}
 	
