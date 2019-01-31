@@ -6915,7 +6915,7 @@ function moveDomainToAnotherAccount(){
 			$success=$success && $this->executeQuery("update " . $this->conf['emailforwardingstable']['tablename'] . " set panelusername = '" . $movetopaneluser . "' WHERE domainname = '" . $domainInfo["domainname"] . "';");		
 			
 			// Move files to the new home directory
-			$success=$success && $this->runCommandInDaemon("mkdir -p " . $newHome . "/" . $domainInfo["domainname"] . " && cp -R " . $currentHome . "/* " . $newHome . "/" . $domainInfo["domainname"] . " && rm -rf " . $currentHome);	
+			$success=$success && $this->runCommandInDaemon("mkdir -p " . $newHome . "/" . $domainInfo["domainname"] . " && cp -R " . $currentHome . "/* " . $newHome . "/" . $domainInfo["domainname"] . " && rm -rf " . $currentHome . " && chown -R " . $this->ftpuser . ":www-data " . $newHome . "/" . $domainInfo["domainname"]);	
 		
 			// Sync FTP accounts
 			$success=$success && $this->addDaemonOp('syncftp','','','','sync ftp for nonstandard homes');
