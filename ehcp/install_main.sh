@@ -551,6 +551,11 @@ function genUbuntuFixes(){
 			fixApache2ConfigInvalidLockFileLine
 			fixMariaDBSkippingInnoDB
 		fi
+		
+		# Ubuntu 18.04+ and Debian 10+ Fixes
+		if [[ "$distro" == "ubuntu" && "$yrelease" -ge "18" ]] || [[ "$distro" == "debian" && "$yrelease" -ge "10" ]]; then
+			fixQuotaForEmailsPostfix3x
+		fi
 	fi
 }
 
@@ -2555,6 +2560,53 @@ function syncDomainsEHCP(){
 		cd "$curDir"
 	fi
 }
+
+function fixQuotaForEmailsPostfix3x(){
+	# Get currently working directory
+	origDir=$( pwd )
+	
+	cd "$patchDir"
+	
+	# Do normal postfix dpkg first
+	if [ ! -e postfix_3.3.0-1ubuntu0.2.deb ]; then
+		if [ $OSBits -eq "32" ]; then
+			cp "$FIXDIR/postfix/postfix_3.3.0-1ubuntu0.2_i386.deb" "postfix_3.3.0-1ubuntu0.2.deb"
+		else
+			cp "$FIXDIR/postfix/postfix_3.3.0-1ubuntu0.2_amd64.deb" "postfix_3.3.0-1ubuntu0.2.deb"
+		fi
+	fi
+	
+	#install
+	dpkg -i postfix_3.3.0-1ubuntu0.2.deb
+	echo "postfix hold" | dpkg --set-selections # Ignore official updates to postfix package
+	
+	# Handle postfix-mysql
+	if [ ! -e postfix-mysql_3.3.0-1ubuntu0.2.deb ]; then
+		if [ $OSBits -eq "32" ]; then
+			cp "$FIXDIR/postfix/postfix-mysql_3.3.0-1ubuntu0.2_i386.deb" "postfix-mysql_3.3.0-1ubuntu0.2.deb"
+		else
+			cp "$FIXDIR/postfix/postfix-mysql_3.3.0-1ubuntu0.2_amd64.deb" "postfix-mysql_3.3.0-1ubuntu0.2.deb"
+		fi
+	fi
+	
+	#install
+	dpkg -i postfix-mysql_3.3.0-1ubuntu0.2.deb
+	echo "postfix-mysql hold" | dpkg --set-selections # Ignore official updates to postfix-mysql package
+	
+	# Update the settings
+	mailLimitFile="/etc/postfix/mysql-virtual_mailbox_limit_maps.cf"
+	if [ -e "$mailLimitFile" ]; then
+		hasQueryInMailboxLimitFile=$(cat "$mailLimitFile" | grep -o "query")
+		if [ ! -z "$hasQueryInMailboxLimitFile" ]; then
+			sed -i "s/^query/query = SELECT quota*1048576 FROM emailusers WHERE email='%s'/g" "$mailLimitFile"
+		else
+			echo -e "query = SELECT quota*1048576 FROM emailusers WHERE email='%s'" >> "$mailLimitFile"
+		fi
+	fi
+	
+	cd $origDir
+}
+
 #############################################################
 # End Functions & Start Install							 #
 #############################################################

@@ -786,8 +786,10 @@ function runOp($op){ # these are like url to function mappers...  maps op variab
 		case 'syncdomains'				: return $this->syncDomains();break;
 		case 'handlecouriersslcert'		: return $this->handleCourierSSLCert();break;
 		case 'handlevsftpdsslcert'		: return $this->handleVSFTPDSSLCert();break;
+		case 'handlepostfixsslcert'		: return $this->handlePostfixSSLCert();break;
 		case 'resynccourierssl'			: return $this->resyncCourierSSL();break;
 		case 'resyncvsftpdssl'			: return $this->resyncVSFTPDSSL();break;
+		case 'resyncpostfixssl'			: return $this->resyncPostfixSSL();break;
 		case 'syncftp'					: return $this->syncFtp();break;
 		case 'rebuild_crontab'			: return $this->rebuildCrontab();break;
 		case 'process_pwd_dirs'			: return $this->handlePasswordProtectedDirs();break;
@@ -2116,9 +2118,11 @@ function advancedsettings(){
 		array('allowcustomsslnonadmin','checkbox','lefttext'=>'Allow non-admin users to manage and use custom SSL certs for domains','default'=>'Yes','checked'=>$this->miscconfig['allowcustomsslnonadmin'],'righttext'=>'(may break webserver if certificates are invalid)'),
 		array('allowanonymousftptodirectory','lefttext'=>'Enable Anonymous READONLY FTP Access to Specific Directory:','righttext'=>'Leave blank to keep disabled.&nbsp; DO NOT USE EHCP DIRECTORIES!','default'=>$this->miscconfig['allowanonymousftptodirectory']),
 		array('globalpanelurls', 'textarea', 'lefttext'=>'EHCP Panel Direct URL(s) (Protected by Let\'s Encrypt if SSL is Enabled):<br>(Takes the format of ns3.otherdomain.com,otherdomain.com)<br>Multiple entries separated by comma ",".<br>Leave blank if you don\'t want to configure any.<br>Use only domains or subdomains not currently configured in the panel for best results.</p>', 'default'=> $this->miscconfig['globalpanelurls'], 'skip-ending-colon'=>true),
-		array('sslcouriercertpath','lefttext'=>'POP3-SSL and IMAP-SSL Certificate Path:','righttext'=>'Leave blank to use the default self-signed certificate.','default'=>$this->miscconfig['sslcouriercertpath']),
+		array('postfixsslcertpath','lefttext'=>'Postfix TLS SSL (Combined in PEM format) Path:','righttext'=>'Leave blank to use the default self-signed certificate.','default'=>$this->miscconfig['postfixsslcertpath']),
+		array('restartpostfix','checkbox','lefttext'=>'Reload Postfix SSL (Refresh SSL Cert)','default'=>'Yes'),
+		array('sslcouriercertpath','lefttext'=>'POP3-SSL and IMAP-SSL Certificate (Combined in PEM format) Path:','righttext'=>'Leave blank to use the default self-signed certificate.','default'=>$this->miscconfig['sslcouriercertpath']),
 		array('restartcourier','checkbox','lefttext'=>'Reload Courier SSL (Refresh SSL Cert)','default'=>'Yes'),
-		array('sslvsftpdcertpath','lefttext'=>'VSFTPD Certificate Path:','righttext'=>'Leave blank to revert back to default VSFTPD configuration.','default'=>$this->miscconfig['sslvsftpdcertpath']),
+		array('sslvsftpdcertpath','lefttext'=>'VSFTPD Certificate (Combined in PEM format) Path:','righttext'=>'Leave blank to revert back to default VSFTPD configuration.','default'=>$this->miscconfig['sslvsftpdcertpath']),
 		array('restartvsftpd','checkbox','lefttext'=>'Reload VSFTPD SSL (Refresh SSL Cert)','default'=>'Yes')
 	);
 
@@ -2134,13 +2138,14 @@ function advancedsettings(){
 		$old_globalcert_type=$this->miscconfig['useglobalsslcert'];
 		$old_courier_ssl_cert=$this->miscconfig['sslcouriercertpath'];
 		$old_vsftpd_ssl_cert = $this->miscconfig['sslvsftpdcertpath'];
+		$old_postfix_ssl_cert = $this->miscconfig['postfixsslcertpath'];
 		
 		if($old_webserver_type=='') $old_webserver_type='apache2-nonssl';
 
 		$this->output.="Updating configuration...";
 		#$this->debugecho(print_r2($optionlist),3,false);
 
-		$optionsToIgnore = array('restartcourier', 'restartvsftpd');
+		$optionsToIgnore = array('restartcourier', 'restartvsftpd', 'restartpostfix');
 		foreach($optionlist as $option) {
 			if(!in_array($option[0], $optionsToIgnore)){
 				global ${$option[0]}; # make it global to be able to read in getVariable function..may be we need to fix the global thing..
@@ -2208,6 +2213,20 @@ function advancedsettings(){
 			// If they're the same, the certificate may have changed, so we allow a quick way to restart the courier ssl services
 			if($this->hasValueOrZero($_REQUEST["restartvsftpd"])){
 				$this->addDaemonOp('resyncvsftpdssl','','','','resyncvsftpdssl');
+			}
+		}
+		
+		// Handle Postfix SSL certificate path
+		if($old_postfix_ssl_cert != $this->miscconfig['postfixsslcertpath']){
+			if($this->hasValueOrZero($this->miscconfig['postfixsslcertpath']) && !isextension($this->miscconfig['postfixsslcertpath'], 'pem')){
+				// Reset its value since it's not valid
+				$this->setConfigValue('postfixsslcertpath', $old_postfix_ssl_cert);
+			}
+			$this->addDaemonOp('handlepostfixsslcert','','','','handlepostfixsslcert');
+		}else{
+			// If they're the same, the certificate may have changed, so we allow a quick way to restart the courier ssl services
+			if($this->hasValueOrZero($_REQUEST["restartpostfix"])){
+				$this->addDaemonOp('resyncpostfixssl','','','','resyncpostfixssl');
 			}
 		}
 		
@@ -13819,6 +13838,14 @@ function resyncCourierSSL(){
 	return true;
 }
 
+function resyncPostfixSSL(){
+	$this->requireCommandLine(__FUNCTION__);
+	echo "Restarting Postfix services!\n";
+	manageService("postfix", "restart");
+	
+	return true;
+}
+
 function resyncVSFTPDSSL(){
 	$this->requireCommandLine(__FUNCTION__);
 	echo "Restarting VSFTPD service!\n";
@@ -13988,6 +14015,46 @@ function handleCourierSSLCert(){
 			rename($pop3dOrigPath, $pop3dPath);
 			manageService("courier-pop-ssl", "restart");
 		}		
+	}
+	
+	return true;
+}
+
+function handlePostfixSSLCert(){
+	$this->requireCommandLine(__FUNCTION__);
+	
+	// Echo statements for debug and showing in the log
+	echo "Updating Postfix SSL certificate!\n";
+	
+	// Variables
+	$postFixConfigLocation = '/etc/postfix/main.cf';
+	$origCertPath = '/etc/postfix/smtpd.cert';
+	$origKeyPath = '/etc/postfix/smtpd.key';
+	
+	// Load latest config
+	$this->loadConfigWithDaemon();
+	
+	if($this->hasValueOrZero($this->miscconfig['postfixsslcertpath'])){
+		$postfixSSLPath = $this->miscconfig['postfixsslcertpath'];
+		if(file_exists($postfixSSLPath) && isextension($postfixSSLPath ,'pem') && file_exists($postFixConfigLocation)){
+			echo "Using certificate from $postfixSSLPath for Postfix!\n";
+			
+			// Edit the config files to make sure our certs are being used
+			replacelineinfile("smtpd_tls_cert_file", "smtpd_tls_cert_file = " . $postfixSSLPath, $postFixConfigLocation, true);
+			replacelineinfile("smtpd_tls_key_file", 'smtpd_tls_key_file = $smtpd_tls_cert_file', $postFixConfigLocation, true);
+			
+			$this->resyncPostfixSSL();
+		}else{
+			echo "Proposed certificate path of \"" . $postfixSSLPath . "\" does NOT exist!\n";
+		}
+	}else{
+		echo "Restoring default SSL certificate for Postfix!\n";
+		if(file_exists($postFixConfigLocation) && file_exists($origCertPath) && file_exists($origKeyPath)){
+			replacelineinfile("smtpd_tls_cert_file", "smtpd_tls_cert_file = " . $origCertPath, $postFixConfigLocation, true);
+			replacelineinfile("smtpd_tls_key_file", "smtpd_tls_key_file = " . $origKeyPath, $postFixConfigLocation, true);
+		}else{
+			echo "Unable to restore default SSL certificate settings for Postfix due to " . $origCertPath. ", " . $postFixConfigLocation . ", or " . $origKeyPath . " missing!\n";
+		}
 	}
 	
 	return true;
