@@ -2598,7 +2598,7 @@ function fixQuotaForEmailsPostfix3x(){
 	if [ -e "$mailLimitFile" ]; then
 		hasQueryInMailboxLimitFile=$(cat "$mailLimitFile" | grep -o "query")
 		if [ ! -z "$hasQueryInMailboxLimitFile" ]; then
-			sed -i "s/^query/query = SELECT quota*1048576 FROM emailusers WHERE email='%s'/g" "$mailLimitFile"
+			sed -i "s/^query.*/query = SELECT quota*1048576 FROM emailusers WHERE email='%s'/g" "$mailLimitFile"
 		else
 			echo -e "query = SELECT quota*1048576 FROM emailusers WHERE email='%s'" >> "$mailLimitFile"
 		fi
