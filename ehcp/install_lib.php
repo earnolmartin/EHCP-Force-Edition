@@ -804,6 +804,7 @@ hosts = localhost";
 
 	passthru3("postconf -e 'virtual_create_maildirsize = yes'");
 	passthru3("postconf -e 'virtual_mailbox_extended = yes'");
+	passthru3("postconf -e 'virtual_maildir_extended = yes'");
 	passthru3("postconf -e 'virtual_mailbox_limit_maps = proxy:mysql:/etc/postfix/mysql-virtual_mailbox_limit_maps.cf'");
 	passthru3("postconf -e 'virtual_mailbox_limit_override = yes'");
 	passthru3("postconf -e 'virtual_maildir_limit_message = \"The user you are trying to reach is over quota.\"'");

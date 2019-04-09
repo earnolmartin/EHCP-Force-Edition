@@ -2604,6 +2604,13 @@ function fixQuotaForEmailsPostfix3x(){
 		fi
 	fi
 	
+	# Make sure main.cf has virtual_mailbox_extended
+	PostfixMainConf="/etc/postfix/main.cf"
+	hasVMExtended=$(cat "$PostfixMainConf" | grep -o "virtual_maildir_extended")
+	if [ -z "$hasVMExtended" ]; then
+		echo -e "virtual_maildir_extended = yes" >> "$PostfixMainConf"
+	fi
+	
 	cd $origDir
 }
 
