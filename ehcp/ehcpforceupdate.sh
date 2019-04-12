@@ -1334,8 +1334,18 @@ function CheckPreReqs(){
 	
 	# Normal
 	aptgetInstall nginx
+	
+	# Install PHP-FPM which can be tricky evidently...
+	installPHPFPM
+}
+
+function installPHPFPM(){
 	aptgetInstall php5-fpm
 	aptgetInstall php-fpm
+	phpfpmversionsFromCache=$(apt-cache search "fpm" | grep "php" | grep "\-fpm" | awk '{print $1}')
+	for version in "$phpfpmversionsFromCache" ; do
+	   aptgetInstall "$version"
+	done
 }
 
 function addConfDFolder(){
