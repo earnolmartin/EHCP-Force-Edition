@@ -3436,6 +3436,7 @@ function daemonRestore($action,$info,$info2='') {
 	$this->addDaemonOp('syncdomains','','','','sync domains');
 	$this->addDaemonOp('syncdns','','','','sync dns');
 	$this->addDaemonOp('syncftp','','','','sync ftp');
+	$this->addDaemonOp('rebuild_crontab','','','','rebuild crontab');
 	manageService("ehcp", "restart");
 	$this->restart_webserver();
 	
