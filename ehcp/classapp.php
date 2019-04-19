@@ -5113,11 +5113,12 @@ function addDnsOnlyDomainWithPaneluser(){
 }
 
 function isValidIP($ip){ # by earnolmartin@gmail.com
-	if(preg_match( "/^(([1-9]?[0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]).){3}([1-9]?[0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/", $ip)){
-		return True;
-	}else{
-		return False;
+	if(!empty($ip)){
+		if(preg_match( "/^(([1-9]?[0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]).){3}([1-9]?[0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/", $ip)){
+			return true;
+		}
 	}
+	return false;
 }
 
 function isValidDomain($domain, $checkIfExistsInPanel = true){
@@ -5180,20 +5181,21 @@ function getMasterIP($domainname){ # by earnolmartin@gmail.com
 
 function addSlaveDNS(){ # coded by earnolmartin@gmail.com, modified little by ehcpdeveloper
 	global $serverip,$_insert,$password,$dnsmaster,$email;
+	$currentDNSMaster = "";
 	$this->getVariable(array("_insert",'dnsmaster'));
 	$domainname=$this->chooseDomain(__FUNCTION__,$domainname); # this ensures a domain selected. 
-
+	$isAlreadySlave = "";
 	$success=True;
 	$errmsg='';
 
     if($this->getIsSlaveDomain($domainname)){
-		$dnsmaster = $this->getMasterIP($domainname);
+		$currentDNSMaster = $this->getMasterIP($domainname);
 		$isAlreadySlave="<p style='color: red;'> $domainname is currently configured as a slave DNS domain.&nbsp; You can edit the master server IP address below.&nbsp; <a href='?op=removeslavedns'>Click here</a> to remove slave configuration from the domain.&nbsp; If you do not wish to change these settings, please go back.</p>";
     }
     
     if(!$_insert) {
 		$inputparams=array(
-			array('dnsmaster','input','lefttext'=>'Master Server IP:','default'=>$dnsmaster),
+			array('dnsmaster','input','lefttext'=>'Master Server IP:','default'=>$currentDNSMaster),
 			array('op','hidden','default'=>__FUNCTION__)
 		);
 	
