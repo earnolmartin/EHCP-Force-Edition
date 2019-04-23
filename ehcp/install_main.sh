@@ -552,8 +552,8 @@ function genUbuntuFixes(){
 			fixMariaDBSkippingInnoDB
 		fi
 		
-		# Ubuntu 18.04+ and Debian 10+ Fixes
-		if [[ "$distro" == "ubuntu" && "$yrelease" -ge "18" ]] || [[ "$distro" == "debian" && "$yrelease" -ge "10" ]]; then
+		# Ubuntu 18.04 and Debian 10 Fixes
+		if [[ "$distro" == "ubuntu" && "$yrelease" -eq "18" ]] || [[ "$distro" == "debian" && "$yrelease" -eq "10" ]]; then
 			fixQuotaForEmailsPostfix3x
 		fi
 	fi
