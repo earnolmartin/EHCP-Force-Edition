@@ -2172,10 +2172,6 @@ function advancedsettings(){
 			// Check to make sure entries are valid
 			$valid = $this->checkValidGlobalPanelURLs($entries);
 			
-			if(!isset($rebuildTriggered) && $rebuildTriggered !== true && $valid){
-				$this->addDaemonOp('syncdomains','','','','sync domains');
-			}
-			
 			if(!$valid){
 				// Reset its value
 				$this->setConfigValue('globalpanelurls',$old_globalpanelurls);
@@ -2184,6 +2180,11 @@ function advancedsettings(){
 				if($this->hasValueOrZero($old_globalpanelurls) && $oldEntries){
 					$this->removeLetsEncryptCertificates($oldEntries);
 				}
+			}
+			
+			// Sync domains after let's encrypt certificate cleanup
+			if(!isset($rebuildTriggered) && $rebuildTriggered !== true && $valid){
+				$this->addDaemonOp('syncdomains','','','','sync domains');
 			}
 			
 		}
