@@ -88,6 +88,7 @@ function scpCopy () {
 	if [ ! -z "$1" ]; then
 		UPLOADFILE="$1"
 		if [ -e /var/backup ]; then
+			cd "/var/backup"
 			if [ -e "$UPLOADFILE" ]; then
 				Server="$HOST"
 				LoginAs="$LOGIN"
