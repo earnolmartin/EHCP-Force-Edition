@@ -15,6 +15,8 @@ if [ $(id -u) != "0" ]; then
 	exit
 fi
 
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games"
+
 ##################
 # Variables      #
 ##################
