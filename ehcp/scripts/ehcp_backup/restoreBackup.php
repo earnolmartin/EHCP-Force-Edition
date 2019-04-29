@@ -20,7 +20,7 @@
 			require ("classapp.php");
 			$app = new Application();
 			$app->connectTodb(); # fill config.php with db user/pass for things to work..
-			$this->addDaemonOp("daemonrestore",'',$filename,'','opname:restore');
+			$app->addDaemonOp("daemonrestore",'',$filename,'','opname:restore');
 		}
 		/* END EHCP API Call */
 		
