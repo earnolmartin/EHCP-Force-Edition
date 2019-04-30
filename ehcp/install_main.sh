@@ -2626,11 +2626,13 @@ function installBadBotsBlockerNginx(){
 	origDir=$( pwd )
 	if [ -e "/etc/nginx" ]; then
 		cd /etc/nginx
-		git clone https://github.com/mariusv/nginx-badbot-blocker.git
-		if [ -e "/etc/nginx/nginx-badbot-blocker/blacklist.conf" ]; then
-			getServerIPAddr
-			sed -i "s#\|python-requests##g" "/etc/nginx/nginx-badbot-blocker/blacklist.conf"
-			sed -i "s#111.111.111.111#${MYIP}#g" "/etc/nginx/nginx-badbot-blocker/blacklist.conf"
+		if [ ! -e "nginx-badbot-blocker" ]; then
+			git clone https://github.com/mariusv/nginx-badbot-blocker.git
+			if [ -e "/etc/nginx/nginx-badbot-blocker/blacklist.conf" ]; then
+				getServerIPAddr
+				sed -i "s#\|python-requests##g" "/etc/nginx/nginx-badbot-blocker/blacklist.conf"
+				sed -i "s#111.111.111.111#${MYIP}#g" "/etc/nginx/nginx-badbot-blocker/blacklist.conf"
+			fi
 		fi
 	fi
 	cd "$origDir"
