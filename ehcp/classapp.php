@@ -1579,11 +1579,13 @@ function editApacheTemplate(){
 		if($template==''){
 			if(empty($globalDomainTemplate)){
 				$template=$templateinfile;
-				// If the domain was configured to redirect normal HTTP to HTTPS, make sure the template default reflects that here as well
-				$template = $this->adjustDomainTemplateDependingOnSSLSettings($template, $domaininfo, "domain", false); 
 			}else{
 				$template=$globalDomainTemplate;
 			}
+			
+			// If the domain was configured to redirect normal HTTP to HTTPS, make sure the template default reflects that here as well
+			$template = $this->adjustDomainTemplateForRedirect($template, $domaininfo, "domain", false); 			
+			
 		}else{
 			$usingDefault = false;
 		}
@@ -1658,11 +1660,12 @@ function editApacheTemplateSubdomain(){
 		if($template==''){
 			if(empty($globalSubDomainTemplate)){
 				$template=$templateinfile;
-				// If the domain was configured to redirect normal HTTP to HTTPS, make sure the template default reflects that here as well
-				$template = $this->adjustDomainTemplateDependingOnSSLSettings($template, $subdomain, "subdomain");
 			}else{
 				$template=$globalSubDomainTemplate;
 			}
+			
+			// If the domain was configured to redirect normal HTTP to HTTPS, make sure the template default reflects that here as well
+			$template = $this->adjustDomainTemplateDependingOnSSLSettings($template, $subdomain, "subdomain");
 		}else{
 			$usingDefault = false;
 		}
@@ -13490,28 +13493,13 @@ function syncDomains($file='',$domainname='') {
 				$webserver_template = $globalWebServerTemplate;
 			} else {
 				$this->echoln2("Domain:".$ar1['domainname']." should use the default domain template!");
-				$webserver_template=$webserver_template_file;
-				
-				// If the domain should be redirected, we need to use a different webserver_template_file
-				if(!empty($ar1['domainname_redirect']) && $ar1['domainname_redirect'] != $ar1['domainname'] && $ar1['domainname_redirect'] != '%{HTTP_HOST}' && $ar1['domainname_redirect'] != '$host'){
-					$this->echoln("domain redirect is set to: " . $ar1['domainname_redirect'] . " for the domain of " . $ar1['domainname'] . "!");
-					$webserver_template=file_get_contents($this->ehcpdir . "/apachetemplate_redirect");
-					
-					// See if we should include the request URI as part of the redirect template (a redirect URL without a slash in it)
-					$removeProt = array("https://", "http://");
-					$nameWithoutHTTP = str_replace($removeProt, '', $ar1['domainname_redirect']);
-					if(stripos($nameWithoutHTTP, '/') !== false){
-						if($this->miscconfig['webservertype'] == "nginx"){
-							$webserver_template = str_replace('{domainname_redirect}$request_uri', '{domainname_redirect}', $webserver_template);
-						}else if($this->miscconfig['webservertype'] == "apache2"){
-							$webserver_template = str_replace('{domainname_redirect}%{REQUEST_URI}', '{domainname_redirect}', $webserver_template);
-						}
-					}
-				}else{
-					$webserver_template = $this->adjustDomainTemplateDependingOnSSLSettings($webserver_template, $ar1);
-				}
+				$webserver_template=$webserver_template_file;				
 			}
 
+			// Do redirect and sslonly adjustments regardless of which web template is used
+			if(!empty($webserver_template)){
+				$webserver_template = $this->adjustDomainTemplateForRedirect($webserver_template, $ar1);
+			}
 
 			if($this->miscconfig['enablewildcarddomain']<>'') $wildcard='*.{domainname}';
 			else $wildcard='';
@@ -13594,6 +13582,29 @@ function getStripNonSSLSectionForDomain($sslInfo, $stripSSLSectionFromTemplate){
 		$stripNonSSLSectionFromTemplate = true;
 	}
 	return $stripNonSSLSectionFromTemplate;
+}
+
+function adjustDomainTemplateForRedirect($webserver_template, &$ar1, $type = 'domain', $echoOn = true){	
+	// If the domain should be redirected, we need to use a different webserver_template_file
+	if(!empty($ar1['domainname_redirect']) && $ar1['domainname_redirect'] != $ar1['domainname'] && $ar1['domainname_redirect'] != '%{HTTP_HOST}' && $ar1['domainname_redirect'] != '$host'){
+		$this->echoln("domain redirect is set to: " . $ar1['domainname_redirect'] . " for the domain of " . $ar1['domainname'] . "!");
+		$webserver_template=file_get_contents($this->ehcpdir . "/apachetemplate_redirect");
+					
+		// See if we should include the request URI as part of the redirect template (a redirect URL without a slash in it)
+		$removeProt = array("https://", "http://");
+		$nameWithoutHTTP = str_replace($removeProt, '', $ar1['domainname_redirect']);
+		if(stripos($nameWithoutHTTP, '/') !== false){
+			if($this->miscconfig['webservertype'] == "nginx"){
+				$webserver_template = str_replace('{domainname_redirect}$request_uri', '{domainname_redirect}', $webserver_template);
+			}else if($this->miscconfig['webservertype'] == "apache2"){
+				$webserver_template = str_replace('{domainname_redirect}%{REQUEST_URI}', '{domainname_redirect}', $webserver_template);
+			}
+		}
+	}else{
+		$webserver_template = $this->adjustDomainTemplateDependingOnSSLSettings($webserver_template, $ar1, $type, $echoOn);
+	}
+	
+	return $webserver_template;
 }
 
 function adjustDomainTemplateDependingOnSSLSettings($webserver_template, &$ar1, $type = 'domain', $echoOn = true){
