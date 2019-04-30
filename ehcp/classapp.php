@@ -1668,7 +1668,7 @@ function editApacheTemplateSubdomain(){
 		}
 		
 		// If the subdomain was configured to redirect normal HTTP to HTTPS, make sure the template default reflects that here as well
-		$template = $this->adjustDomainTemplateDependingOnSSLSettings($template, $subdomain, "subdomain");
+		$template = $this->adjustDomainTemplateDependingOnSSLSettings($template, $subdomain, "subdomain", false);
 
 		$inputparams=array(
 			array($templatefield,'textarea','default'=>trim($template),'cols'=>80,'rows'=>30, 'lefttext'=>'Current ' . $this->miscconfig['webservertype'] . ' Subdomain Template:'),
