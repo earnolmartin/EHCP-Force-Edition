@@ -3377,9 +3377,19 @@ function daemonRestore($action,$info,$info2='') {
 
 	# restore files first
 	chdir("/var/backup");
+	
+	$this->pwdls('extracting backup file ' . $backupname);
 	passthru2("$tarwithparams $backupname");
-	chdir("/var/backup/$filename");
-
+	$this->pwdls('extraction of backup file ' . $backupname . ' complete!');
+	
+	if(file_exists('/var/backup/' . $filename)){
+		$this->pwdls('extraction directory of /var/backup/' . $filename . ' exists as it should!');
+	}else{
+		$this->pwdls('extraction directory of /var/backup/' . $filename . ' does NOT exist! This is a critical problem');
+	}
+	
+	$this->pwdls('changing to extraction directory of /var/backup/' . $filename);
+	chdir("/var/backup/" . $filename);
 
 	$this->pwdls('before extract files');
 
