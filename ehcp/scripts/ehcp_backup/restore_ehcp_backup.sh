@@ -58,7 +58,7 @@ function decryptBackupFile(){
 }
 
 function doEHCPRestore(){
-	if [ ! -z "$1" ] && [ -e "$1" ]; then
+	if [ ! -z "$1" ] && [ -e "/var/backup/${1}" ]; then
 		echo -e "Asked EHCP Daemon to Restore Backup File ${1} on ${DATEOFBACKUP}!" >> restore_log.conf
 		php restoreBackup.php "$1"
 	fi
