@@ -1582,13 +1582,12 @@ function editApacheTemplate(){
 			}else{
 				$template=$globalDomainTemplate;
 			}
-			
-			// If the domain was configured to redirect normal HTTP to HTTPS, make sure the template default reflects that here as well
-			$template = $this->adjustDomainTemplateForRedirect($template, $domaininfo, "domain", false); 			
-			
 		}else{
 			$usingDefault = false;
 		}
+		
+		// If the domain was configured to redirect normal HTTP to HTTPS, make sure the template default reflects that here as well
+		$template = $this->adjustDomainTemplateForRedirect($template, $domaininfo, "domain", false); 	
 
 		$inputparams=array(
 			array($templatefield,'textarea','default'=>trim($template),'cols'=>80,'rows'=>30, 'lefttext'=>'Current ' . $this->miscconfig['webservertype'] . ' Template:'),
@@ -1664,11 +1663,12 @@ function editApacheTemplateSubdomain(){
 				$template=$globalSubDomainTemplate;
 			}
 			
-			// If the domain was configured to redirect normal HTTP to HTTPS, make sure the template default reflects that here as well
-			$template = $this->adjustDomainTemplateDependingOnSSLSettings($template, $subdomain, "subdomain");
 		}else{
 			$usingDefault = false;
 		}
+		
+		// If the subdomain was configured to redirect normal HTTP to HTTPS, make sure the template default reflects that here as well
+		$template = $this->adjustDomainTemplateDependingOnSSLSettings($template, $subdomain, "subdomain");
 
 		$inputparams=array(
 			array($templatefield,'textarea','default'=>trim($template),'cols'=>80,'rows'=>30, 'lefttext'=>'Current ' . $this->miscconfig['webservertype'] . ' Subdomain Template:'),
@@ -14279,7 +14279,10 @@ function syncSubdomains($file='',$domainname) {
 				$dom['wildcarddomain'] = ""; // Replace wildcard domain from redirect if it's used...
 			}
 			
-			$dom['domainname_redirect'] = ""; // Needs this key added to it since it may be populated with an actual value in processing logic
+			if(!array_key_exists('domainname_redirect', $dom)){
+				$dom['domainname_redirect'] = ""; // Needs this key added to it since it may be populated with an actual value in processing logic
+			}
+			
 			$arr2[]=$dom;
 			# arr2 used because, customsubdomainhttp is used or similar...
 
@@ -14302,6 +14305,7 @@ function syncSubdomains($file='',$domainname) {
 		foreach($arr2 as $ar1) {
 			$webserver_template=$ar1[$templatefield];# get domain specific (custom) template
 			if(!empty($webserver_template)){
+				$webserver_template = $this->adjustDomainTemplateDependingOnSSLSettings($webserver_template, $ar1, "subdomain");
 				$webserver_template=str_replace(array('{ehcpdir}','{localip}'),array($this->ehcpdir,$this->miscconfig['localip']),	$webserver_template);
 				$webserver_config=str_replace($replacealanlar,$ar1,$webserver_template);
 				$fileOut .= $this->adjustWebTemplateConfIfNeededForLineBreaks($webserver_config); // Directives need to be separated by newlines
@@ -14325,6 +14329,7 @@ function syncSubdomains($file='',$domainname) {
 			$replacealanlar=arrayop($alanlar,"strop");
 			$fileOut = "";
 			foreach($arr3 as $ar1) {
+				$webserver_template = $this->adjustDomainTemplateDependingOnSSLSettings($webserver_template, $ar1, "subdomain");
 				$webserver_template=str_replace(array('{ehcpdir}','{localip}'),array($this->ehcpdir,$this->miscconfig['localip']),$globalSubdomainTemplate);
 				$webserver_config=str_replace($replacealanlar,$ar1,$webserver_template);
 				$fileOut .= $this->adjustWebTemplateConfIfNeededForLineBreaks($webserver_config);
