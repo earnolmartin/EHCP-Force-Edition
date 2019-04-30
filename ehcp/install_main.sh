@@ -1103,6 +1103,9 @@ function installExtras(){
 			apacheSecurity
 		fi
 	fi
+	
+	# Clone nginx bat bots blocker
+	installBadBotsBlockerNginx
 }
 
 function apacheSecurity(){
@@ -1927,6 +1930,7 @@ function installNeededDependencies(){
 	fi
 
 	# apt-get upgrade  # may be cancelled later... this may be dangerous... server owner should do it manually...
+	aptgetInstall git
 	aptgetInstall php
 	aptgetInstall php-mysql
 	aptgetInstall php-cli
@@ -2612,6 +2616,24 @@ function fixQuotaForEmailsPostfix3x(){
 	fi
 	
 	cd $origDir
+}
+
+function getServerIPAddr(){
+	MYIP=$(wget -qO- "https://dynamix.run/ip.php" | xargs)
+}
+
+function installBadBotsBlockerNginx(){
+	origDir=$( pwd )
+	if [ -e "/etc/nginx" ]; then
+		cd /etc/nginx
+		git clone https://github.com/mariusv/nginx-badbot-blocker.git
+		if [ -e "/etc/nginx/nginx-badbot-blocker/blacklist.conf" ]; then
+			getServerIPAddr
+			sed -i "s#\|python-requests##g" "/etc/nginx/nginx-badbot-blocker/blacklist.conf"
+			sed -i "s#111.111.111.111#${MYIP}#g" "/etc/nginx/nginx-badbot-blocker/blacklist.conf"
+		fi
+	fi
+	cd "$origDir"
 }
 
 #############################################################

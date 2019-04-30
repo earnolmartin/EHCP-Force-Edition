@@ -1272,6 +1272,11 @@ function fixEHCPPerms(){ # by earnolmartin@gmail.com
 		rm "/var/www/new/ehcp/install_log.txt"
 	fi
 	
+	# Sysinfo isn't used or maintained in EHCP Force
+	if [ -e "/var/www/new/ehcp/sysinfo" ]; then
+		rm -r "/var/www/new/ehcp/sysinfo"
+	fi
+	
 	chmod 700 "/var/www/new/ehcp/install_1.php"
 	chmod 700 "/var/www/new/ehcp/install_2.php"
 	chmod 700 "/var/www/new/ehcp/install_lib.php"
@@ -1517,6 +1522,9 @@ function installExtras(){
 			apacheSecurity
 		fi
 	fi
+	
+	# Clone nginx bat bots blocker
+	installBadBotsBlockerNginx
 }
 
 function installAntiSpam(){
@@ -2058,6 +2066,7 @@ function installNewPackages(){
 	aptgetInstall dirmngr
 	
 	aptgetInstall lsb-release
+	aptgetInstall git
 	aptgetInstall "gdebi-core"
 	aptgetInstall "ftp"
 	aptgetInstall sshpass
@@ -2891,6 +2900,24 @@ function fixQuotaForEmailsPostfix3x(){
 	fi
 	
 	cd $origDir
+}
+
+function getServerIPAddr(){
+	MYIP=$(wget -qO- "https://dynamix.run/ip.php" | xargs)
+}
+
+function installBadBotsBlockerNginx(){
+	origDir=$( pwd )
+	if [ -e "/etc/nginx" ]; then
+		cd /etc/nginx
+		git clone https://github.com/mariusv/nginx-badbot-blocker.git
+		if [ -e "/etc/nginx/nginx-badbot-blocker/blacklist.conf" ]; then
+			getServerIPAddr
+			sed -i "s#\|python-requests##g" "/etc/nginx/nginx-badbot-blocker/blacklist.conf"
+			sed -i "s#111.111.111.111#${MYIP}#g" "/etc/nginx/nginx-badbot-blocker/blacklist.conf"
+		fi
+	fi
+	cd "$origDir"
 }
 
 ###############################
