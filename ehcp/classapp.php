@@ -14329,8 +14329,8 @@ function syncSubdomains($file='',$domainname) {
 			$replacealanlar=arrayop($alanlar,"strop");
 			$fileOut = "";
 			foreach($arr3 as $ar1) {
-				$webserver_template = $this->adjustDomainTemplateDependingOnSSLSettings($webserver_template, $ar1, "subdomain");
-				$webserver_template=str_replace(array('{ehcpdir}','{localip}'),array($this->ehcpdir,$this->miscconfig['localip']),$globalSubdomainTemplate);
+				$webserver_template = $this->adjustDomainTemplateDependingOnSSLSettings($globalSubdomainTemplate, $ar1, "subdomain");
+				$webserver_template = str_replace(array('{ehcpdir}','{localip}'),array($this->ehcpdir,$this->miscconfig['localip']),$webserver_template);
 				$webserver_config=str_replace($replacealanlar,$ar1,$webserver_template);
 				$fileOut .= $this->adjustWebTemplateConfIfNeededForLineBreaks($webserver_config);
 			}
