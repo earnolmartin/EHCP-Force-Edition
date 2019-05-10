@@ -13653,7 +13653,79 @@ function adjustDomainTemplateDependingOnSSLSettings($webserver_template, &$ar1, 
 		$webserver_template = $httpOnlyRedirect . "\n" . $webserver_template;
 	}
 	
+	if((!empty($sslInfo["cert"]) || !empty($sslInfo["letsenc"])) && $this->miscconfig['webservermode'] == 'ssl'){ // If SSL has been enabled and it previously wasn't for the domain / subdomain and the server is running mixed SSL mode, adjust the template to make sure it has an SSL section
+		// The domain is using some kind of SSL certificate, so make sure it has an SSL section in its template (may not always have one depending on advanced panel settings)
+		$sslContents = getContentsAfterLine("# FOR SSL CONFIG", $webserver_template);
+		if((empty($sslContents) || empty(trim($sslContents)) || !$sslContents) && strpos($webserver_template, "# FOR SSL CONFIG") !== false){
+			// It should have an SSL template at this point
+			$sslContents = $this->getPartOfDomainTemplate($type, "ssl");
+			if($sslContents && !empty($sslContents)){
+				$webserver_template = $webserver_template . "\n" . $sslContents;
+			}
+		}
+	}
+	
 	return $webserver_template;
+}
+
+function getPartOfDomainTemplate($type, $content = "all"){ // Should only be used in certain use cases - like if SSL is enabled, but the template is missing an SSL section due to old configuration settings for the domain / advanced panel options
+	$templateToReturn = "";
+	
+	if($type == "domain"){
+		$webserver_template_filename="$this->ehcpdir/apachetemplate"; # this file may be an apache template actually, or an nginx template, code will be fixed later.. 
+		$globalWebServerTemplate = $this->getGlobalDomainTemplate();
+		
+		// Load up the template possibilities for when no SSL section was discovered in the domains current template (meaning it's probably using a custom template or an adjusted custom templated based on advanced panel settings)
+		if(!empty($globalWebServerTemplate)){
+			$templateToReturn = $globalWebServerTemplate;
+		}else{
+			$templateToReturn = file_get_contents($webserver_template_filename);
+		}
+	}else{
+		$webserver_template_filename="$this->ehcpdir/apache_subdomain_template"; # this file may be an apache template actually, or an nginx template, code will be fixed later.. 
+		$globalWebServerTemplate = $this->getGlobalSubDomainTemplate();
+		
+		// Load up the template possibilities for when no SSL section was discovered in the domains current template (meaning it's probably using a custom template or an adjusted custom templated based on advanced panel settings)
+		if(!empty($globalWebServerTemplate)){
+			$templateToReturn = $globalWebServerTemplate;
+		}else{
+			$templateToReturn = file_get_contents($webserver_template_filename);
+		}
+	}
+	
+	switch($content){
+		case "ssl":
+			$sslContents = getContentsAfterLine("# FOR SSL CONFIG", $templateToReturn);
+			if($sslContents && !empty($sslContents)){
+				$templateToReturn = $sslContents;
+			}else{
+				$templateToReturn = file_get_contents($webserver_template_filename);
+				$sslContents = getContentsAfterLine("# FOR SSL CONFIG", $templateToReturn);
+				if($sslContents && !empty($sslContents)){
+					$templateToReturn = $sslContents;
+				}else{
+					$templateToReturn = "";
+				}
+			}
+			break;
+		case "nonssl":
+			$nonSSL = stripContentsAfterLine("# FOR SSL CONFIG", $templateToReturn);
+			if($nonSSL && !empty($nonSSL)){
+				$templateToReturn = $nonSSL;
+			}else{
+				$templateToReturn = file_get_contents($webserver_template_filename);
+				$nonSSL = stripContentsAfterLine("# FOR SSL CONFIG", $templateToReturn);
+				if($nonSSL && !empty($nonSSL)){
+					$templateToReturn = $nonSSL;
+				}else{
+					$templateToReturn = "";
+				}
+			}
+			break;
+			
+	}
+	
+	return $templateToReturn;
 }
 
 function getClientEmailFromPanelUsername($panelusername){
