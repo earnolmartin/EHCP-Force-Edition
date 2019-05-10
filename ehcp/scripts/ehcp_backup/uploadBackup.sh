@@ -73,8 +73,7 @@ End-Of-Session
 				fi
 				if [ -z "$SUCCESSFTPUPLOAD" ]; then
 					SUCCESSFTPUPLOAD=$(cat "$FTPLOGFILE" | grep -i "^226")
-				fi
-								
+				fi	
 				
 				if [ -z "$SUCCESSFTPUPLOAD" ]; then
 					echo -e "Failed to upload and backup $UPLOADFILE to FTP SERVER $HOST! Check the FTP log file /var/backup/$FTPLOGFILE for details!\n"
