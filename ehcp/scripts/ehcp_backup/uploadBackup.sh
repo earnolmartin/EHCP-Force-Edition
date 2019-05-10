@@ -67,7 +67,15 @@ function ftpCopy () {
 				bye	
 End-Of-Session
 				# Get upload status
-				SUCCESSFTPUPLOAD=$(cat "$FTPLOGFILE" | grep "226 Transfer OK")
+				SUCCESSFTPUPLOAD=$(cat "$FTPLOGFILE" | grep -i "226 Transfer OK")
+				if [ -z "$SUCCESSFTPUPLOAD" ]; then
+					SUCCESSFTPUPLOAD=$(cat "$FTPLOGFILE" | grep -i "226 Successfully transferred")
+				fi
+				if [ -z "$SUCCESSFTPUPLOAD" ]; then
+					SUCCESSFTPUPLOAD=$(cat "$FTPLOGFILE" | grep -i "^226")
+				fi
+								
+				
 				if [ -z "$SUCCESSFTPUPLOAD" ]; then
 					echo -e "Failed to upload and backup $UPLOADFILE to FTP SERVER $HOST! Check the FTP log file /var/backup/$FTPLOGFILE for details!\n"
 					echo -e "Failed to upload and backup $UPLOADFILE to FTP SERVER $HOST! Check the FTP log file /var/backup/$FTPLOGFILE for details!" >> backup_log.conf
