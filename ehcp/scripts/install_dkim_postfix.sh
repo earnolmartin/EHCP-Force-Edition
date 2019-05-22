@@ -164,11 +164,13 @@ function clearDKIMPostfix(){
 	service postfix stop
 	service opendkim stop
 	
-	> /etc/opendkim/KeyTable
-	> /etc/opendkim/SigningTable
-	> /etc/opendkim/TrustedHosts
-	
-	rm -rf /etc/opendkim/keys/*
+	if [ -e "/etc/opendkim" ]; then
+		> /etc/opendkim/KeyTable
+		> /etc/opendkim/SigningTable
+		> /etc/opendkim/TrustedHosts
+		
+		rm -rf /etc/opendkim/keys/*
+	fi
 	
 	sed -i "s#^milter_protocol.*##g" "/etc/postfix/main.cf"
 	sed -i "s#^milter_default_action.*##g" "/etc/postfix/main.cf"

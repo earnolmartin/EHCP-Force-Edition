@@ -2216,6 +2216,9 @@ function advancedsettings(){
 		
 		if($old_dkimdomain != $this->miscconfig['dkimdomain']){
 			if($this->miscconfig['dkimdomain'] != 'NONE' && !empty($this->miscconfig['dkimdomain'])){
+				if(isset($old_dkimdomain) && !empty($old_dkimdomain)){
+					$this->addDaemonOp("manage_dkim",'remove',$old_dkimdomain,'','handle dkim postfix configuration');
+				}
 				$this->addDaemonOp("manage_dkim",'add',$this->miscconfig['dkimdomain'],'','handle dkim postfix configuration');
 			}else{
 				if(isset($old_dkimdomain) && !empty($old_dkimdomain) && $this->miscconfig['dkimdomain'] == 'NONE'){
