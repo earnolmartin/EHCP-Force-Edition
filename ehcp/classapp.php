@@ -2216,7 +2216,7 @@ function advancedsettings(){
 		
 		if($old_dkimdomain != $this->miscconfig['dkimdomain']){
 			if($this->miscconfig['dkimdomain'] != 'NONE' && !empty($this->miscconfig['dkimdomain'])){
-				if(isset($old_dkimdomain) && !empty($old_dkimdomain)){
+				if(isset($old_dkimdomain) && !empty($old_dkimdomain) && $old_dkimdomain != 'NONE'){
 					$this->addDaemonOp("manage_dkim",'remove',$old_dkimdomain,'','handle dkim postfix configuration');
 				}
 				$this->addDaemonOp("manage_dkim",'add',$this->miscconfig['dkimdomain'],'','handle dkim postfix configuration');
@@ -10521,28 +10521,39 @@ function updateNginxConfVariablesInFile(){
 function handleDKIMConfig($action, $domain){
 	$this->requireCommandLine(__FUNCTION__);
 	if($action == "remove"){
-		echo "Removing DKIM configuration for the domain of " . $domain . "...";
+		echo "Removing DKIM configuration for the domain of " . $domain . "...\n";
 	}else if($action == "add"){
-		echo "Configuring DKIM global configuration for the domain of " . $domain . "...";
+		echo "Configuring DKIM global configuration for the domain of " . $domain . "...\n";
 	}else{
-		echo "INVALID ACTION RECEIVED FOR HANDLE DKIM!";
+		echo "INVALID ACTION RECEIVED FOR HANDLE DKIM!\n";
 		return false;
 	}
-	$out=shell_exec('bash /var/www/new/ehcp/scripts/install_dkim_postfix.sh "' . $action . '" "' . $domain . '"');
+	
+	$command = 'bash /var/www/new/ehcp/scripts/install_dkim_postfix.sh "' . $domain . '" "' . $action . '"';
+	echo "Running command: " . $command . "\n";
+	$out=shell_exec($command);
+	
+	echo "OUTPUT from the /var/www/new/ehcp/scripts/install_dkim_postfix.sh script is: " . $out . "\n";
 	
 	if(!empty($out) && $action == "add"){
+		echo "Adding DKIM TXT DNS record for the domain of " . $domain . "..." . "\n";
+		echo "Public key for TXT DNS record is " . $out . "\n";
 		// Need to add custom TXT DNS 
-		$publicKeyDKIMStr = 'mail._domainkey IN TXT "v=DKIM1; k=rsa; p=' . $out . '"';
-		$success=$success && $this->executeQuery("insert into ".$this->conf['customstable']['tablename']." (domainname,name,value,comment) values ('" . $domain . "','customdns','" . $this->escape($publicKeyDKIMStr) . "','A DKIM public key record')",'manage_dkim');
+		$publicKeyDKIMStr = 'mail._domainkey IN TXT "v=DKIM1; k=rsa; p=' . $out . '"' . "\n";
+		$publicKeyDKIMStr .= 'mail._domainkey.' . $domain . ' IN TXT "v=DKIM1; k=rsa; p=' . $out . '"';
+		$this->executeQuery("insert into ".$this->conf['customstable']['tablename']." (domainname,name,value,comment) values ('" . $domain . "','customdns','" . $this->escape($publicKeyDKIMStr) . "','A DKIM public key record')",'manage_dkim');
 	}
 	
 	if($action == "remove"){
+		echo "Deleting DKIM TXT DNS record for the domain of " . $domain . "..." . "\n";
 		$sql = "SELECT * FROM " . $this->conf['customstable']['tablename'] . " WHERE name='customdns' AND value LIKE 'mail._domainkey%' and domainname = '" . $domain . "' ORDER BY ID DESC"; 
-		$rs = $this->query($SQL);
+		$rs = $this->query($sql);
 		if($rs !== false){
 			$id = $rs[0]["id"];
 			if(isset($id) && !empty($id)){
-				$this->executeQuery("delete from ".$this->conf['customstable']['tablename']." where id='" . $id . "' limit 1");
+				$sql = "delete from " . $this->conf['customstable']['tablename'] . " where id='" . $id . "' limit 1";
+				echo "Running SQL command of: " . $sql . "\n";
+				$this->executeQuery($sql);
 			}
 		}
 	}
