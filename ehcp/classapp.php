@@ -2101,6 +2101,26 @@ function addServer(){
 
 }
 
+function getAllPanelDomains(){
+	$SQL = "SELECT * FROM " . $this->conf['domainstable']['tablename'];
+	$rs = $this->query($SQL);
+	if($rs !== false){
+		return $rs;
+	}
+	return false;
+}
+
+function getAllPanelDomainsKeyValue(){
+	$returnVal = array('NONE'=>'NONE');
+	$domains = $this->getAllPanelDomains();
+	if($domains !== false){
+		foreach($domains as $domain){
+			$returnVal[$domain["domainname"]] = $domain["domainname"];
+		}
+	}
+	return $returnVal;
+}
+
 function advancedsettings(){
 	$this->requireAdmin();
 
@@ -2121,6 +2141,7 @@ function advancedsettings(){
 		array('allowcustomsslnonadmin','checkbox','lefttext'=>'Allow non-admin users to manage and use custom SSL certs for domains','default'=>'Yes','checked'=>$this->miscconfig['allowcustomsslnonadmin'],'righttext'=>'(may break webserver if certificates are invalid)'),
 		array('allowanonymousftptodirectory','lefttext'=>'Enable Anonymous READONLY FTP Access to Specific Directory:','righttext'=>'Leave blank to keep disabled.&nbsp; DO NOT USE EHCP DIRECTORIES!','default'=>$this->miscconfig['allowanonymousftptodirectory']),
 		array('globalpanelurls', 'textarea', 'lefttext'=>'EHCP Panel Direct URL(s) (Protected by Let\'s Encrypt if SSL is Enabled):<br>(Takes the format of ns3.otherdomain.com,otherdomain.com)<br>Multiple entries separated by comma ",".<br>Leave blank if you don\'t want to configure any.<br>Use only domains or subdomains not currently configured in the panel for best results.</p>', 'default'=> $this->miscconfig['globalpanelurls'], 'skip-ending-colon'=>true),
+		array('dkimdomain', 'select', 'secenekler'=>$this->getAllPanelDomainsKeyValue(), 'lefttext'=>'Configure Global DKIM for Emails Using the Domain Of:','righttext'=>'Select "NONE" to Disable DKIM.','default'=>$this->miscconfig['dkimdomain']),
 		array('postfixsslcertpath','lefttext'=>'Postfix TLS SSL (Combined in PEM format) Path:','righttext'=>'Leave blank to use the default self-signed certificate.','default'=>$this->miscconfig['postfixsslcertpath']),
 		array('restartpostfix','checkbox','lefttext'=>'Reload Postfix SSL (Refresh SSL Cert)','default'=>'Yes'),
 		array('sslcouriercertpath','lefttext'=>'POP3-SSL and IMAP-SSL Certificate (Combined in PEM format) Path:','righttext'=>'Leave blank to use the default self-signed certificate.','default'=>$this->miscconfig['sslcouriercertpath']),
@@ -2142,6 +2163,7 @@ function advancedsettings(){
 		$old_courier_ssl_cert=$this->miscconfig['sslcouriercertpath'];
 		$old_vsftpd_ssl_cert = $this->miscconfig['sslvsftpdcertpath'];
 		$old_postfix_ssl_cert = $this->miscconfig['postfixsslcertpath'];
+		$old_dkimdomain = $this->miscconfig['dkimdomain'];
 		
 		if($old_webserver_type=='') $old_webserver_type='apache2-nonssl';
 
@@ -2190,6 +2212,16 @@ function advancedsettings(){
 				$this->addDaemonOp('syncdomains','','','','sync domains');
 			}
 			
+		}
+		
+		if($old_dkimdomain != $this->miscconfig['dkimdomain']){
+			if($this->miscconfig['dkimdomain'] != 'NONE' && !empty($this->miscconfig['dkimdomain'])){
+				$this->addDaemonOp("manage_dkim",'add',$this->miscconfig['dkimdomain'],'','handle dkim postfix configuration');
+			}else{
+				if(isset($old_dkimdomain) && !empty($old_dkimdomain) && $this->miscconfig['dkimdomain'] == 'NONE'){
+					$this->addDaemonOp("manage_dkim",'remove',$old_dkimdomain,'','handle dkim postfix configuration');
+				}
+			}
 		}
 		
 		// Handle courier POP3-SSL and IMAP-SSL certificate path
@@ -10483,6 +10515,40 @@ function updateNginxConfVariablesInFile(){
 	file_put_contents("/etc/nginx/nginx.conf", $nginxContents);
 }
 
+function handleDKIMConfig($action, $domain){
+	$this->requireCommandLine(__FUNCTION__);
+	if($action == "remove"){
+		echo "Removing DKIM configuration for the domain of " . $domain . "...";
+	}else if($action == "add"){
+		echo "Configuring DKIM global configuration for the domain of " . $domain . "...";
+	}else{
+		echo "INVALID ACTION RECEIVED FOR HANDLE DKIM!";
+		return false;
+	}
+	$out=shell_exec('bash /var/www/new/ehcp/scripts/install_dkim_postfix.sh "' . $action . '" "' . $domain . '"');
+	
+	if(!empty($out) && $action == "add"){
+		// Need to add custom TXT DNS 
+		$publicKeyDKIMStr = 'mail._domainkey IN TXT "v=DKIM1; k=rsa; p=' . $out . '"';
+		$success=$success && $this->executeQuery("insert into ".$this->conf['customstable']['tablename']." (domainname,name,value,comment) values ('" . $domain . "','customdns','" . $this->escape($publicKeyDKIMStr) . "','A DKIM public key record')",'manage_dkim');
+	}
+	
+	if($action == "remove"){
+		$sql = "SELECT * FROM " . $this->conf['customstable']['tablename'] . " WHERE name='customdns' AND value LIKE 'mail._domainkey%' and domainname = '" . $domain . "' ORDER BY ID DESC"; 
+		$rs = $this->query($SQL);
+		if($rs !== false){
+			$id = $rs[0]["id"];
+			if(isset($id) && !empty($id)){
+				$this->executeQuery("delete from ".$this->conf['customstable']['tablename']." where id='" . $id . "' limit 1");
+			}
+		}
+	}
+	
+	$this->addDaemonOp("syncdns",'','','','sync dns');
+	
+	return true;
+}
+
 function handleCustomSSLCertsForDomains(){
 	$this->requireCommandLine(__FUNCTION__);
 	
@@ -14652,6 +14718,9 @@ function runop2($op,$action,$info,$info2='',$info3=''){
 			break; # array in this is params
 		case 'process_ssl_certs':
 			return $this->handleCustomSSLCertsForDomains();
+			break;
+		case 'manage_dkim':
+			return $this->handleDKIMConfig($action, $info);
 			break;
 		default:
 			return $this->errorText("Internal EHCP Error - Undefined Operation: ".$op." <br> This feature may not be complete.");
