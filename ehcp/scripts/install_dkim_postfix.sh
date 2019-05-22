@@ -118,6 +118,15 @@ Socket                  inet:12301@localhost" >> "/etc/opendkim.conf"
 		fi
 	fi
 	
+	# Update the host name it's being sent from
+	hasMyHostName=$(cat "/etc/postfix/main.cf" | grep -o "^myhostname")
+	if [ -z "$hasMyHostName" ]; then
+		echo -e "myhostname = ${DOMAIN}" >> "/etc/postfix/main.cf"
+	else
+		sed -i "s#^myhostname.*#myhostname = ${DOMAIN}#g" "/etc/postfix/main.cf"
+	fi
+	
+	
 	# Generate the keys and signing table
 	mkdir -p /etc/opendkim
 	mkdir -p /etc/opendkim/keys
