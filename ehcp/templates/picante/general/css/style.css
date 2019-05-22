@@ -16,7 +16,7 @@ div.sessionBar{width: 100%; margin-left: auto; margin-right: auto; height: 50px;
 	.changeColor{width: 60%; float:left; text-align: center; vertical-align: middle; height: 50px;}
 	.logout{float: left; width: 20%; text-align: left; vertical-align: middle; height: 50px; text-align: right;}
 	#colorpicker{width: 20px; height: 20px; background-color: black; cursor: pointer; display: inline-block; border: 2px solid black; vertical-align: middle; margin-top: 4px;}
-div.ehcp_content{width: 100%; margin-left: auto; margin-right: auto; background-color: white; min-height: 100%;}
+div.ehcp_content{width: 100%; margin-left: auto; margin-right: auto; background-color: white; min-height: 100%; overflow: auto;}
 div.footer{width: 100%; margin-left: auto; margin-right: auto; background-color: black; height: 50px; text-align: center; color: white; line-height: 25px;}
 .footer a{color: white;}
 .divBorder{border-right: 10px solid black; border-left: 10px solid black;}
