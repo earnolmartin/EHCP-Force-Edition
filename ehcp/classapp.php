@@ -10539,8 +10539,8 @@ function handleDKIMConfig($action, $domain){
 		echo "Adding DKIM TXT DNS record for the domain of " . $domain . "..." . "\n";
 		echo "Public key for TXT DNS record is " . $out . "\n";
 		// Need to add custom TXT DNS 
-		$publicKeyDKIMStr = 'mail._domainkey IN TXT "v=DKIM1; k=rsa; p=' . $out . '"' . "\n";
-		$publicKeyDKIMStr .= 'mail._domainkey.' . $domain . ' IN TXT "v=DKIM1; k=rsa; p=' . $out . '"';
+		// $publicKeyDKIMStr = 'mail._domainkey IN TXT "v=DKIM1; k=rsa; p=' . $out . '"' . "\n";
+		$publicKeyDKIMStr = 'mail._domainkey.' . $domain . '. IN TXT "v=DKIM1; k=rsa; p=' . $out . '"';
 		$this->executeQuery("insert into ".$this->conf['customstable']['tablename']." (domainname,name,value,comment) values ('" . $domain . "','customdns','" . $this->escape($publicKeyDKIMStr) . "','A DKIM public key record')",'manage_dkim');
 	}
 	
