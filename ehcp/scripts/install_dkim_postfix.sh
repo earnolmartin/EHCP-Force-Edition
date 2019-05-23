@@ -32,14 +32,14 @@ function aptgetInstall(){
 	fi
 	
 	# Run the command
-	sh -c "$cmd"
+	sh -c "DEBIAN_FRONTEND=noninteractive ${cmd} < /dev/null > /dev/null" > /dev/null 2>&1 
 	
 	if [ $? -ne 0 ]; then
 		cmd="apt-get -qq -y --allow-unauthenticated install $1"
 		if [ ! -z "$2" ]; then
 			cmd="RUNLEVEL=1 $cmd"
 		fi
-		sh -c "$cmd" > /dev/null 2>&1 	
+		sh -c "DEBIAN_FRONTEND=noninteractive ${cmd} < /dev/null > /dev/null" > /dev/null 2>&1 	
 	fi
 	
 	PackageFailed="$?"
@@ -192,15 +192,19 @@ function clearDKIMPostfix(){
 rootCheck
 CurDate=$(date +%Y_%m_%d_%s)
 
-if [ ! -z "$1" ] && [ "$2" == "add" ]; then
-	DOMAIN="$1"
-	# Check for root
-	aptgetInstall "opendkim opendkim-tools"
-	setupDKIMConfig
-elif [ "$2" == "remove" ]; then
-	clearDKIMPostfix
+if [ -e "/etc/postfix/main.cf" ]; then
+	if [ ! -z "$1" ] && [ "$2" == "add" ]; then
+		DOMAIN="$1"
+		# Check for root
+		aptgetInstall "opendkim opendkim-tools"
+		setupDKIMConfig
+	elif [ "$2" == "remove" ]; then
+		clearDKIMPostfix
+	else
+		echo "Domain and action (add / remove) must be specified."
+	fi
 else
-	echo "Domain and action (add / remove) must be specified."
+	echo "Postfix must be installed..."
 fi
 
 exit
