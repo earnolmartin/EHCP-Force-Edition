@@ -2102,7 +2102,7 @@ function addServer(){
 }
 
 function getAllPanelDomains(){
-	$SQL = "SELECT * FROM " . $this->conf['domainstable']['tablename'];
+	$SQL = "SELECT * FROM " . $this->conf['domainstable']['tablename'] . " ORDER BY domainname ASC";
 	$rs = $this->query($SQL);
 	if($rs !== false){
 		return $rs;
