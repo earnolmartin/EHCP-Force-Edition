@@ -142,7 +142,7 @@ localhost
 	
 	mkdir -p "/etc/opendkim/keys/${DOMAIN}"
 	cd "/etc/opendkim/keys/${DOMAIN}"
-	opendkim-genkey -s mail -d "${DOMAIN}"
+	opendkim-genkey -b 1024 -s mail -d "${DOMAIN}"
 	chown opendkim:opendkim mail.private
 	
 	service postfix restart > /dev/null 2>&1 
