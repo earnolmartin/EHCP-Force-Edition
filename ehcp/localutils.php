@@ -552,7 +552,11 @@ $sagyazi</td>\n";
 		break;
 		
 		case 'submit':
-			$res.="\n<input type='submit' id='$alanadi' name='$alanadi' value='$deger'>\n";
+			if($deger == "No/Yes"){ // Special no yes confirm case
+				$res.="\n<input type='submit' id='$alanadi' name='$alanadi' value='No'>&nbsp; <input type='submit' id='$alanadi' name='$alanadi' value='Yes'>\n";
+			}else{
+				$res.="\n<input type='submit' id='$alanadi' name='$alanadi' value='$deger'>\n";
+			}
 		break;
 
 

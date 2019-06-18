@@ -2792,7 +2792,7 @@ function setField($table,$field,$value,$func,$wherecondition,$opname='',$isInt=f
 
 	if(!$isInt) $value="'$value'"; # surround value with ' if not integer..
 
-	if($func) {# function such as md5, password, encrypt
+	if($func && $func != null) {# function such as md5, password, encrypt
 		if($func=='encrypt') $set="$func($value,'ehcp') "; # encrypt is a special function that produces different results for different 2nd par....
 		else $set="$func($value) ";
 	}
@@ -2844,18 +2844,19 @@ function adjustEmailAutoreply($email,$autoreplysubject,$autoreplymessage){
 }
 
 function editEmailUser(){
-	global $id,$newpass,$newpass2,$_insert,$autoreplysubject,$autoreplymessage;
-	$this->getVariable(array('id','newpass','newpass2','_insert','autoreplysubject','autoreplymessage'));
+	global $id,$newpass,$newpass2,$_insert,$autoreplysubject,$autoreplymessage,$quota;
+	$this->getVariable(array('id','newpass','newpass2','_insert','autoreplysubject','autoreplymessage','quota'));
+
+	$email=$this->query("select email, quota from emailusers where id=$id");
 
 	if($this->isEmailUser()){ # email users edits itself
-		$email=$this->activeuser;
+		$emailAddr=$this->activeuser;
 	} else {
 		$dom=$this->getDomain('emailuserstable',$id);
 		$this->requireMyDomain($dom);
-		$email=$this->query("select email from emailusers where id=$id");
-		$email=$email[0]['email'];
+		$emailAddr=$email[0]['email'];
 	}
-	$where="email='$email'";
+	$where="email='$emailAddr'";
 
 	if($_insert){
 		if($newpass and ($newpass==$newpass2)){
@@ -2864,7 +2865,13 @@ function editEmailUser(){
 			$this->output.="<br>Success email pass change. ";
 			#equivalent: $this->executeQuery("update ".$this->conf['emailuserstable']['tablename']." set password=encrypt($newpass) where id=$id ", "update email pass");
 		}
-		$this->adjustEmailAutoreply($email,$autoreplysubject,$autoreplymessage);
+		
+		// Update quota as well
+		if($quota != $email[0]['quota'] && is_numeric($quota)){
+			$this->setField('emailuserstable','quota',$quota,null,$where,"editemailuser-update email quota");
+		}
+		
+		$this->adjustEmailAutoreply($emailAddr,$autoreplysubject,$autoreplymessage);
 
 	} else {
 		$info=$this->query("select autoreplysubject,autoreplymessage from emailusers where $where");
@@ -2874,12 +2881,16 @@ function editEmailUser(){
 		$inputparams=array(
 			array('newpass','password','lefttext'=>'New Password:','righttext'=>'Leave emtpy for no change'),
 			array('newpass2','password','lefttext'=>'New Password Again:','righttext'=>'Leave emtpy for no change'),
+			array('quota','text','lefttext'=>'Quota:','righttext'=>'', 'default'=>$email[0]['quota']),
 			array('autoreplysubject','default'=>$autoreplysubject,'righttext'=>'Leave emtpy to disable autoreply', 'lefttext'=>'Auto Reply Subject:'),
 			array('autoreplymessage','textarea','default'=>$autoreplymessage, 'lefttext'=>'Auto Reply Message:'),
 			array('id','hidden','default'=>$id),
 			array('op','hidden','default'=>__FUNCTION__)
 		);
-		$this->output.=inputform5($inputparams);
+		
+		$infoTitle = "<p>Editing Email Address \"" . $emailAddr . "\"</p>";
+		
+		$this->output .= $infoTitle . inputform5($inputparams);
 	}
 
 	$this->showSimilarFunctions('email');
@@ -9317,7 +9328,7 @@ function logquery($qu){
 		}
 }
 
-function executeQuery($qu,$opname='',$caller='',$mysqlconn=false,$adoConn=false,$quiet=false){ # only executes conn->execute
+function executeQuery($qu,$opname='',$caller='',$mysqlconn=false,$adoConn=false,$quiet=false,$returnAffected=false){ # only executes conn->execute
 	$this->logquery($qu.($caller?' Caller:'.$caller:''));
 
 	if($mysqlconn){  # mysqlconn is for queries that needs to be executed on another mysql link.
@@ -9349,7 +9360,7 @@ function executeQuery($qu,$opname='',$caller='',$mysqlconn=false,$adoConn=false,
 	}
 	
 	if(is_numeric($affectedRows)){
-		if($affectedRows > 0){
+		if($affectedRows > 0 || $returnAffected){
 			return $affectedRows;
 		}
 	}
@@ -11528,8 +11539,8 @@ function syncpostfix(){
 }
 
 function userop(){
-	global $action,$ftpusername,$mailusername,$panelusername,$id;
-	$this->getVariable(array("action","ftpusername","mailusername","panelusername","id"));
+	global $action,$ftpusername,$mailusername,$panelusername,$id,$_insert,$submit;
+	$this->getVariable(array("action","ftpusername","mailusername","panelusername","id","_insert","submit"));
 	if(!$action) {
 		return $this->errorText(__FUNCTION__.": Error: Action was not provided.");
 	}
@@ -11538,17 +11549,36 @@ function userop(){
 	$inClause = $this->generateMySQLInClause($userHasAccessToTheseChildrenUsers);
 
 	switch($action){
-		case "emailuserdelete": //*** bu yapilmadi henuz... tam olarak...
+		case "emailuserdelete": //*** bu yapilmadi henuz... tam olarak...		
 			if($id==''){
 				$this->output.="user id to delete not given.<br>";
 				$success=false;
 			} else {
-				$sql = "delete from ".$this->conf['emailuserstable']['tablename']." where id='" . $id . "'";
-				if(!$this->isadmin()){
-					$sql .= " AND panelusername " . $inClause;
+				$email=$this->query("select email, domainname, mailusername, quota from emailusers where id=$id");
+				$emailAddr = $email[0]['email'];
+				$domain = $email[0]['domainname'];
+				$justEmail = $email[0]['mailusername'];
+				$path = "/home/vmail/" . $domain . "/" . $justEmail;
+				if(!$_insert) {
+					$inputparams=array(
+						array('op','hidden','default'=>__FUNCTION__),
+						array('submit','submit','default'=>'No/Yes')
+					);
+	
+					$this->output.="<p><br>Are you sure you want to delete the email address of \"" . $emailAddr . "\"?&nbsp; All existing email messages will be deleted as well." . ($this->isadmin() ? " (the folder $path will be deleted) " : '') . inputform5($inputparams);
+				}else{
+					if($submit == "Yes"){
+						$sql = "delete from ".$this->conf['emailuserstable']['tablename']." where id='" . $id . "'";
+						if(!$this->isadmin()){
+							$sql .= " AND panelusername " . $inClause;
+						}
+						$success=$this->executeQuery($sql, ' email user delete', '', false, false, false, true);
+						$success = $success && $this->bashDelete($path, true);				
+						$this->ok_err_text($success,"Email account successfully deleted.",'Failed to delete email account.');
+					}else{
+						$this->ok_err_text(true,"Email account was NOT deleted.",'');
+					}
 				}
-				$success=$this->executeQuery($sql, ' email user delete');
-				$this->ok_err_text($success,"Email account successfully deleted.",'Failed to delete email account.');
 			}
 			$this->showSimilarFunctions('email');
 			return $success;
@@ -11557,13 +11587,33 @@ function userop(){
 
 		# ftp silerken aslında arayüzde dosyaların silinip silinmeyeceğini sorsa iyi olur.
 		case "ftpuserdelete"://*** sonra bakilacak... username ile beraber domain de kontrol edilmeli..where icinde
-
-			$ftp=$this->query("select * from ".$this->conf['ftpuserstable']['tablename']." where ftpusername='$ftpusername'");
-			if($ftp['domainname']<>'' and $ftp['type']<>''){
-				$success=$this->errorText('This account has active domains or subdomains. Please delete domains and subdomains first.');
-			} else {
-				$success=$this->deleteFtpUserDirect($ftpusername);
-				$this->ok_err_text($success,"Successfully deleted FTP account.","Failed to remove FTP account.");
+			$sql = "select * from ".$this->conf['ftpuserstable']['tablename']." where ftpusername='$ftpusername'";
+			if(!$this->isadmin()){
+				$sql .= " AND panelusername " . $inClause;
+			}
+			$ftp=$this->query($sql);
+			if($ftp != false && !empty($ftp)){
+				if(!$_insert) {
+					$inputparams=array(
+						array('op','hidden','default'=>__FUNCTION__),
+						array('submit','submit','default'=>'No/Yes')
+					);
+	
+					$this->output.="<p><br>Are you sure you want to delete the FTP account of \"" . $ftpusername . "\"?" . inputform5($inputparams);
+				}else{
+					if($submit == "Yes"){
+						if($ftp['domainname']<>'' and $ftp['type']<>''){
+							$success=$this->errorText('This account has active domains or subdomains. Please delete domains and subdomains first.');
+						} else {
+							$success=$this->deleteFtpUserDirect($ftpusername);
+							$this->ok_err_text($success,"Successfully deleted FTP account.","Failed to remove FTP account.");
+						}
+					}else{
+						$this->ok_err_text(true,"FTP account was NOT deleted.",'');
+					}
+				}
+			}else{
+				$this->ok_err_text(false,"Successfully deleted FTP account.","Failed to remove FTP account.");
 			}
 			$this->showSimilarFunctions('ftp');
 			return $success;
