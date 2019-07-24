@@ -711,7 +711,8 @@ function finalize(){
 # Get distro name , by Marcel <marcelbutucea@gmail.com>, thanks to marcel for fixing whole code syntax
 # No longer works in Ubuntu 13.04
 # Fixed by Eric Martin <earnolmartin@gmail.com>
-function checkDistro() {		
+function checkDistro() {
+		# Get distro properly
 		# Get distro properly
 		if [ -e /etc/issue ]; then
 			distro=$( cat /etc/issue | awk '{ print $1 }' )
@@ -735,7 +736,8 @@ function checkDistro() {
 		else
 			# Convert it to lowercase
 			distro=$( echo $distro | awk '{print tolower($0)}' )
-		fi 
+		fi
+		 
 		
 		# Get actual release version information
 		version=$( lsb_release -r | awk '{ print $2 }' )
@@ -762,9 +764,29 @@ function checkDistro() {
 		# Another way to get the version number
 		# version=$(lsb_release -r | awk '{ print $2 }')
 		
-		echo "Your distro is $distro runnning version $version."
+		echo "Your distro is $distro runnning version $version"
 		if [ "$distro" != "debian" ]; then
 			echo "Your distros yearly release is $yrelease. Your distros monthly release is $mrelease."
+		fi
+		
+		# Get distro and version initially installed on
+		if [ -e "/var/www/new/ehcp/distro_during_install.txt" ]; then
+			oldDistro=$(cat "/var/www/new/ehcp/distro_during_install.txt")
+		fi
+		
+		if [ -e "/var/www/new/ehcp/version_during_install.txt" ]; then
+			oldYRelease=$(cat "/var/www/new/ehcp/version_during_install.txt" | awk {'print $1'})
+			oldMRelease=$(cat "/var/www/new/ehcp/version_during_install.txt" | awk {'print $2'})
+		fi
+
+		if [ ! -z "$oldYRelease" ] && [ ! -z "$oldMRelease" ] && [ ! -z "$oldDistro" ]; then
+			if [ "$oldYRelease" != "$yrelease" ] || [ "$oldMRelease" != "$mrelease" ] || [ "$oldDistro" != "$distro" ]; then
+				OSUpgradeChangeDetectedFromInstall=true
+			else
+				OSUpgradeChangeDetectedFromInstall=false
+			fi
+		else
+			OSUpgradeChangeDetectedFromInstall=true
 		fi
 		
 		if [ "$distro" == "debian" ] && [ "$yrelease" -lt "8" ]; then
