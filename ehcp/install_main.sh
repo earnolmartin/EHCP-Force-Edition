@@ -367,6 +367,9 @@ function checkDistro() {
 		if [[ "$version" == *.* ]]; then
 			yrelease=$( echo "$version" | cut -d. -f1 )
 			mrelease=$( echo "$version" | cut -d. -f2 )
+		else
+			yrelease="$version"
+			mrelease="0"
 		fi
 		
 		# Get 64-bit OS or 32-bit OS [used in vsftpd fix]
@@ -379,7 +382,10 @@ function checkDistro() {
 		# Another way to get the version number
 		# version=$(lsb_release -r | awk '{ print $2 }')
 		
-		echo "Your distro is $distro runnning version $version"
+		echo "Your distro is $distro runnning version $version."
+		if [ "$distro" != "debian" ]; then
+			echo "Your distros yearly release is $yrelease. Your distros monthly release is $mrelease."
+		fi
 		
 		if [ "$distro" == "debian" ] && [ "$yrelease" -lt "8" ]; then
 			echo "Debian 7.x and lower are no longer supported."
@@ -2658,11 +2664,11 @@ checkAptget
 # If your package information is out of date, MySQL and others may fail to install
 updateBeforeInstall
 
-# Get some additional prereqs
-getImportantPreReqs
-
 # Check distribution
 checkDistro
+
+# Get some additional prereqs
+getImportantPreReqs
 
 # Set global variables
 setGlobalVars
