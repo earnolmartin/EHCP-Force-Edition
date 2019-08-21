@@ -2730,13 +2730,20 @@ function useNginxTemplates(){
 	*/
 }
 
-function listSelector($arr,$print,$link,$linkfield='id',$className="EHCPListItem"){
+function listSelector($arr,$print,$link,$linkfield='id',$className="EHCPListItem",$ignoreLinkColumns=array()){
 	# for small lists that no paging required...
 	$res.="<table>";
 	foreach($arr as $item){
 		$res.="<tr>";
 		foreach($print as $pr){
-			$res.="<td><a class='" . $className . "' href='$link".$item[$linkfield]."'>".$item[$pr]."</td>";
+			$skipLink = false;
+			$res.="<td>";
+			if(!in_array($pr, $ignoreLinkColumns)){
+				$res .= "<a class='" . $className . "' href='$link".$item[$linkfield]."'>";
+			}else{
+				$skipLink = true;
+			}
+			$res .= ($pr == "panelusername" ? "owned by user " . $item[$pr] : $item[$pr]) . (!$skipLink ? "</a>" : "") . "</td>";
 		}
 		$res.="</tr>";
 	}
@@ -7761,9 +7768,18 @@ function chooseDomainGoNextOp(){ # sets selected domain, then redirect to new op
 function chooseDomain2($opname){
 	# displays list of domains available, then let user choose one, then goes to next op..
 
+	// Get list of domains
 	$mydomains=$this->getMyDomains('',' ORDER BY domainname ASC');
+	
+	// Print domain and panelusername columns depending on user type
+	$printColumns = array('domainname');
+	if($this->isadmin() || $this->isreseller){
+		$printColumns[] = 'panelusername';
+	}
+	
+	// Output
 	if(!$mydomains) $this->output.="<br>You have no domains yet. Add domain first, then use this function.";
-	else $this->output.="<br><br>Select A Domain:".$this->listSelector($arr=$mydomains,$print=array('domainname'),$link="?op=choosedomaingonextop&nextop=$opname&domainname=",$linfield='domainname','selectDomainNameLink');
+	else $this->output.="<br><br>Select A Domain:".$this->listSelector($arr=$mydomains,$print=$printColumns,$link="?op=choosedomaingonextop&nextop=$opname&domainname=",$linfield='domainname','selectDomainNameLink',array('panelusername'));
 	return True;
 }
 
