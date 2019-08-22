@@ -10693,10 +10693,10 @@ function rebuildCrontab(){
 			
 			$backupScriptCommand = 'echo "0 ' . $time . ' * * ' . $dayofweek . ' ' . $createBackupScript . ' ' . $name . '" >> ' . $ehcpCronFile;
 			$timeInOneHour = ($time + 1);
-			$uploadScriptCommand = 'echo "0 ' . $timeInOneHour . ' * * ' . $dayofweek . ' ' . $uploadScript . ' ' . $transfer_method . ' \'' . $transfer_login . '\' \'' . $transfer_pass . '\' ' . $transfer_host . ' ' . $transfer_port . ' \'' . $transfer_encrpytion_password . '\'" >> ' . $ehcpCronFile;
+			$uploadScriptCommand = 'echo "0 ' . $timeInOneHour . ' * * ' . $dayofweek . ' ' . $uploadScript . ' ' . $transfer_method . ' \'' . $transfer_login . '\' \'' . escapeDollarSignsBash($transfer_pass) . '\' ' . $transfer_host . ' ' . $transfer_port . ' \'' . escapeDollarSignsBash($transfer_encrpytion_password) . '\'" >> ' . $ehcpCronFile;
 			
-			passthru2($backupScriptCommand, true, false);
-			passthru2($uploadScriptCommand, true, false);
+			passthru2($backupScriptCommand, true, true);
+			passthru2($uploadScriptCommand, true, true);
 			$rs->MoveNext();
 		}
 		

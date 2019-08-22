@@ -676,6 +676,10 @@ function passthru2($cmd,$no_remove=false,$no_escape=false){
 	return true;
 }
 
+function escapeDollarSignsBash($cmd){
+	return str_replace('$', '\$', $cmd);
+}
+
 function passthru2_silent($cmd,$no_remove=false,$no_escape=false){
 	$cmd1=$cmd;
 	if(!$no_remove) $cmd=removeDoubleSlash($cmd);
