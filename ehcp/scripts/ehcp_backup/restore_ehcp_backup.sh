@@ -50,9 +50,23 @@ function decryptBackupFile(){
 	if [ ! -z "$1" ] && [ -e "$1" ]; then
 		backupFileName=$(echo "$1" | grep -o "[^${backupEncFilesDir}].*" | grep -o "[^/].*")
 		backupFileNameWithTGZ=$(echo ${backupFileName: : -4})
-		if [ ! -z "$backupFileNameWithTGZ" ]; then
-			openssl enc -aes-256-cbc -d -in "$1" -out "/var/backup/${backupFileNameWithTGZ}" -k "${encryptionKey}"
-			doEHCPRestore "${backupFileNameWithTGZ}"
+		if [ ! -z "$backupFileNameWithTGZ" ]; then	
+			outOpen=$(openssl enc -aes-256-cbc -d -in "$1" -out "/var/backup/${backupFileNameWithTGZ}" -k "${encryptionKey}" 2>&1)
+			echo "OpenSSL unencrypt output is $outOpen"
+			hasFailed=$(echo "$outOpen" | grep -o "bad decrypt")
+			if [ ! -z "$hasFailed" ]; then
+				echo "Failed to unencrypt... trying -nopad option..."
+				outOpen=$(openssl enc -aes-256-cbc -d -in "$1" -out "/var/backup/${backupFileNameWithTGZ}" -k "${encryptionKey}" -nopad 2>&1)
+			fi
+			hasBadDecrypt=$(echo "$outOpen" | grep -o "bad decrypt")
+			hasDecryptError=$(echo "$outOpen" | grep -o "error")
+			if [ -z "$hasBadDecrypt" ] && [ -z "$hasDecryptError" ]; then
+				echo "Beginning EHCP restore daemon operation!"
+				doEHCPRestore "${backupFileNameWithTGZ}"
+			else
+				echo "Failed to decrypt the encryped archive. Perhaps the file is corrupt or using a different md digest?"
+				exit 1
+			fi
 		fi
 	fi
 }
@@ -74,4 +88,3 @@ fi
 
 # Find the backup file to restore, unecrypt it, and then tell the EHCP daemon to restore it based on variable settings at the beginning of the file
 getLatestBackupToRestore
-

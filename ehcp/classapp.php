@@ -10114,8 +10114,6 @@ function dologin2($username,$password,$usernamefield='',$passwordfield='',$login
 		if($this->userconfig['defaultdomain']<>'' and $this->selecteddomain=='') {
 			$this->setselecteddomain($this->userconfig['defaultdomain']);
 		}
-		
-		$this->addDaemonOp('daemon_vps','vps_check_state','xx');
 
 		return True;
 	} else {
@@ -10697,8 +10695,8 @@ function rebuildCrontab(){
 			$timeInOneHour = ($time + 1);
 			$uploadScriptCommand = 'echo "0 ' . $timeInOneHour . ' * * ' . $dayofweek . ' ' . $uploadScript . ' ' . $transfer_method . ' \'' . $transfer_login . '\' \'' . $transfer_pass . '\' ' . $transfer_host . ' ' . $transfer_port . ' \'' . $transfer_encrpytion_password . '\'" >> ' . $ehcpCronFile;
 			
-			passthru2($backupScriptCommand, true, true);
-			passthru2($uploadScriptCommand, true, true);
+			passthru2($backupScriptCommand, true, false);
+			passthru2($uploadScriptCommand, true, false);
 			$rs->MoveNext();
 		}
 		
@@ -14793,9 +14791,6 @@ function runop2($op,$action,$info,$info2='',$info3=''){
 		case 'fixApacheConfigSslOnly':
 			return $this->fixApacheConfigSslOnly($info);
 			break;
-		case 'daemon_vps':
-			return $this->call_func_in_module('Vps_Module','daemon_vps',array('action'=>$action,'info'=>$info)); 
-			break; # array in this is params
 		case 'process_ssl_certs':
 			return $this->handleCustomSSLCertsForDomains();
 			break;
