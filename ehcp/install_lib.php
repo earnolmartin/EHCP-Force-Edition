@@ -1424,6 +1424,9 @@ ftpd_banner=Welcome to vsFTPd Server, managed by EHCP Force Edition (Easy Hostin
 # allow_writeable_chroot=YES : bunun uzerinde calisacagim... boyle olmuyor... bakalim... bu olabilir: http://ehcp.net/?q=comment/2905#comment-2905
 	writeoutput("/etc/vsftpd.conf",$filecontent,"w");
 	passthru2("usermod -g $app->ftpgroup $app->ftpuser");
+	
+	writeoutput("/var/log/vsftpd.log","","w");
+	
 	manageService("vsftpd", "restart");
 }
 
