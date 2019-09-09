@@ -823,12 +823,11 @@ hosts = localhost";
 
 	# here, both params, options added, in case it may be changed.
 	$filecontent="
-	NAME=\"saslauthd\"
-	START=yes
-	MECHANISMS=\"pam\"
-	PARAMS=\"-s 5120 -m /var/spool/postfix/var/run/saslauthd -r\"
-	OPTIONS=\"-s 5120 -m /var/spool/postfix/var/run/saslauthd -r\"
-	THREADS=2
+		NAME=\"saslauthd\"
+		START=yes
+		MECHANISMS=\"pam\"
+		PARAMS=\"-n 0 -m /var/spool/postfix/var/run/saslauthd -r\"
+		OPTIONS=\"-n 0 -m /var/spool/postfix/var/run/saslauthd -r\"
 	";
 
 	writeoutput("/etc/default/saslauthd",$filecontent,"w");
