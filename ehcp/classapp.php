@@ -8999,6 +8999,9 @@ function editFtpUser(){
 	global $ftpusername,$_insert,$status,$newpass,$newpass2;
 	$this->getVariable(array('ftpusername','_insert','status','newpass','newpass2'));
 	$success=True;
+	
+	$userHasAccessToTheseChildrenUsers = $this->getParentsAndChildren($this->activeuser);
+	$inClause = $this->generateMySQLInClause($userHasAccessToTheseChildrenUsers);
 
 	if(!$ftpusername){ # if no ftpusername given, learn it from domainname,
 		$domainname=$this->chooseDomain(__FUNCTION__,$domainname);
