@@ -9017,16 +9017,24 @@ function editFtpUser(){
 		// Admin should be able to edit any MySQL user
 		return $this->errorText("This FTP account is not owned by your account.");
 	}
+	
+	$sql = "select * from ".$this->conf['ftpuserstable']['tablename']." where ftpusername='$ftpusername'";
+	if(!$this->isadmin()){
+			$sql .= " AND panelusername " . $inClause;
+	}
+	$ftp=$this->query($sql);
 
 	if(!$_insert){
-		$inputparams=array(
-			array('status','select','lefttext'=>'Set Active/Passive','secenekler'=>$this->statusActivePassive),
-			#array('status','lefttext'=>'Set Active/Passive'),
-			array('newpass','password','lefttext'=>'New Password: (leave empty for no change)'),
-			array('newpass2','password', 'lefttext'=>'Enter Password Again:'),
-			array('ftpusername','hidden','default'=>$ftpusername, 'lefttext'=>'FTP Username:'),
-			array('op','hidden','default'=>__FUNCTION__)
-		);
+		$inputparams = array();
+		
+		if($ftp != false && !empty($ftp) && !empty($ftp['status'])){
+			$inputparams[] = array('status','select','lefttext'=>'Set Active/Passive','secenekler'=>$this->statusActivePassive);
+		}
+		
+		$inputparams[] = array('newpass','password','lefttext'=>'New Password: (leave empty for no change)');
+		$inputparams[] = array('newpass2','password', 'lefttext'=>'Enter Password Again:');
+		$inputparams[] = array('ftpusername','hidden','default'=>$ftpusername, 'lefttext'=>'FTP Username:');
+		$inputparams[] = array('op','hidden','default'=>__FUNCTION__);
 
 		$this->output.="Changing FTP User: $ftpusername <br>".inputform5($inputparams);
 
@@ -9041,9 +9049,18 @@ function editFtpUser(){
 			$passwordset=", password=password('$newpass') ";
 		}
 
-
-		$success=$success && $this->executeQuery("update ".$this->conf['ftpuserstable']['tablename']." set status='$status' $passwordset where $filt");
-		$success=$success && $this->addDaemonOp("daemonftp",$status,$this->conf['vhosts'].'/'.$ftpusername);
+		$sql = "update ".$this->conf['ftpuserstable']['tablename']." SET ftpusername = '" . $ftpusername . "'  $passwordset";
+		if(isset($status) && !empty($status)){
+			$sql .= ", status='$status'";
+		}
+		$sql .= " where $filt";
+		$success=$success && $this->executeQuery($sql);
+		
+		// Only update status if we actually used it
+		if(isset($status) && !empty($status)){
+			$success=$success && $this->addDaemonOp("daemonftp",$status,$this->conf['vhosts'].'/'.$ftpusername);
+		}
+		
 		$success=$success && $this->addDaemonOp('syncftp','','','','sync ftp for nonstandard homes');
 
 		$this->ok_err_text($success,'FTP account was successfully modified.','Failed to modify FTP account.');
