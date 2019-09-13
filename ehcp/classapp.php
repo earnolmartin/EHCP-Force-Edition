@@ -9020,6 +9020,10 @@ function editFtpUser(){
 	
 	$sql = "select * from ".$this->conf['ftpuserstable']['tablename']." where ftpusername='$ftpusername'";
 	$ftp=$this->query($sql);
+	
+	if($ftp && is_array($ftp)){
+		$ftp=$ftp[0];
+	}
 
 	if(!$_insert){
 		$inputparams = array();
