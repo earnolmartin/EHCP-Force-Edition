@@ -417,7 +417,7 @@ function mysqlUseLocalHost(){
 	if [ -e "/etc/mysql/my.cnf" ]; then
 		sqlModeExists=$(cat "/etc/mysql/my.cnf" | grep -o "^sql_mode")
 		if [ ! -z "$sqlModeExists" ]; then
-			sed -i "s/^sql_mode.*/sql_mode=/g" "/etc/mysql/mariadb.conf.d/50-server.cnf"
+			sed -i "s/^sql_mode.*/sql_mode=/g" "/etc/mysql/my.cnf"
 		else
 			echo -e "sql_mode=" >> "/etc/mysql/my.cnf"
 		fi
