@@ -737,6 +737,7 @@ hosts = localhost";
 	replacelineinfile("bind-address","bind-address=0.0.0.0",'/etc/mysql/my.cnf', false);
 	replacelineinfile("bind-address","bind-address=0.0.0.0",'/etc/mysql/mariadb.conf.d/50-server.cnf', false);
 	replacelineinfile("skip-innodb","#skip-innodb",'/etc/mysql/mariadb.cnf', false);
+	replacelineinfile("sql_mode","sql_mode=",'/etc/mysql/my.cnf', true);
 
 	passthru3("chmod o= /etc/postfix/mysql-virtual_*.cf");
 	passthru3("chgrp postfix /etc/postfix/mysql-virtual_*.cf");
