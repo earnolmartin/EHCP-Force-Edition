@@ -886,8 +886,9 @@ function genUbuntuFixes(){
 	if [ ! -z "$yrelease" ]; then
 		
 		# Due to template changes, we need to set older web servers to use nginx because the ondrej version of apache2 will not work in 12.04 and earlier
-		if [[ "$distro" == "ubuntu" && "$yrelease" -le "12" ]] || [[ "$distro" == "debian" && "$yrelease" -le "7" ]]; then
+		if [[ "$distro" == "ubuntu" && "$yrelease" -le "13" ]] || [[ "$distro" == "debian" && "$yrelease" -le "7" ]]; then
 			setWebServerModeToNginx
+			syncDomainsPostInstall=true
 		fi
 	
 		if [[ "$distro" == "ubuntu" && "$yrelease" -ge "13" ]] || [[ "$distro" == "debian" && "$yrelease" -ge "8" ]]; then
@@ -2075,6 +2076,7 @@ function ModifyPHPIniConfigForFile(){
 
 function installNewPackages(){
 	# Install required packages that may be missing
+	aptgetInstall coreutils
 	
 	# debian fix
 	aptgetInstall software-properties-common
@@ -2864,6 +2866,18 @@ function fixMariaDBSkippingInnoDB(){
 	fi
 }
 
+function syncDomainsEHCP(){
+	if [ "$syncDomainsPostInstall" = true ]; then
+		# Sync domains
+		curDir=$(pwd)
+		cd "$patchDir"
+		cp "$FIXDIR/api/syncdomains_apiscript.tar.gz" "syncdomains_apiscript.tar.gz"
+		tar -zxvf "syncdomains_apiscript.tar.gz"
+		php syncdomains.php
+		cd "$curDir"
+	fi
+}
+
 function fixQuotaForEmailsPostfix3x(){
 	# Get currently working directory
 	origDir=$( pwd )
@@ -2935,6 +2949,40 @@ function installBadBotsBlockerNginx(){
 		fi
 	fi
 	cd "$origDir"
+}
+
+function checkApacheVersionForProxyFCGI(){
+	switchToNginx=false
+	detectRunningWebServer
+	if [ "$WebServerType" == "apache2" ]; then
+		apache2Version=$(apache2 -v | head -n 1 | grep -o "/.*" | grep -o "[^/].*" | cut -d ' ' -f1)
+		if [ ! -z "$apache2Version" ]; then
+			apache2MajorVersion=$(echo "$apache2Version" | cut -d '.' -f1)
+			apache2MinorVersion=$(echo "$apache2Version" | cut -d '.' -f2)
+			apache2RevisionVersion=$(echo "$apache2Version" | cut -d '.' -f3)
+			if [ ! -z "$apache2MajorVersion" ] && [ ! -z "$apache2MinorVersion" ] && [ ! -z "$apache2RevisionVersion" ]; then
+				echo "Detected apache2 version of ${apache2MajorVersion}.${apache2MinorVersion}.${apache2RevisionVersion}"
+				if [ "$apache2MajorVersion" -lt "2" ]; then
+					switchToNginx=true
+				else
+					if [ "$apache2MinorVersion" -lt "4" ] && [ "$apache2MajorVersion" -eq "2" ]; then
+						switchToNginx=true
+					else
+						if [ "$apache2RevisionVersion" -lt "26" ] && [ "$apache2MinorVersion" -le "4" ] && [ "$apache2MajorVersion" -eq "2" ]; then
+							switchToNginx=true
+						fi
+					fi
+				fi
+			fi
+		else
+			echo "Can't detect apache2 version!"
+		fi
+		
+		if [ "$switchToNginx" = true ]; then
+			setWebServerModeToNginx
+			syncDomainsPostInstall=true
+		fi
+	fi
 }
 
 ###############################
@@ -3142,6 +3190,18 @@ convertToMariaDBFromMYSQLPrompt
 
 echo -e "Adding email blacklist lookup for incoming emails.\n"
 addToPostFixRecipientRestrictions
+
+echo -e "Getting web server mode!\n"
+# Get web server type
+detectRunningWebServer
+
+echo -e "Checking apache2 version for ProxyFCGISetEnvIf support with mod_proxy_fcgi!\n"
+# Get web server type
+checkApacheVersionForProxyFCGI
+
+echo -e "Syncing domains in case the web server mode changed!\n"
+# Start the services and sync domains
+syncDomainsEHCP
 
 echo -e "Restarting web services, synchronizing domains, and finalizing installation!\n"
 # Start the services and sync domains

@@ -544,7 +544,7 @@ function genUbuntuFixes(){
 	if [ ! -z "$yrelease" ]; then
 	
 		# Due to template changes, we need to set older web servers to use nginx because the ondrej version of apache2 will not work in 12.04 and earlier
-		if [[ "$distro" == "ubuntu" && "$yrelease" -le "12" ]] || [[ "$distro" == "debian" && "$yrelease" -le "7" ]]; then
+		if [[ "$distro" == "ubuntu" && "$yrelease" -le "14" ]] || [[ "$distro" == "debian" && "$yrelease" -le "7" ]]; then
 			setWebServerModeToNginx
 			syncDomainsPostInstall=true
 		fi
@@ -2533,6 +2533,7 @@ function fixMariaDBSkippingInnoDB(){
 }
 
 function getImportantPreReqs(){
+	aptgetInstall coreutils
 	aptgetInstall lsb-release
 	# debian fix
 	aptgetInstall software-properties-common 
@@ -2642,6 +2643,61 @@ function installBadBotsBlockerNginx(){
 		fi
 	fi
 	cd "$origDir"
+}
+
+function detectRunningWebServer(){
+	# Get the web server type from the database
+	curDir=$(pwd)
+	cd "$patchDir"
+	cp "$FIXDIR/api/getwebservertype.tar.gz" "getwebservertype.tar.gz"
+	tar -zxvf "getwebservertype.tar.gz"
+	WebServerType=$(php -f getwebservertype.php | xargs) 
+	
+	if [ -z "$WebServerType" ] || [[ "$WebServerType" != "nginx" && "$WebServerType" != "apache2" ]]; then
+		nginxIsRunning=$(pidof nginx)
+		apache2IsRunning=$(pidof apache2)
+		if [ ! -z "$nginxIsRunning" ]; then
+			WebServerType="nginx"
+		fi
+		if [ ! -z "$apache2IsRunning" ]; then
+			WebServerType="apache2"
+		fi
+	fi
+	cd "$curDir"
+}
+
+function checkApacheVersionForProxyFCGI(){
+	switchToNginx=false
+	detectRunningWebServer
+	if [ "$WebServerType" == "apache2" ]; then
+		apache2Version=$(apache2 -v | head -n 1 | grep -o "/.*" | grep -o "[^/].*" | cut -d ' ' -f1)
+		if [ ! -z "$apache2Version" ]; then
+			apache2MajorVersion=$(echo "$apache2Version" | cut -d '.' -f1)
+			apache2MinorVersion=$(echo "$apache2Version" | cut -d '.' -f2)
+			apache2RevisionVersion=$(echo "$apache2Version" | cut -d '.' -f3)
+			if [ ! -z "$apache2MajorVersion" ] && [ ! -z "$apache2MinorVersion" ] && [ ! -z "$apache2RevisionVersion" ]; then
+				echo "Detected apache2 version of ${apache2MajorVersion}.${apache2MinorVersion}.${apache2RevisionVersion}"
+				if [ "$apache2MajorVersion" -lt "2" ]; then
+					switchToNginx=true
+				else
+					if [ "$apache2MinorVersion" -lt "4" ] && [ "$apache2MajorVersion" -eq "2" ]; then
+						switchToNginx=true
+					else
+						if [ "$apache2RevisionVersion" -lt "26" ] && [ "$apache2MinorVersion" -le "4" ] && [ "$apache2MajorVersion" -eq "2" ]; then
+							switchToNginx=true
+						fi
+					fi
+				fi
+			fi
+		else
+			echo "Can't detect apache2 version!"
+		fi
+		
+		if [ "$switchToNginx" = true ]; then
+			setWebServerModeToNginx
+			syncDomainsPostInstall=true
+		fi
+	fi
 }
 
 #############################################################
@@ -2754,6 +2810,8 @@ fixNginxSessions
 changeApacheUser
 # Use FPM for apache
 apacheUseFPM
+# Check which version of apache we have... if it doesn't support ProxyFCGISetEnvIf (Available in version 2.4.26 and later), then set web server to nginx
+checkApacheVersionForProxyFCGI
 # Add rate limiting option to nginx if it doesn't have it
 nginxRateLimit
 # Fix extra mysql module getting loaded in the PHP config printing warning messages
