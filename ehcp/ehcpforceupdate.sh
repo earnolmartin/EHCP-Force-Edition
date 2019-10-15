@@ -886,7 +886,7 @@ function genUbuntuFixes(){
 	if [ ! -z "$yrelease" ]; then
 		
 		# Due to template changes, we need to set older web servers to use nginx because the ondrej version of apache2 will not work in 12.04 and earlier
-		if [[ "$distro" == "ubuntu" && "$yrelease" -le "13" ]] || [[ "$distro" == "debian" && "$yrelease" -le "7" ]]; then
+		if [[ "$distro" == "ubuntu" && "$yrelease" -le "12" ]] || [[ "$distro" == "debian" && "$yrelease" -le "7" ]]; then
 			setWebServerModeToNginx
 			syncDomainsPostInstall=true
 		fi
@@ -3190,10 +3190,6 @@ convertToMariaDBFromMYSQLPrompt
 
 echo -e "Adding email blacklist lookup for incoming emails.\n"
 addToPostFixRecipientRestrictions
-
-echo -e "Getting web server mode!\n"
-# Get web server type
-detectRunningWebServer
 
 echo -e "Checking apache2 version for ProxyFCGISetEnvIf support with mod_proxy_fcgi!\n"
 # Get web server type
