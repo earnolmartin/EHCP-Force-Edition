@@ -544,7 +544,7 @@ function genUbuntuFixes(){
 	if [ ! -z "$yrelease" ]; then
 	
 		# Due to template changes, we need to set older web servers to use nginx because the ondrej version of apache2 will not work in 12.04 and earlier
-		if [[ "$distro" == "ubuntu" && "$yrelease" -le "14" ]] || [[ "$distro" == "debian" && "$yrelease" -le "7" ]]; then
+		if [[ "$distro" == "ubuntu" && "$yrelease" -le "14" ]] || [[ "$distro" == "debian" && "$yrelease" -le "8" ]]; then
 			setWebServerModeToNginx
 			syncDomainsPostInstall=true
 		fi
@@ -868,10 +868,6 @@ function apacheUseFPM(){
 	aptget_Update
 	
 	# Harder to use PPAs from Ubuntu on Debian, but still possible :)
-	if [ "$distro" == "debian" ] && [ "$yrelease" -eq "8" ]; then
-		sed -i "s/jessie/trusty/g" "/etc/apt/sources.list.d/ondrej-apache2-jessie.list"
-		sed -i "s/jessie/trusty/g" "/etc/apt/sources.list.d/ondrej-apache2-jessie.list.save"
-	fi
 	if [ "$distro" == "debian" ] && [ "$yrelease" -eq "9" ]; then
 		sed -i "s/cosmic/xenial/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-cosmic.list"
 		sed -i "s/cosmic/xenial/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-cosmic.list.save"
