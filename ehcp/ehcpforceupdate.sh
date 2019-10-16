@@ -172,6 +172,9 @@ function apacheUseFPM(){
 	if [ "$distro" == "debian" ] && [ "$yrelease" -eq "9" ]; then
 		sed -i "s/cosmic/xenial/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-cosmic.list"
 		sed -i "s/cosmic/xenial/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-cosmic.list.save"
+		
+		sed -i "s/eoan/xenial/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-eoan.list"
+		sed -i "s/eoan/xenial/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-eoan.list.save"
 	fi
 	
 	aptget_Update
