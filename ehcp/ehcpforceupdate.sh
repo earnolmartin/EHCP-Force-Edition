@@ -417,16 +417,33 @@ function mysqlUseLocalHost(){
 		sed -i "s/^bind-address.*/bind-address=0.0.0.0/g" "/etc/mysql/mariadb.conf.d/50-server.cnf"
 	fi
 	
+	manageService "mysql" "restart"
+}
+
+function updateMySQLModeVariableIfNeeded(){
+	if [ -e "/etc/mysql/mariadb.conf.d/50-server.cnf" ]; then
+		sqlModeExists=$(cat "/etc/mysql/mariadb.conf.d/50-server.cnf" | grep -o "^sql_mode")
+		if [ ! -z "$sqlModeExists" ]; then
+			sed -i "s/^sql_mode.*/sql_mode=/g" "/etc/mysql/mariadb.conf.d/50-server.cnf"
+		else
+			mysqldSectionExists=$(cat "/etc/mysql/mariadb.conf.d/50-server.cnf" | grep -o "^\[mysqld\]")
+			if [ ! -z "$mysqldSectionExists" ]; then
+				sed -i "s/^\[mysqld\]/\[mysqld\]\\nsql_mode=/g" "/etc/mysql/mariadb.conf.d/50-server.cnf"
+			fi
+		fi
+	fi
+	
 	if [ -e "/etc/mysql/my.cnf" ]; then
 		sqlModeExists=$(cat "/etc/mysql/my.cnf" | grep -o "^sql_mode")
 		if [ ! -z "$sqlModeExists" ]; then
 			sed -i "s/^sql_mode.*/sql_mode=/g" "/etc/mysql/my.cnf"
 		else
-			echo -e "sql_mode=" >> "/etc/mysql/my.cnf"
+			mysqldSectionExists=$(cat "/etc/mysql/my.cnf" | grep -o "^\[mysqld\]")
+			if [ ! -z "$mysqldSectionExists" ]; then
+				sed -i "s/^\[mysqld\]/\[mysqld\]\\nsql_mode=/g" "/etc/mysql/my.cnf"
+			fi
 		fi
 	fi
-	
-	manageService "mysql" "restart"
 }
 
 function apacheSecurity(){
@@ -3100,6 +3117,10 @@ getLatestEHCPFiles
 echo -e "Updating the EHCP Daemon\n"
 # Update EHCP Daemon
 updateDaemon
+
+echo -e "Running MySQL Mode Fix\n"
+# Fix MySQL Mode
+updateMySQLModeVariableIfNeeded
 
 echo -e "Running MySQL Bind Address Fix\n"
 # Fix MySQL Bind Address
