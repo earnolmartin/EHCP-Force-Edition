@@ -878,6 +878,13 @@ function apacheUseFPM(){
 			
 			sed -i "s/focal/xenial/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-focal.list"
 			sed -i "s/focal/xenial/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-focal.list.save"
+			
+			# figure out what to replace dynamically
+			ondrejKeyword=$(ls /etc/apt/sources.list.d/ondrej-* | head -n 1 | cut -d '-' -f4 | cut -d '.' -f1)
+			if [ ! -z "$ondrejKeyword" ]; then
+				sed -i "s/$ondrejKeyword/xenial/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-${ondrejKeyword}.list"
+				sed -i "s/$ondrejKeyword/xenial/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-${ondrejKeyword}.list.save"
+			fi
 		fi
 		
 		aptget_Update
