@@ -4577,8 +4577,8 @@ function existscontrol($controls){
 		$count=0;
 		switch($key){
 			# vps cases
-			case 'ip': continue ; # no ip check, same ip can exists on different servers, perhaps..
-			case 'hostip': continue ;  # multiple vps will have same hostip
+			case 'ip': continue 2; # no ip check, same ip can exists on different servers, perhaps..
+			case 'hostip': continue 2;  # multiple vps will have same hostip
 			case "vpsname":
 				$count=$this->recordcount($this->conf['vpstable']['tablename'],"vpsname='$val'");
 			break;

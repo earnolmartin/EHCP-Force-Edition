@@ -2775,6 +2775,7 @@ function installPHPMyAdminManually(){
 		cp "$FIXDIR/phpmyadmin/config.inc.php" "/usr/share/phpmyadmin"
 		sed -i "s#{PHPMYADMINUSER}#$phpmyadminMySQLUser#g" "/usr/share/phpmyadmin/config.inc.php"
 		sed -i "s#{PHPMYADMINPASS}#$phpmyadminMySQLPass#g" "/usr/share/phpmyadmin/config.inc.php"
+		ln -s /usr/share/phpmyadmin /var/www/new/phpmyadmin
 	fi
 	cd "$curDir"
 }
