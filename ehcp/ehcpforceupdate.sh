@@ -177,6 +177,14 @@ function apacheUseFPM(){
 		sed -i "s/eoan/xenial/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-eoan.list.save"
 	fi
 	
+	if [ "$distro" == "debian" ] && [ "$yrelease" -eq "10" ]; then
+		sed -i "s/cosmic/bionic/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-cosmic.list"
+		sed -i "s/cosmic/bionic/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-cosmic.list.save"
+		
+		sed -i "s/eoan/bionic/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-eoan.list"
+		sed -i "s/eoan/bionic/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-eoan.list.save"
+	fi
+	
 	aptget_Update
 	apt-get install -y --allow-unauthenticated -o Dpkg::Options::="--force-confold" apache2
 }
