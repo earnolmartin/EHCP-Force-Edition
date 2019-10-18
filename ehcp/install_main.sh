@@ -2725,6 +2725,52 @@ function updateMySQLModeVariableIfNeeded(){
 	fi
 }
 
+function packageCanBeInstalledFromRepo(){
+	#$1 is the package name
+	if [ ! -z "$1" ]; then
+		packageSearchResult=$(apt-cache policy "$1" | grep -o "Candidate:.*" | grep -o "[^Candidate: ].*")
+		if [ ! -z "$packageSearchResult" ] && [ "$packageSearchResult" != "(none)" ]; then
+			packageSearchedExists=true
+		fi
+	fi
+	
+	packageSearchedExists=false
+}
+
+function installPHPMyAdminManually(){
+	curDir=$(pwd)
+	packageCanBeInstalledFromRepo "phpmyadmin"
+	if [ "$packageSearchedExists" = false ] && [ ! -e "/usr/share/phpmyadmin" ]; then
+		echo -e "Installing phpmyadmin manually!"
+		# Install phpmyadmin manually
+		cd "$patchDir"
+		wget -O "phpmyadmin.zip" -N "https://files.phpmyadmin.net/phpMyAdmin/4.9.1/phpMyAdmin-4.9.1-all-languages.zip"
+		unzip "phpmyadmin.zip"
+		cd "phpMyAdmin-4.9.1-all-languages"
+		if [ ! -d "/usr/share/phpmyadmin" ]; then
+			mkdir -p "/usr/share/phpmyadmin"
+		fi
+		cp -R ./* /usr/share/phpmyadmin
+		
+		# Create database and user for phpmyadmin
+		generatePassword
+		phpmyadminMySQLUser="phpmyadmin_sys"
+		phpmyadminMySQLPass="$rPass"
+		
+		# Create the database with the username and password and populate it with the policyd mysql
+		cd "$patchDir"
+		cp "$FIXDIR/api/create_mysql_db_user.tar.gz" "create_mysql_db_user.tar.gz"
+		tar -zxvf "create_mysql_db_user.tar.gz"
+		php -f create_mysql_db_user.php "phpmyadmin" "$phpmyadminMySQLUser" "$phpmyadminMySQLPass"
+		
+		# Update the config to use the database info
+		cp "$FIXDIR/phpmyadmin/config.inc.php" "/usr/share/phpmyadmin"
+		sed -i "s#{PHPMYADMINUSER}#$phpmyadminMySQLUser#g" "/usr/share/phpmyadmin/config.inc.php"
+		sed -i "s#{PHPMYADMINPASS}#$phpmyadminMySQLPass#g" "/usr/share/phpmyadmin/config.inc.php"
+	fi
+	cd "$curDir"
+}
+
 #############################################################
 # End Functions & Start Install							 #
 #############################################################
@@ -2860,6 +2906,8 @@ fixPopBeforeSMTP
 #Fix apache2 umask issue
 #For some reason, new distros include umask 111 in apache2 envvars which really messes stuff up
 removeApacheUmask
+# Install phpmyadmin manually if needed
+installPHPMyAdminManually
 # Secure PHPMyAdmin Configuration to Prevent Root Logins Except for Local Connections
 securePHPMyAdminConfiguration
 #Change settings in php.ini to allow 50MB upload files, turn on displaying errors, and setting the error_reporting to something practical
