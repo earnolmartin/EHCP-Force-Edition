@@ -2774,6 +2774,16 @@ function installPHPMyAdminManually(){
 	cd "$curDir"
 }
 
+function adjustOpenSSLConfiguration(){
+	# Allow "weaker" keys for nginx / apache
+	if [ -e "/etc/ssl/openssl.cnf" ]; then
+		secLevelOpenSSL=$(cat "/etc/ssl/openssl.cnf" | grep -o "SECLEVEL=2")
+		if [ ! -z "$secLevelOpenSSL" ]; then
+			sed -i "s#SECLEVEL=2#SECLEVEL=1#g" "/etc/ssl/openssl.cnf"
+		fi
+	fi
+}
+
 #############################################################
 # End Functions & Start Install							 #
 #############################################################
@@ -2874,6 +2884,8 @@ slaveDNSApparmorFix
 fixEHCPPerms
 # Run log chmod fix
 logDirFix
+# Fix openssl configuration
+adjustOpenSSLConfiguration
 # Copy over nginx conf file
 copyNginxConf
 # Fix php-fpm to listen to port 9000

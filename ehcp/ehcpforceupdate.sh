@@ -3049,6 +3049,16 @@ function installPHPMyAdminManually(){
 	cd "$curDir"
 }
 
+function adjustOpenSSLConfiguration(){
+	# Allow "weaker" keys for nginx / apache
+	if [ -e "/etc/ssl/openssl.cnf" ]; then
+		secLevelOpenSSL=$(cat "/etc/ssl/openssl.cnf" | grep -o "SECLEVEL=2")
+		if [ ! -z "$secLevelOpenSSL" ]; then
+			sed -i "s#SECLEVEL=2#SECLEVEL=1#g" "/etc/ssl/openssl.cnf"
+		fi
+	fi
+}
+
 ###############################
 ###START OF SCRIPT MAIN CODE###
 ###############################
@@ -3133,6 +3143,9 @@ fixPHPFPMListen
 
 # Fix session saving for nginx
 fixNginxSessions
+
+# Fix openssl configuration
+adjustOpenSSLConfiguration
 
 echo -e "Changing Apache User\n"
 # Change Apache User
