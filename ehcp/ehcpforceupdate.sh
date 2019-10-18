@@ -161,32 +161,22 @@ function apacheUseFPM(){
 	a2dismod php7.2
 	
 	# We need a newer version of Apache for this to work properly!
-	add-apt-repository -y ppa:ondrej/apache2
-	aptget_Update
-	
-	# Harder to use PPAs from Ubuntu on Debian, but still possible :)
-	if [ "$distro" == "debian" ] && [ "$yrelease" -eq "8" ]; then
-		sed -i "s/jessie/trusty/g" "/etc/apt/sources.list.d/ondrej-apache2-jessie.list"
-		sed -i "s/jessie/trusty/g" "/etc/apt/sources.list.d/ondrej-apache2-jessie.list.save"
-	fi
-	if [ "$distro" == "debian" ] && [ "$yrelease" -eq "9" ]; then
-		sed -i "s/cosmic/xenial/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-cosmic.list"
-		sed -i "s/cosmic/xenial/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-cosmic.list.save"
+	if [[ "$distro" == "ubuntu" && "$yrelease" -eq "16" && "$mrelease" == "04" ]] || [[ "$distro" == "debian" && "$yrelease" -eq "9" ]]; then
+		add-apt-repository -y ppa:ondrej/apache2
+		aptget_Update
 		
-		sed -i "s/eoan/xenial/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-eoan.list"
-		sed -i "s/eoan/xenial/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-eoan.list.save"
-	fi
-	
-	if [ "$distro" == "debian" ] && [ "$yrelease" -eq "10" ]; then
-		sed -i "s/cosmic/bionic/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-cosmic.list"
-		sed -i "s/cosmic/bionic/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-cosmic.list.save"
+		# Harder to use PPAs from Ubuntu on Debian, but still possible :)
+		if [ "$distro" == "debian" ] && [ "$yrelease" -eq "9" ]; then
+			sed -i "s/cosmic/xenial/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-cosmic.list"
+			sed -i "s/cosmic/xenial/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-cosmic.list.save"
+			
+			sed -i "s/eoan/xenial/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-eoan.list"
+			sed -i "s/eoan/xenial/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-eoan.list.save"
+		fi
 		
-		sed -i "s/eoan/bionic/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-eoan.list"
-		sed -i "s/eoan/bionic/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-eoan.list.save"
+		aptget_Update
+		apt-get install -y --allow-unauthenticated -o Dpkg::Options::="--force-confold" apache2
 	fi
-	
-	aptget_Update
-	apt-get install -y --allow-unauthenticated -o Dpkg::Options::="--force-confold" apache2
 }
 
 function changeNginxUser(){
