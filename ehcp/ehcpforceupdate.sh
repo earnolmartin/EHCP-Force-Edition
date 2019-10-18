@@ -172,6 +172,9 @@ function apacheUseFPM(){
 			
 			sed -i "s/eoan/xenial/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-eoan.list"
 			sed -i "s/eoan/xenial/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-eoan.list.save"
+			
+			sed -i "s/focal/xenial/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-focal.list"
+			sed -i "s/focal/xenial/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-focal.list.save"
 		fi
 		
 		aptget_Update
