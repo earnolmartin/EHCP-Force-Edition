@@ -2793,6 +2793,58 @@ function adjustOpenSSLConfiguration(){
 	fi
 }
 
+function updateWebalizerIfNeeded(){
+	curDir=$(pwd)
+	whichWebalizer=$(which webalizer)
+	if [ -z "$whichWebalizer" ]; then
+		upgradeWebalizer
+	else
+		curWebalizerVer=$(webalizer -V | head -n 1 | grep -o "V.*"| cut -d ' ' -f 1)
+		if [ "${curWebalizerVer:0:2}" = "V2" ]; then
+			curWebalizerRev=$(echo "$curWebalizerVer" | cut -d '-' -f 2)
+			curWebalizerVerNum=$(echo "$curWebalizerVer" | cut -d '-' -f 1 | grep -o '[0-9.]*')
+			curWebalizerVerNumInt=$(echo "scale=0;$curWebalizerVerNum*100" | bc | cut -d '.' -f 1)
+			echo -e "Webalizer full version detected as ${curWebalizerVer} \nWebalizer revision number detected as ${curWebalizerRev} \nWebalizer version number detected as ${curWebalizerVerNum} \nWebalizer version number INT detected as ${curWebalizerVerNumInt}"
+			if [ "$curWebalizerVerNumInt" -le "223" ]; then
+				if [ "$curWebalizerRev" -lt "8" ]; then
+					echo -e "Webalizer is going to be upgraded..."
+					upgradeWebalizer					
+				else
+					echo -e "Webalizer version is current.  No need to update.  Skipping..."
+				fi
+			fi
+		fi
+	fi
+	
+	cd "$curDir"
+}
+
+function upgradeWebalizer(){
+	# Install prereqs
+	aptgetInstall libbz2-1.0
+	aptgetInstall libpng++-dev
+	aptgetInstall libdb++-dev
+	aptgetInstall libgd-dev
+	apt-get purge -y webalizer
+				
+	# Handle updated geodb files
+	mkdir -p /root/Downloads/webalizer
+	cd /root/Downloads/webalizer
+	wget -N "ftp://ftp.mrunix.net/pub/webalizer/geodb/webalizer-geodb-20191201.tgz"
+	tar -xzf webalizer-geodb-20191201.tgz
+	mkdir -p "/usr/share/GeoIP2"
+	cp GeoDB.dat /usr/share/GeoIP2
+		
+	# Compile and install latest version of webalizer
+	cd /root/Downloads/webalizer
+	wget -N "ftp://ftp.mrunix.net/pub/webalizer/webalizer-2.23-08-src.tgz"
+	tar -xzf webalizer-2.23-08-src.tgz
+	cd webalizer-2.23-08
+	./configure --sysconfdir=/etc --enable-dns --with-geodb=/usr/share/GeoIP2 --enable-bz2 --enable-geoip
+	make
+	make install
+}
+
 #############################################################
 # End Functions & Start Install							 #
 #############################################################
@@ -2966,6 +3018,9 @@ fi
 
 # Add blacklist email lookup to block incoming spam
 addToPostFixRecipientRestrictions
+
+# Upgrade webalizer if needed
+updateWebalizerIfNeeded
 
 # Write out version information to version_during_install.txt... that way, if it changes later, we can reprocess it
 writeOutVersionInfo
