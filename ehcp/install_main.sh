@@ -2838,7 +2838,7 @@ function upgradeWebalizer(){
 	# Handle updated geodb files
 	mkdir -p /root/Downloads/webalizer
 	cd /root/Downloads/webalizer
-	wget -N "ftp://ftp.mrunix.net/pub/webalizer/geodb/webalizer-geodb-20191201.tgz"
+	wget -N "ftp://ftp.mrunix.net/pub/webalizer/webalizer-geodb-latest.tgz"
 	tar -xzf webalizer-geodb-20191201.tgz
 	mkdir -p "/usr/share/GeoIP2"
 	cp GeoDB.dat /usr/share/GeoIP2
