@@ -3074,33 +3074,35 @@ function adjustOpenSSLConfiguration(){
 }
 
 function updateWebalizerIfNeeded(){
-	curDir=$(pwd)
-	whichWebalizer=$(which webalizer)
-	if [ -z "$whichWebalizer" ]; then
-		upgradeWebalizer
-	else
-		curWebalizerVer=$(webalizer -V | head -n 1 | grep -o "V.*"| cut -d ' ' -f 1)
-		if [ "${curWebalizerVer:0:2}" = "V2" ]; then
-			curWebalizerRev=$(echo "$curWebalizerVer" | cut -d '-' -f 2)
-			curWebalizerVerNum=$(echo "$curWebalizerVer" | cut -d '-' -f 1 | grep -o '[0-9.]*')
-			curWebalizerVerNumInt=$(echo "scale=0;$curWebalizerVerNum*100" | bc | cut -d '.' -f 1)
-			echo -e "Webalizer full version detected as ${curWebalizerVer} \nWebalizer revision number detected as ${curWebalizerRev} \nWebalizer version number detected as ${curWebalizerVerNum} \nWebalizer version number INT detected as ${curWebalizerVerNumInt}"
-			if [ "$curWebalizerVerNumInt" -le "223" ]; then
-				if [ "$curWebalizerRev" -le "8" ]; then
-					if [ ! -e "/etc/ehcp/webalizer_patched" ]; then
-						echo -e "Webalizer is going to be upgraded..."
-						upgradeWebalizer		
+	if [[ "$distro" == "ubuntu" && "$yrelease" -lt "18" ]] || [[ "$distro" == "debian" && "$yrelease" -lt "10" ]]; then  # Only applies to Ubuntu 14.04 and 16.04 / applies to Debian 8 & 9
+		curDir=$(pwd)
+		whichWebalizer=$(which webalizer)
+		if [ -z "$whichWebalizer" ]; then
+			upgradeWebalizer
+		else
+			curWebalizerVer=$(webalizer -V | head -n 1 | grep -o "V.*"| cut -d ' ' -f 1)
+			if [ "${curWebalizerVer:0:2}" = "V2" ]; then
+				curWebalizerRev=$(echo "$curWebalizerVer" | cut -d '-' -f 2)
+				curWebalizerVerNum=$(echo "$curWebalizerVer" | cut -d '-' -f 1 | grep -o '[0-9.]*')
+				curWebalizerVerNumInt=$(echo "scale=0;$curWebalizerVerNum*100" | bc | cut -d '.' -f 1)
+				echo -e "Webalizer full version detected as ${curWebalizerVer} \nWebalizer revision number detected as ${curWebalizerRev} \nWebalizer version number detected as ${curWebalizerVerNum} \nWebalizer version number INT detected as ${curWebalizerVerNumInt}"
+				if [ "$curWebalizerVerNumInt" -le "223" ]; then
+					if [ "$curWebalizerRev" -le "8" ]; then
+						if [ ! -e "/etc/ehcp/webalizer_patched" ]; then
+							echo -e "Webalizer is going to be upgraded..."
+							upgradeWebalizer		
+						else
+							echo -e "Webalizer version is current.  No need to update.  Skipping..."
+						fi		
 					else
 						echo -e "Webalizer version is current.  No need to update.  Skipping..."
-					fi		
-				else
-					echo -e "Webalizer version is current.  No need to update.  Skipping..."
+					fi
 				fi
 			fi
 		fi
+		
+		cd "$curDir"
 	fi
-	
-	cd "$curDir"
 }
 
 function upgradeWebalizer(){
