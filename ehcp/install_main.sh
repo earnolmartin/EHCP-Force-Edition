@@ -2806,9 +2806,13 @@ function updateWebalizerIfNeeded(){
 			curWebalizerVerNumInt=$(echo "scale=0;$curWebalizerVerNum*100" | bc | cut -d '.' -f 1)
 			echo -e "Webalizer full version detected as ${curWebalizerVer} \nWebalizer revision number detected as ${curWebalizerRev} \nWebalizer version number detected as ${curWebalizerVerNum} \nWebalizer version number INT detected as ${curWebalizerVerNumInt}"
 			if [ "$curWebalizerVerNumInt" -le "223" ]; then
-				if [ "$curWebalizerRev" -lt "8" ]; then
-					echo -e "Webalizer is going to be upgraded..."
-					upgradeWebalizer					
+				if [ "$curWebalizerRev" -le "8" ]; then
+					if [ ! -e "/etc/ehcp/webalizer_patched" ]; then
+						echo -e "Webalizer is going to be upgraded..."
+						upgradeWebalizer		
+					else
+						echo -e "Webalizer version is current.  No need to update.  Skipping..."
+					fi		
 				else
 					echo -e "Webalizer version is current.  No need to update.  Skipping..."
 				fi
@@ -2839,10 +2843,15 @@ function upgradeWebalizer(){
 	cd /root/Downloads/webalizer
 	wget -N "ftp://ftp.mrunix.net/pub/webalizer/webalizer-2.23-08-src.tgz"
 	tar -xzf webalizer-2.23-08-src.tgz
+	
 	cd webalizer-2.23-08
+	wget -N "https://launchpadlibrarian.net/251786296/webalizer-2.23-08-memmove.patch"
+	patch < webalizer-2.23-08-memmove.patch
+	
 	./configure --sysconfdir=/etc --enable-dns --with-geodb=/usr/share/GeoIP2 --enable-bz2 --enable-geoip
 	make
 	make install
+	echo "1" > "/etc/ehcp/webalizer_patched"
 }
 
 #############################################################
