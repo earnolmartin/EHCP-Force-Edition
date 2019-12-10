@@ -3110,6 +3110,10 @@ function upgradeWebalizer(){
 	aptgetInstall libdb++-dev
 	aptgetInstall libgd-dev
 	apt-get purge -y webalizer
+	
+	if [ -e "/root/Downloads/webalizer" ]; then
+		rm -rf "/root/Downloads/webalizer"
+	fi
 				
 	# Handle updated geodb files
 	mkdir -p /root/Downloads/webalizer
@@ -3128,10 +3132,7 @@ function upgradeWebalizer(){
 	wget -N "https://launchpadlibrarian.net/251786296/webalizer-2.23-08-memmove.patch"
 	patch < webalizer-2.23-08-memmove.patch
 	
-	./configure --sysconfdir=/etc --enable-dns --with-geodb=/usr/share/GeoIP2 --enable-bz2 --enable-geoip
-	make
-	make install
-	echo "1" > "/etc/ehcp/webalizer_patched"
+	./configure --sysconfdir=/etc --enable-dns --with-geodb=/usr/share/GeoIP2 --enable-bz2 --enable-geoip && make && make install && echo "1" > "/etc/ehcp/webalizer_patched" || rm -rf "/etc/ehcp/webalizer_patched"
 }
 
 ###############################
