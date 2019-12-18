@@ -10924,7 +10924,7 @@ function isOpThatOnlyNeedsToRunOnce($op){
 	$manualListOfOpsThatRunOnce = array('updatehostsfile', 'rebuild_crontab', 'process_pwd_dirs', 'process_ssl_certs', 'fixapacheconfigssl', 'fixapacheconfigsslonly', 'fixapacheconfignonssl', 'update_ez_install');
 	
 	// Allow ops that start with daemon to run more than once
-	if(startsWith($op, "sync") || in_array($op, $manualListOfOpsThatRunOnce)){
+	if(startsWith($op, "sync") || startsWith($op, "new_sync") || in_array($op, $manualListOfOpsThatRunOnce)){
 		$runOnce = true;
 	}
 	
@@ -13177,13 +13177,13 @@ function new_sync_domains($file=''){
 
 
 function new_sync_all(){
-		$this->requireCommandLine(__FUNCTION__);
-		$success=$this->new_sync_domains();
-		$success=$success && $this->new_sync_dns();
+	$this->requireCommandLine(__FUNCTION__);
+	$success=$this->new_sync_domains();
+	$success=$success && $this->new_sync_dns();
 
-		if($success) $this->last_deleted_domaininfo=false;		 # burada kucuk problem cıkabilir
-		#$this->conn->AutoExecute('operations',array('op'=>'new_sync_domains3'),'INSERT');  # this is not working, thats why, i need to leave adodb autoinserts..
-		return $success;
+	if($success) $this->last_deleted_domaininfo=false;		 # burada kucuk problem cıkabilir
+	#$this->conn->AutoExecute('operations',array('op'=>'new_sync_domains3'),'INSERT');  # this is not working, thats why, i need to leave adodb autoinserts..
+	return $success;
 }
 
 function sync_server_services(){
