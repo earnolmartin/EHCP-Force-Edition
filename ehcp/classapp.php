@@ -620,6 +620,7 @@ function runOp($op){ # these are like url to function mappers...  maps op variab
 		case 'multiserver_add_domain'	: return $this->multiserver_add_domain();break;
 
 		case 'new_sync_all'				: return $this->new_sync_all();break;
+		case 'sync_server_services'		: return $this->sync_server_services();break;
 		case 'new_sync_domains'			: return $this->new_sync_domains();break;
 		case 'new_sync_dns'				: return $this->new_sync_dns();break;
 		case 'multiserver_add_ftp_user_direct': return $this->gui_multiserver_add_ftp_user_direct();break;
@@ -3818,26 +3819,6 @@ $pageinfo
 
 	$this->output.="<br><br> Welcome ".$this->activeuser;
 	$_SESSION['myserver']=false; # reset mysql server data..
-
-/*
-	$this->debugecho("Query test:".print_r2($this->query3("select * from domains limit 1")),3,false);
-	$this->debugecho("Query test:".print_r2($this->query3("select * from domains limit 1",'','',false,$this->conn)),3,false);
-
-		$logininfo=array(
-			'dbhost'=>'96.31.91.67',
-			'dbusername'=>$this->dbusername,
-			'dbpass'=>$this->dbpass,
-			'dbname'=>$this->dbname
-		);
-
-		$uzak_conn=$this->connect_to_mysql($logininfo);
-	$this->debugecho("Query test:".print_r2($this->query3("select * from domains limit 2",'','',$uzak_conn)),3,false);
-	*
-	*/
-	#$domaininfo=$this->getDomainInfo('merhaba.com'); $this->output.="ftp username: ".$this->multiserver_get_domain_ftpusername($domaininfo);
-	#$this->conn->AutoExecute('operations',array('op'=>'new_sync_domains2'),'INSERT');
-
-
 }
 
 
@@ -7678,8 +7659,9 @@ function deleteDomainDirect($domainname,$syncdomains=True){
 		$success=$success && ($s=$this->add_daemon_op(array('op'=>'daemondomain','action'=>'delete','info'=>$domainname,'info2'=>$homedir,'info3'=>$ftpserver)));
 
 		if($syncdomains){
-			$success=$success && $this->add_daemon_op(array('op'=>'new_sync_all'));
+			$success=$success && $this->add_daemon_op(array('op'=>'sync_server_services'));
 		}
+		
 		$ret=$this->query("select id from ".$this->conf['mysqldbstable']['tablename'].$domfilt);
 		foreach($ret as $d) $success=$success && $this->deleteDB($d['id']);
 		
@@ -8953,7 +8935,7 @@ function deletepaneluser(){
 		}
 		$this->ok_err_text($success,"Panel user " . $panelusername . " with account ID \"" . $id . "\" was deleted along with any children.","Failed to remove panel user $panelusername.");
 		$this->showSimilarFunctions('panelusers');
-		$this->add_daemon_op(array('op'=>'new_sync_all'));
+		$this->add_daemon_op(array('op'=>'sync_server_services'));
 	}
 	
 	return $success;
@@ -12739,29 +12721,6 @@ function get_servers($filt){
 	return $this->query($q);
 }
 
-function new_sync_domains2(){
-	# NON-COMPLETEEE *******
-
-	# Design: many ips may arise in many servers, multi-server, each multi-ip
-	# what if same config needs to be sent to more than one server, such as cluster ?
-
-	# functions will be constructed..
-
-	$domain_ips=$this->get_domain_ips();  # find ip's of domains.
-	foreach($domain_ips as $ip){		  # for each ip,
-		$domains=$this->get_domains_in_ip($ip);   # get domain list
-		$this->prepare_webserver_files($domains,$ip);   # build config
-		$access_ip=$this->get_access_ip($ip);   # learn access ip of that ip, if a server has many ips, then, only one access ip.
-		$this->write_webserver_config_to_access_ip();
-	}
-
-	$servers=$this->get_access_ips(); # get server list, using their access ips
-	foreach($servers as $ip){
-		$this->send_webserver_files($ip);
-	}
-
-}
-
 function get_webservers(){
 	print __FUNCTION__.": basliyor ** \n";
 	# this function reads servers table, then merges it through domain list, thus building dns/web servers,
@@ -13132,6 +13091,8 @@ function prepare_dns_named_conf_file($server,$arr){
 }
 
 function new_sync_dns(){
+	$this->requireCommandLine(__FUNCTION__);
+	
 	# will be like this:
 	$dnsservers=$this->get_dnsservers(); # get server list, server list should determine the type of remote server. currently, default is apache2
 
@@ -13176,6 +13137,8 @@ function adjust_webmail_dirs(){
 }
 
 function new_sync_domains($file=''){
+	$this->requireCommandLine(__FUNCTION__);
+	
 	# will be like this:
 	$webservers=$this->get_webservers(); # get server list, server list should determine the type of remote server. currently, default is apache2
 	echo __FUNCTION__.":\n";
@@ -13214,6 +13177,7 @@ function new_sync_domains($file=''){
 
 
 function new_sync_all(){
+		$this->requireCommandLine(__FUNCTION__);
 		$success=$this->new_sync_domains();
 		$success=$success && $this->new_sync_dns();
 
@@ -13222,6 +13186,13 @@ function new_sync_all(){
 		return $success;
 }
 
+function sync_server_services(){
+	$this->requireCommandLine(__FUNCTION__);
+	$success = $this->addDaemonOp('syncdomains','','','','sync domains');
+	$success = $success && $this->addDaemonOp('syncdns','','','','sync dns');
+	$success = $success && $this->addDaemonOp('syncftp','','','','sync ftp for nonstandard homes');
+	return $success;
+}
 
 function build_logrotate_conf($arr2,$host){	
 	if($this->debuglevel>0) print_r($arr2);
