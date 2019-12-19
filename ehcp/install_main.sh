@@ -1699,11 +1699,21 @@ function securePHPMyAdminConfiguration(){
 		fi
 	fi
 	
+	fixPHPMyAdminIssuesSpecificOSVer
+	
 	chown ${VSFTPDUser}:www-data -R $PHPMYADMINTEMPUPDIR
 	chmod 775 -R $PHPMYADMINTEMPUPDIR
 	
 	# Required in Ubuntu 16.04 and up
 	aptgetInstall "php-gettext"	
+}
+
+function fixPHPMyAdminIssuesSpecificOSVer(){
+	# Code fixes in Ubuntu 18.04 and Debian 10
+	if [[ "$distro" == "ubuntu" && "$yrelease" -eq "18" ]] || [[ "$distro" == "debian" && "$yrelease" -eq "10" ]]; then
+		sed -i "s/|\s*\((count(\$analyzed_sql_results\['select_expr'\]\)/| (\1)/g" "/usr/share/phpmyadmin/libraries/sql.lib.php" # https://stackoverflow.com/questions/48001569/phpmyadmin-count-parameter-must-be-an-array-or-an-object-that-implements-co	
+		sed -i 's/if (\$options != null \&\& count(\$options) > 0) {/if (\$options != null \&\& count((array)\$options) > 0) {/g;' "/usr/share/phpmyadmin/libraries/plugin_interface.lib.php" # https://stackoverflow.com/questions/55066509/error-in-phpmyadmin-warning-in-libraries-plugin-interface-lib-php551
+	fi
 }
 
 function phpMyAdminConfigurationTweaks(){
