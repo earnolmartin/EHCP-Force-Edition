@@ -862,6 +862,8 @@ function apacheUseFPM(){
 	a2dismod php7.0
 	a2dismod php7.1
 	a2dismod php7.2
+	a2dismod php7.3
+	a2dismod php7.4
 	
 	# We need a newer version of Apache for this to work properly!
 	if [[ "$distro" == "ubuntu" && "$yrelease" -eq "16" && "$mrelease" == "04" ]] || [[ "$distro" == "debian" && "$yrelease" -eq "9" ]]; then
@@ -2500,6 +2502,8 @@ function managePHPFPMService(){
 		manageService "php7.0-fpm" "${fpmAction}"
 		manageService "php7.1-fpm" "${fpmAction}"
 		manageService "php7.2-fpm" "${fpmAction}"
+		manageService "php7.3-fpm" "${fpmAction}"
+		manageService "php7.4-fpm" "${fpmAction}"
 	fi
 }
 
@@ -2523,6 +2527,10 @@ function enablePHPFPMService(){
 		update-rc.d "php7.1-fpm" defaults
 		update-rc.d "php7.2-fpm" enable
 		update-rc.d "php7.2-fpm" defaults
+		update-rc.d "php7.3-fpm" enable
+		update-rc.d "php7.3-fpm" defaults
+		update-rc.d "php7.4-fpm" enable
+		update-rc.d "php7.4-fpm" defaults
 		
 		systemctl daemon-reload
 		systemctl enable php5-fpm.service
@@ -2530,6 +2538,8 @@ function enablePHPFPMService(){
 		systemctl enable php7.0-fpm.service
 		systemctl enable php7.1-fpm.service
 		systemctl enable php7.2-fpm.service
+		systemctl enable php7.3-fpm.service
+		systemctl enable php7.4-fpm.service
 	fi
 }
 

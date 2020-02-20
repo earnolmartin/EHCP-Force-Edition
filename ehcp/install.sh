@@ -100,6 +100,110 @@ function checkRoot(){
 	fi
 }
 
+function aptgetInstall(){
+	# Parameter $1 is a list of programs to install
+	# Parameter $2 is used to specify runlevel 1 in front of the command to prevent daemons from automatically starting (needed for amavisd-new)
+
+	if [ -n "$noapt" ] ; then  # skip install
+		echo "skipping apt-get install for:$1"
+		return
+	fi
+
+	# first, try to install without any prompt, then if anything goes wrong, normal install..
+	cmd="apt-get -y --no-remove --allow-unauthenticated install $1"
+	
+	if [ ! -z "$2" ]; then
+		cmd="RUNLEVEL=1 $cmd"
+	fi
+	
+	# Run the command
+	sh -c "$cmd"
+	
+	if [ $? -ne 0 ]; then
+		cmd="apt-get -y --allow-unauthenticated install $1"
+		if [ ! -z "$2" ]; then
+			cmd="RUNLEVEL=1 $cmd"
+		fi
+		sh -c "$cmd"	
+	fi
+	
+	PackageFailed="$?"
+
+}
+
+function checkDistro() {		
+	# Get distro properly
+	if [ -e /etc/issue ]; then
+		distro=$( cat /etc/issue | awk '{ print $1 }' )
+	fi
+		
+	if [ ! -z "$distro" ]; then
+		# Convert it to lowercase
+		distro=$( echo $distro | awk '{print tolower($0)}' )
+	fi
+		
+	
+	if [ -z "$distro" ] || [[ "$distro" != "ubuntu" && "$distro" != "debian" ]]; then
+		if [ -e /etc/os-release ]; then
+			distro=$( cat /etc/os-release | grep -o "^NAME=.*" | grep -o "[^NAME=\"].*[^\"]" )
+		fi
+	fi
+		
+	# Assume Ubuntu
+	if [ -z "$distro" ]; then
+		distro="ubuntu"
+	else
+		# Convert it to lowercase
+		distro=$( echo $distro | awk '{print tolower($0)}' )
+	fi 
+		
+	# Get actual release version information
+	version=$( lsb_release -r | awk '{ print $2 }' )
+	if [ -z "$version" ]; then
+		version=$( cat /etc/issue | awk '{ print $2 }' )
+	fi
+		
+	# Separate year and version
+	if [[ "$version" == *.* ]]; then
+		yrelease=$( echo "$version" | cut -d. -f1 )
+		mrelease=$( echo "$version" | cut -d. -f2 )
+	else
+		yrelease="$version"
+		mrelease="0"
+	fi
+		
+	# Get 64-bit OS or 32-bit OS [used in vsftpd fix]
+	if [ $( uname -m ) == 'x86_64' ]; then
+		OSBits=64
+	else
+		OSBits=32
+	fi 
+		
+	# Another way to get the version number
+	# version=$(lsb_release -r | awk '{ print $2 }')
+		
+	echo "Your distro is $distro runnning version $version."
+	if [ "$distro" != "debian" ]; then
+		echo "Your distros yearly release is $yrelease. Your distros monthly release is $mrelease."
+	fi
+		
+	if [ "$distro" == "debian" ] && [ "$yrelease" -lt "8" ]; then
+		echo "Debian 7.x and lower are no longer supported."
+		exit
+	fi
+}
+
+function installInitialPrereqs(){
+	if [ "$distro" == "ubuntu" ]; then
+		add-apt-repository universe
+	fi
+	
+	aptgetInstall software-properties-common
+	aptgetInstall wget
+	aptgetInstall subversion
+	aptgetInstall curl
+}
+
 ###################
 #### Main Code ####
 ###################
@@ -108,8 +212,14 @@ clear
 # Check for root
 checkRoot
 
+# Check OS
+checkDistro
+
 # Check for Apt-get availability
 isAptGetInUseBySomething
+
+# Install some pre-reqs
+installInitialPrereqs
 
 # Get parameters
 for varCheck in "$@"
