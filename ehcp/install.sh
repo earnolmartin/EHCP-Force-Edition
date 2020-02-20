@@ -198,6 +198,8 @@ function installInitialPrereqs(){
 		add-apt-repository universe
 	fi
 	
+	apt-get update
+	
 	aptgetInstall software-properties-common
 	aptgetInstall wget
 	aptgetInstall subversion
