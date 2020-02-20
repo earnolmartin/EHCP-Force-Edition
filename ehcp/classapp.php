@@ -12122,7 +12122,7 @@ function generateSslFiles(){
 			$replacearray=array($this->getWebServer());
 			$this->replaceArrayPutInFile("$this->ehcpdir/LocalServer.cnf","$this->ehcpdir/LocalServerIP.cnf",$findarray,$replacearray);
 				
-			passthru2("openssl genrsa -out $this->ehcpdir/server.key 1024");
+			passthru2("openssl genrsa -out $this->ehcpdir/server.key");
 			passthru2("openssl req -new -key $this->ehcpdir/server.key -out $this->ehcpdir/server.csr -config $this->ehcpdir/LocalServerIP.cnf");
 			passthru2("openssl x509 -req -days 365 -in $this->ehcpdir/server.csr -signkey $this->ehcpdir/server.key -out $this->ehcpdir/server.crt");
 
