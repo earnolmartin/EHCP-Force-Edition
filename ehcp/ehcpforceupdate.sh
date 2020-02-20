@@ -2613,7 +2613,10 @@ function convertToMariaDBFromMYSQL(){
 function installPythonPamMysql(){
 	# Install Python Prereqs
 	aptgetInstall "libpam-python python-pip python-dev build-essential"
+	aptgetInstall "python-passlib"
+	aptgetInstall "libmysqlclient-dev"
 	pip install passlib
+	pip install mysqlclient
 	
 	# Copy our libpam-python scripts to /etc/security
 	cp -vf /var/www/new/ehcp/etc/pam/pam_dbauth_smtp.conf /etc/security/pam_dbauth_smtp.conf
@@ -3155,6 +3158,13 @@ function upgradeWebalizer(){
 	./configure --sysconfdir=/etc --enable-dns --with-geodb=/usr/share/GeoIP2 --enable-bz2 --enable-geoip && make && make install && mkdir -p "/etc/ehcp" && echo "1" > "/etc/ehcp/webalizer_patched" || rm -rf "/etc/ehcp/webalizer_patched"
 }
 
+function postfixEnableSubmissionPortByDefault(){
+	PostFixMaster="/etc/postfix/master.cf"
+	if [ -e "$PostFixMaster" ]; then
+		sed -i 's/^#submission inet.*/submission inet n       -       y       -       -       smtpd/g' "$PostFixMaster"
+	fi
+}
+
 ###############################
 ###START OF SCRIPT MAIN CODE###
 ###############################
@@ -3381,6 +3391,10 @@ checkApacheVersionForProxyFCGI
 echo -e "Syncing domains in case the web server mode changed!\n"
 # Start the services and sync domains
 syncDomainsEHCP
+
+# Enable postfix submission port by default
+echo -e "Enabling postfix submission port (587)...\n"
+postfixEnableSubmissionPortByDefault
 
 echo -e "Restarting web services, synchronizing domains, and finalizing installation!\n"
 # Start the services and sync domains

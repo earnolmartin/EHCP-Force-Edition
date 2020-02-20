@@ -1189,7 +1189,9 @@ function installPythonPamMysql(){
 	
 	// Install prerequisites
 	aptget(array('libpam-python', 'python-pip', 'python-dev', 'build-essential'));
+	aptget(array('python-passlib', 'libmysqlclient-dev'));
 	passthru2("pip install passlib");
+	passthru2("pip install mysqlclient");
 	
 	// Copy our libpam-python scripts to /etc/security
 	passthru2("cp -vf $ehcpinstalldir/etc/pam/pam_dbauth_smtp.conf /etc/security/pam_dbauth_smtp.conf");

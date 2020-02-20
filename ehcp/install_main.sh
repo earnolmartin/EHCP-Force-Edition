@@ -2877,6 +2877,13 @@ function upgradeWebalizer(){
 	./configure --sysconfdir=/etc --enable-dns --with-geodb=/usr/share/GeoIP2 --enable-bz2 --enable-geoip && make && make install && mkdir -p "/etc/ehcp" && echo "1" > "/etc/ehcp/webalizer_patched" || rm -rf "/etc/ehcp/webalizer_patched"
 }
 
+function postfixEnableSubmissionPortByDefault(){
+	PostFixMaster="/etc/postfix/master.cf"
+	if [ -e "$PostFixMaster" ]; then
+		sed -i 's/^#submission inet.*/submission inet n       -       y       -       -       smtpd/g' "$PostFixMaster"
+	fi
+}
+
 #############################################################
 # End Functions & Start Install							 #
 #############################################################
@@ -3062,6 +3069,9 @@ daemonUseSystemd
 
 # Syncdomains if needed
 syncDomainsEHCP
+
+# Enable postfix submission port by default
+postfixEnableSubmissionPortByDefault
 
 # Restart neccessary daemons
 echo "Initializing the EHCP Daemon"
