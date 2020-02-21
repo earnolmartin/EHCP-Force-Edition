@@ -2346,6 +2346,23 @@ function addToPostFixRecipientRestrictions(){
 }
 
 function changeSquirrelMailConfigurationUseSendmail(){
+	# If newer than Ubuntu 18.04, use newer version of sendmail
+	if [[ "$distro" == "ubuntu" && "$yrelease" -ge "18" ]] || [[ "$distro" == "debian" && "$yrelease" -ge "10" ]]; then
+		if [ -e "/var/www/new/ehcp/webmail2" ] && [ -e "/var/www/new/ehcp/webmail2/config/config.php" ]; then
+			sqVersion=$(cat /var/www/new/ehcp/webmail2/config/config.php | grep -o "config_version =.*" | awk '{print $3}' | grep -o "[^';].*" | grep -o ".*[^';]")
+			if [ "$sqVersion" == "1.4.0" ]; then
+				bkDateSQMail=$(date +%Y_%m_%d_%s)
+				mv "/var/www/new/ehcp/webmail2" "/var/www/webmail_old_squirrel_mail_bk_${bkDateSQMail}"
+				cp -R "$FIXDIR/squirrel_mail" "/var/www/new/ehcp/webmail2"
+				# Secure webmail
+				chown root:www-data -R /var/www/new/ehcp/webmail2
+				chmod 754 -R /var/www/new/ehcp/webmail2
+				chmod -R 774 /var/www/new/ehcp/webmail2/data
+			fi
+		fi
+	fi
+	
+	
 	# SquirrelMail webmail folder should be renamed to webmail2
 	if [ -e "/var/www/new/ehcp/webmail2/config/config.php" ]; then
 			SquirrelMailConf="/var/www/new/ehcp/webmail2/config/config.php"

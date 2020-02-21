@@ -1,0 +1,139 @@
+**********************************************
+IMAP AND SMTP AUTHENTICATION WITH SQUIRRELMAIL
+$Id: authentication.txt 11469 2006-08-05 07:38:01Z tokul $
+Chris Hilts tassium@squirrelmail.org
+**********************************************
+
+Prior to SquirrelMail 1.4.0, only plaintext logins for IMAP and SMTP were
+supported.  With the release of SquirrelMail 1.4.0, support for the
+CRAM-MD5 and DIGEST-MD5 auth mechanisms has been added.  TLS support has
+also been added.  It is possible to use different methods for both IMAP and
+SMTP. TLS is able to be enabled on a per-service basis as well.
+Unless the administrator changes the authentication methods, SquirrelMail
+will default to the "classic" plaintext methods, without TLS.
+
+Note: There is no point in using TLS if your IMAP server is localhost. You need
+root to sniff the loopback interface, and if you don't trust root, or an attacker
+already has root, the game is over.  You've got a lot more to worry about beyond
+having the loopback interface sniffed.
+
+REQUIREMENTS
+------------
+
+CRAM/DIGEST-MD5
+* SquirrelMail 1.4.0 or higher
+* If you have the mhash extension to PHP, it will automatically
+  be used, which may help performance on heavily loaded servers.
+  ** NOTE: mhash is optional and no longer a requirement **
+* Digest-MD5 authentication needs PHP XML extension.
+
+TLS
+* SquirrelMail 1.4.0 or higher
+* PHP 4.3.0 or higher (Check Release Notes for PHP 4.3.x information)
+* The server you wish to use TLS on must have a dedicated port listening for 
+  TLS connections. (ie. port 993 for IMAP, 465 for SMTP). See STARTTLS 
+  requirements, if you want to use IMAP or SMTP STARTTLS extension.
+* If you use PHP 4.3.x, OpenSSL support must be compiled staticly. See
+  PHP bug #29934 (http://bugs.php.net/bug.php?id=29934)
+
+STARTTLS
+* SquirrelMail 1.5.1 or higher
+* PHP 5.1.0rc1 or higher (stream_socket_enable_crypto() function)
+* Server with STARTTLS extension support
+
+CONFIGURATION
+-------------
+
+All configuration is done using conf.pl, under main menu option #2.
+
+conf.pl can now attempt to detect which mechanisms your servers support.
+You must have set the host and port before attempting to detect, or you
+may get inaccurate results, or a long wait while the connection times out.
+
+If you get results that you know are wrong when you use auto-detection, send
+information about it to SquirrelMail developers. Provide the results you got, 
+the results you expected, and server type, name, and version (eg. "imap, 
+Cyrus, v2.1.9").
+
+KNOWN ISSUES
+------------
+
+DIGEST-MD5 has three different methods of operation. (qop options "auth",
+"auth-int" and "auth-conf").  This implementation currently supports "auth"
+only.  Work is being done to add the other two modes.
+
+DIGEST-MD5 _may_ fail when authenticating with servers that supply more
+than one "realm".  I have no servers of this type to test on, so if you do
+and it fails, let me know!  (A big help would be for you to telnet to your
+server, start a DIGEST-MD5 auth session, and include the challenge from the
+server in your bug report.)
+
+To get the challenge with IMAP:
+   telnet <your server> imap
+   [server says hello]
+   A01 AUTHENTICATE DIGEST-MD5
+   <copy the gobbledygook that the server sends - this is what I need>
+   *
+   [server says auth aborted]
+   A02 LOGOUT
+   [server says goodbye, closes connection]
+
+To get the challenge with SMTP:
+   telnet <your server> smtp
+   [server sends some sort of "hello" banner]
+   EHLO myhostname
+   [server will probably list a bunch of capabilities]
+   AUTH DIGEST-MD5
+   <copy the gobbledygook that the server sends - this is what I need>
+   *
+   [server says auth aborted]
+   QUIT
+   [server says bye, closes connection]
+
+
+OPTIONAL SMTP AUTH CONFIGURATION
+--------------------------------
+
+In SMTP authentication SquirrelMail uses user's login name and password. If you 
+need all users to send mail via an upstream SMTP provider (your ISP, for 
+example), and that ISP requires authentication, you can configure custom 
+username and password. $smtp_sitewide_user configuration variable stores custom
+username used during SMTP authentication. $smtp_sitewide_pass stores custom
+password that is used during SMTP authentication, if $smtp_sitewide_user 
+variable is not empty.
+
+SquirrelMail 1.5.0 and 1.5.1 stored these configuration variables in 
+config_local.php. Newer SquirrelMail versions allow to configure them in conf.pl
+configuration utility.
+
+These configuration variables will be used to connect to the SMTP server as long
+as the authentication mechanism is something besides 'none', i.e. 'login', 
+'plain', 'cram-md5', or 'digest-md5'.
+
+DEBUGGING SSL ERROR MESSAGES
+----------------------------
+
+SquirrelMail disables display of PHP errors in fsockopen() and 
+stream_socket_enable_crypto() function calls. These functions use PHP error
+handler to display connection errors and SquirrelMail tries to handle
+errors without displaying debugging information to end user. If you use TLS or
+STARTTLS and get connection errors, try reproducing them in configtest.php
+script or remove @ symbol from fsockopen() and stream_socket_enable_crypto()
+calls in SquirrelMail scripts.
+
+Possible error messages:
+* SSL: Connection reset by peer in some script.
+  Error happened in IMAP server and server dropped connection. It is possible
+  that error is logged in system or imap logs.
+
+* SSL operation failed with code 1. OpenSSL Error messages: error:14094410:SSL
+routines:func(148):reason(1040) in some script.
+  Error generated by SSL library. Locate numbers listed in 'SSL 
+  routines:func(###):reason(####)' string, find ssl.h file in your OpenSSL
+  sources and locate same numbers listed in '/* Error codes for the SSL
+  functions. */' section. Error define can be self explanatory. If you don't
+  understand it, search for error or that define in your favorite search
+  engine.
+
+
+[End]
