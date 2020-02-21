@@ -743,9 +743,7 @@ function fixEHCPPerms(){ # by earnolmartin@gmail.com
 	chmod 0755 -R /var/www/vhosts/
 	
 	# Secure webmail
-	chown root:www-data -R /var/www/new/ehcp/webmail2
-	chmod 754 -R /var/www/new/ehcp/webmail2
-	chmod -R 774 /var/www/new/ehcp/webmail2/data
+	fixSQMailPerms
 	
 	# Fix EHCP security
 	if [ -e "/var/www/new/ehcp/ehcpbackup.php" ]; then
@@ -2354,10 +2352,7 @@ function changeSquirrelMailConfigurationUseSendmail(){
 				bkDateSQMail=$(date +%Y_%m_%d_%s)
 				mv "/var/www/new/ehcp/webmail2" "/var/www/webmail_old_squirrel_mail_bk_${bkDateSQMail}"
 				unzip "$FIXDIR/squirrel_mail/squirrel_mail_1.5.x.zip" -d "/var/www/new/ehcp/"
-				# Secure webmail
-				chown root:www-data -R /var/www/new/ehcp/webmail2
-				chmod 754 -R /var/www/new/ehcp/webmail2
-				chmod -R 774 /var/www/new/ehcp/webmail2/data
+				fixSQMailPerms
 			fi
 		fi
 	fi
@@ -2899,6 +2894,16 @@ function postfixEnableSubmissionPortByDefault(){
 	if [ -e "$PostFixMaster" ]; then
 		sed -i 's/^#submission inet.*/submission inet n       -       y       -       -       smtpd/g' "$PostFixMaster"
 	fi
+}
+
+function fixSQMailPerms(){
+	chown root:www-data -R /var/www/new/ehcp/webmail2
+	chmod 754 -R /var/www/new/ehcp/webmail2
+	if [ ! -e "/var/www/new/ehcp/webmail2/data" ]; then
+		mkdir -p "/var/www/new/ehcp/webmail2/data"
+	fi
+	chmod -R 774 /var/www/new/ehcp/webmail2/data
+	chown "${VSFTPDUser}:www-data" -R /var/www/new/ehcp/webmail2/data
 }
 
 #############################################################
