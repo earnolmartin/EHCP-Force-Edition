@@ -2722,7 +2722,7 @@ function changeSquirrelMailConfigurationUseSendmail(){
 			if [ "$sqVersion" == "1.4.0" ]; then
 				bkDateSQMail=$(date +%Y_%m_%d_%s)
 				mv "/var/www/new/ehcp/webmail2" "/var/www/webmail_old_squirrel_mail_bk_${bkDateSQMail}"
-				cp -R "$FIXDIR/squirrel_mail" "/var/www/new/ehcp/webmail2"
+				unzip "$FIXDIR/squirrel_mail/squirrel_mail_1.5.x.zip" -d "/var/www/new/ehcp/"
 				# Secure webmail
 				chown root:www-data -R /var/www/new/ehcp/webmail2
 				chmod 754 -R /var/www/new/ehcp/webmail2

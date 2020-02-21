@@ -1,6 +1,0 @@
-#!/bin/sh
-# This goes through the SquirrelMail attachment spool directory and
-# removes any abandoned temporary files that are more than 10 days old.
-# $Id: squirrelmail.cron 8522 2004-12-29 15:06:20Z jervfors $
-#
-/usr/sbin/tmpwatch 240 __ATTDIR__
