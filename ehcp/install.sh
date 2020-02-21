@@ -204,6 +204,7 @@ function installInitialPrereqs(){
 	aptgetInstall wget
 	aptgetInstall subversion
 	aptgetInstall curl
+	aptgetInstall zip
 }
 
 ###################
