@@ -844,9 +844,9 @@ function getUbuntuReleaseMonth(){
 }
 
 function getIsUbuntu(){
-	exec("cat /etc/issue | awk '{ print $1 }'", $distro);
+	exec("cat /etc/issue | awk '{ print $1 }' | head -n 1", $distro);
 	if(is_array($distro) && !empty($distro)){
-		if(strtolower($distro[0]) == "ubuntu"){
+		if(strtolower(trim($distro[0])) == "ubuntu"){
 			return true;
 		}
 	}
@@ -854,7 +854,7 @@ function getIsUbuntu(){
 }
 
 function getIsDebian(){
-	exec("cat /etc/issue | awk '{ print $1 }'", $distro);
+	exec("cat /etc/issue | awk '{ print $1 }' | head -n 1", $distro);
 	if(is_array($distro) && !empty($distro)){
 		if(strtolower($distro[0]) == "debian"){
 			return true;
