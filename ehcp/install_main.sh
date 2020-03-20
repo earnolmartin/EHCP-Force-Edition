@@ -829,8 +829,8 @@ function changeApacheUser(){ # by earnolmartin@gmail.com
 		
 		# catch worker output and log it
 		sed -i "s/^;catch_workers_output.*/catch_workers_output = yes/g" "$PHPCONFDir/fpm/pool.d/www.conf"
-		sed -i "s/^;php_admin_value[error_log].*/php_admin_value[error_log] = /var/log/fpm-php.www.log/g" "$PHPCONFDir/fpm/pool.d/www.conf"
-		sed -i "s/^;php_admin_flag[log_errors].*/php_admin_flag[log_errors] = on/g" "$PHPCONFDir/fpm/pool.d/www.conf"
+		sed -i "s#^;php_admin_value\[error_log\].*#php_admin_value\[error_log\] = /var/log/fpm-php.www.log#g" "$PHPCONFDir/fpm/pool.d/www.conf"
+		sed -i "s/^;php_admin_flag\[log_errors\].*/php_admin_flag\[log_errors\] = on/g" "$PHPCONFDir/fpm/pool.d/www.conf"
 		
 		if [ ! -e "/var/log/fpm-php.www.log" ]; then
 			> "/var/log/fpm-php.www.log"
