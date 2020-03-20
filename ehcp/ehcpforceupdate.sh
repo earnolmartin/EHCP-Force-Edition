@@ -125,27 +125,6 @@ function changeApacheUser(){ # by earnolmartin@gmail.com
 	if [ -e "$PHPCONFDir/fpm/pool.d/www.conf" ]; then
 		sed -i "s/user = .*/user = ${VSFTPDUser}/g" "$PHPCONFDir/fpm/pool.d/www.conf"
 		sed -i "s/group = .*/group = www-data/g" "$PHPCONFDir/fpm/pool.d/www.conf"
-		
-		# catch worker output and log it
-		sed -i "s/^;catch_workers_output.*/catch_workers_output = yes/g" "$PHPCONFDir/fpm/pool.d/www.conf"
-		sed -i "s#^;php_admin_value\[error_log\].*#php_admin_value\[error_log\] = /var/log/fpm-php.www.log#g" "$PHPCONFDir/fpm/pool.d/www.conf"
-		sed -i "s/^;php_admin_flag\[log_errors\].*/php_admin_flag\[log_errors\] = on/g" "$PHPCONFDir/fpm/pool.d/www.conf"
-		
-		if [ ! -e "/var/log/fpm-php.www.log" ]; then
-			> "/var/log/fpm-php.www.log"
-			chown "root:root" "/var/log/fpm-php.www.log"
-			chmod 777 "/var/log/fpm-php.www.log"
-		fi
-		
-		if [ ! -e "/etc/logrotate.d/ehcp-php-fpm" ]; then
-			echo "/var/log/fpm-php.www.log {
-		daily
-		missingok
-		compress
-		delaycompress
-		su root root		
-}" > "/etc/logrotate.d/ehcp-php-fpm"
-		fi
 	fi
 	
 	# Create EHCP Pool and Secure WWW Pool
