@@ -2476,17 +2476,17 @@ function searchForServiceName(){
 	fi
 	
 	if [ ! -z "$1" ]; then
-		serviceName=$(ls /etc/init.d 2>/dev/null | grep -F -- "${1}")
+		serviceName=$(ls /etc/init.d 2>/dev/null | grep -F -- "${1}" | head -n 1)
 		if [ ! -z "$serviceName" ]; then
 			echo "${serviceName}" > "${serviceNameTempFile}"
 		fi
 		
-		serviceName=$(find /lib/systemd/system -name "*${1}*" -exec basename {} .service \; 2>/dev/null)
+		serviceName=$(find /lib/systemd/system -name "*${1}*" -exec basename {} .service \; 2>/dev/null | head -n 1)
 		if [ ! -z "$serviceName" ]; then
 			echo "${serviceName}" > "${serviceNameTempFile}"
 		fi
 	
-		serviceName=$(find /etc/systemd/system -name "*${1}*" -exec basename {} .service \; 2>/dev/null)
+		serviceName=$(find /etc/systemd/system -name "*${1}*" -exec basename {} .service \; 2>/dev/null | head -n 1)
 		if [ ! -z "$serviceName" ]; then
 			echo "${serviceName}" > "${serviceNameTempFile}"
 		fi
