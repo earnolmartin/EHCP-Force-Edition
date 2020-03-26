@@ -2613,14 +2613,24 @@ function installPythonPamMysql(){
 	aptgetInstall "libpam-python python-pip python-dev build-essential"
 	aptgetInstall "python-passlib"
 	aptgetInstall "libmysqlclient-dev"
+	installPipManuallyIfNeeded
 	pip install passlib
 	pip install mysqlclient
 	
 	# Copy our libpam-python scripts to /etc/security
 	cp -vf /var/www/new/ehcp/etc/pam/pam_dbauth_smtp.conf /etc/security/pam_dbauth_smtp.conf
-	cp -vf /var/www/new/ehcp/etc/pam/pam_dbauth_smtp.py /etc/security/pam_dbauth_smtp.py
+	if [ "$distro" == "ubuntu" && "$yrelease" -ge "20" ]; then
+		cp -vf /var/www/new/ehcp/etc/pam/pam_dbauth_smtp_ubuntu_20_plus.py /etc/security/pam_dbauth_smtp.py
+	else
+		cp -vf /var/www/new/ehcp/etc/pam/pam_dbauth_smtp.py /etc/security/pam_dbauth_smtp.py
+	fi
+	
 	cp -vf /var/www/new/ehcp/etc/pam/pam_dbauth_vsftpd.conf /etc/security/pam_dbauth_vsftpd.conf
-	cp -vf /var/www/new/ehcp/etc/pam/pam_dbauth_vsftpd.py /etc/security/pam_dbauth_vsftpd.py
+	if [ "$distro" == "ubuntu" && "$yrelease" -ge "20" ]; then
+		cp -vf /var/www/new/ehcp/etc/pam/pam_dbauth_vsftpd_ubuntu_20_plus.py /etc/security/pam_dbauth_vsftpd.py
+	else
+		cp -vf /var/www/new/ehcp/etc/pam/pam_dbauth_vsftpd.py /etc/security/pam_dbauth_vsftpd.py
+	fi
 	
 	# Replace EHCP mysql password with the correct one
 	sed -i "s#^password=.*#password=$EHCPMySQLPass#g" "/etc/security/pam_dbauth_smtp.conf"
@@ -3184,6 +3194,27 @@ function fixSQMailPerms(){
 	fi
 	chmod -R 774 /var/www/new/ehcp/webmail2/data
 	chown "${VSFTPDUser}:www-data" -R /var/www/new/ehcp/webmail2/data
+}
+
+function installPipManuallyIfNeeded(){
+	curDir=$(pwd)
+	
+	# Create a symlink for python if one doesn't exist
+	if [ ! -e "/usr/bin/python" ]; then
+		if [ -e "/usr/bin/python2" ]; then
+			ln -s "/usr/bin/python2" "/usr/bin/python"
+		fi
+	fi
+	
+	# Install pip if it's not found on the system manually
+	currentPip=$(which pip)
+	if [ -z "$currentPip" ]; then
+		cd "$patchDir"
+		curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+		python get-pip.py
+	fi
+	
+	cd "$curDir"
 }
 
 ###############################

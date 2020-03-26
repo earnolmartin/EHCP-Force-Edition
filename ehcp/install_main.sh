@@ -2008,6 +2008,9 @@ function installNeededDependencies(){
 	
 	# ifconfig
 	aptgetInstall net-tools
+	
+	# python pip
+	installPipManuallyIfNeeded
 }
 
 function getRidOfExtraPHPMyAdminAlias(){
@@ -2904,6 +2907,27 @@ function fixSQMailPerms(){
 	fi
 	chmod -R 774 /var/www/new/ehcp/webmail2/data
 	chown "${VSFTPDUser}:www-data" -R /var/www/new/ehcp/webmail2/data
+}
+
+function installPipManuallyIfNeeded(){
+	curDir=$(pwd)
+	
+	# Create a symlink for python if one doesn't exist
+	if [ ! -e "/usr/bin/python" ]; then
+		if [ -e "/usr/bin/python2" ]; then
+			ln -s "/usr/bin/python2" "/usr/bin/python"
+		fi
+	fi
+	
+	# Install pip if it's not found on the system manually
+	currentPip=$(which pip)
+	if [ -z "$currentPip" ]; then
+		cd "$patchDir"
+		curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+		python get-pip.py
+	fi
+	
+	cd "$curDir"
 }
 
 #############################################################
