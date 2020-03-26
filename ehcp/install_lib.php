@@ -94,36 +94,38 @@ function aptget($arr,$forceInteraction=False){
 	}
 
 	foreach($arr as $prog) {
-		#
-		# first install try
-		# assumes yes, do not remove anything, allow any unauthenticated packages,
-		# do not remove: this is a security concern
-		$cmd="apt-get -y --no-remove --allow-unauthenticated install $prog";
-		
-		# If unattended, don't show configuration options
-		if($unattended && $forceInteraction == FALSE){
-			$cmd = "DEBIAN_FRONTEND=noninteractive " . $cmd;
+		if(!empty($prog)){
+			#
+			# first install try
+			# assumes yes, do not remove anything, allow any unauthenticated packages,
+			# do not remove: this is a security concern
+			$cmd="apt-get -y --no-remove --allow-unauthenticated install $prog";
+			
+			# If unattended, don't show configuration options
+			if($unattended && $forceInteraction == FALSE){
+				$cmd = "DEBIAN_FRONTEND=noninteractive " . $cmd;
+			}
+			
+			log_to_file($cmd);
+
+			cizgi();
+			echo "Starting apt-get install for: $prog\n(cmd: $cmd)\n\n";
+			passthru($cmd,$ret);
+			echo "The return value for the command \"$cmd\" was $ret\n\n";
+			writeoutput("ehcp-apt-get-install.log",$cmd . " command returned $ret","a",false);
+			writeoutput("ehcp-apt-get-install.log",$cmd,"a",false);
+
+			if($ret==0) continue;
+
+			# second install try, if first fails :
+			# usefull if first one has failed, for reason such as a package has to be removed, if first apt-get exited for any reason, this one executes apt-get with not options, so that user can decide...
+			# if first is successfull, this actually does nothing... only prints that those packages are already installed...
+			# this way a bit slower, calls apt-get twice, but most "secure and avoids user intervention"
+			$cmd="apt-get -y install $prog";
+			echo "\nTrying second installation type for: $prog (cmd: $cmd)\n";
+			passthru($cmd);
+			writeoutput("ehcp-apt-get-install.log",$cmd,"a",false);
 		}
-		
-		log_to_file($cmd);
-
-		cizgi();
-		echo "Starting apt-get install for: $prog\n(cmd: $cmd)\n\n";
-		passthru($cmd,$ret);
-		echo "The return value for the command \"$cmd\" was $ret\n\n";
-		writeoutput("ehcp-apt-get-install.log",$cmd . " command returned $ret","a",false);
-		writeoutput("ehcp-apt-get-install.log",$cmd,"a",false);
-
-		if($ret==0) continue;
-
-		# second install try, if first fails :
-		# usefull if first one has failed, for reason such as a package has to be removed, if first apt-get exited for any reason, this one executes apt-get with not options, so that user can decide...
-		# if first is successfull, this actually does nothing... only prints that those packages are already installed...
-		# this way a bit slower, calls apt-get twice, but most "secure and avoids user intervention"
-		$cmd="apt-get -y install $prog";
-		echo "\nTrying second installation type for: $prog (cmd: $cmd)\n";
-		passthru($cmd);
-		writeoutput("ehcp-apt-get-install.log",$cmd,"a",false);
 	}
 
 }//endfunc
@@ -1249,7 +1251,7 @@ function install_nginx_webserver(){
 	aptget(array('nginx','php5-fpm','php-fpm','php5-cgi','php-cgi'));  # apt-get install nginx php5-fpm php5-cgi
 	
 	// Detect php-fpm specific verison in case above fails
-	$phpFPMVersions = shell_exec("apt-cache search 'fpm' | grep 'php' | grep '\-fpm' | awk '{print \$1}'");
+	$phpFPMVersions = shell_exec("apt-cache search 'fpm' | grep 'php' | grep '\-fpm' | head -n 2 | awk '{print \$1}'");
 	$arrayOfPHPFPM = array_filter(explode(PHP_EOL, $phpFPMVersions));
 	if(isset($arrayOfPHPFPM) && is_array($arrayOfPHPFPM) && count($arrayOfPHPFPM)){
 		aptget($arrayOfPHPFPM);

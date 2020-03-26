@@ -1396,9 +1396,11 @@ function CheckPreReqs(){
 function installPHPFPM(){
 	aptgetInstall php5-fpm
 	aptgetInstall php-fpm
-	phpfpmversionsFromCache=$(apt-cache search "fpm" | grep "php" | grep "\-fpm" | awk '{print $1}')
+	phpfpmversionsFromCache=$(apt-cache search "fpm" | grep "php" | grep "\-fpm" | head -n 2 | awk '{print $1}')
 	for version in "$phpfpmversionsFromCache" ; do
-	   aptgetInstall "$version"
+		if [ ! -z "$version" ]; then
+			aptgetInstall "$version"
+		fi
 	done
 }
 
