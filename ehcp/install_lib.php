@@ -1251,10 +1251,13 @@ function install_nginx_webserver(){
 	aptget(array('nginx','php5-fpm','php-fpm','php5-cgi','php-cgi'));  # apt-get install nginx php5-fpm php5-cgi
 	
 	// Detect php-fpm specific verison in case above fails
-	$phpFPMVersions = shell_exec("apt-cache search 'fpm' | grep 'php' | grep '\-fpm' | head -n 2 | awk '{print \$1}'");
-	$arrayOfPHPFPM = array_filter(explode(PHP_EOL, $phpFPMVersions));
-	if(isset($arrayOfPHPFPM) && is_array($arrayOfPHPFPM) && count($arrayOfPHPFPM)){
-		aptget($arrayOfPHPFPM);
+	$numPHPFPMVersions = trim(shell_exec("apt-cache search 'fpm' | grep 'php' | grep '\-fpm' | awk '{print \$1}' | wc -l"));
+	if(!empty($numPHPFPMVersions) && is_numeric($numPHPFPMVersions) && intval($numPHPFPMVersions) <= 2){
+		$phpFPMVersions = shell_exec("apt-cache search 'fpm' | grep 'php' | grep '\-fpm' | head -n 2 | awk '{print \$1}'");
+		$arrayOfPHPFPM = array_filter(explode(PHP_EOL, $phpFPMVersions));
+		if(isset($arrayOfPHPFPM) && is_array($arrayOfPHPFPM) && count($arrayOfPHPFPM)){
+			aptget($arrayOfPHPFPM);
+		}
 	}
 	
 	copy("$mydir/etc/nginx/mime.types","/etc/nginx/mime.types");

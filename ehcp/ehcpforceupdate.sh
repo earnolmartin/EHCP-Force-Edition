@@ -1396,12 +1396,16 @@ function CheckPreReqs(){
 function installPHPFPM(){
 	aptgetInstall php5-fpm
 	aptgetInstall php-fpm
-	phpfpmversionsFromCache=$(apt-cache search "fpm" | grep "php" | grep "\-fpm" | head -n 2 | awk '{print $1}')
-	for version in "$phpfpmversionsFromCache" ; do
-		if [ ! -z "$version" ]; then
-			aptgetInstall "$version"
-		fi
-	done
+	
+	countOfPHPFPM=$(apt-cache search "fpm" | grep "php" | grep "\-fpm" | awk '{print $1}' | wc -l)
+	if [ "$countOfPHPFPM" -le "2" ]; then
+		phpfpmversionsFromCache=$(apt-cache search "fpm" | grep "php" | grep "\-fpm" | head -n 2 | awk '{print $1}')
+		for version in "$phpfpmversionsFromCache" ; do
+			if [ ! -z "$version" ]; then
+				aptgetInstall "$version"
+			fi
+		done
+	fi
 }
 
 function addConfDFolder(){
