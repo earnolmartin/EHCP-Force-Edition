@@ -3017,6 +3017,10 @@ function dbAddUser(){
 
 		if($this->recordcount($this->conf['mysqldbstable']['tablename'], "panelusername='$this->activeuser' and dbname='$dbname'")==0)
 			return $this->errorText("This database is not owned by your account.");
+			
+		if(empty($domainname)){
+			$domainname = $this->getField($this->conf['mysqldbuserstable']['tablename'],'domainname',"panelusername='" . $this->activeuser . "' and dbname='" . $dbname . "'");
+		}
 
 		$q="grant all privileges on `$dbname`.* to '$dbusername'@'localhost' identified by '$dbuserpass' ";
 		$success=$success && $this->mysqlRootQuery($q);
