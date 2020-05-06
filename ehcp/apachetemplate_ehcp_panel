@@ -10,7 +10,7 @@
 	CustomLog  /var/log/apache2/access_log_multi.log vhost_combined_host
 
 	ProxyPassMatch ^(.*\.php)$ fcgi://127.0.0.1:9001{ehcpdir}/$1
-	ProxyFCGISetEnvIf "true" PHP_ADMIN_VALUE "open_basedir={ehcpdir}:/usr/share/php:/usr/share/pear"
+	ProxyFCGISetEnvIf "true" PHP_ADMIN_VALUE "open_basedir={ehcpdir}:/usr/share/php:/usr/share/pear; \n upload_tmp_dir=/tmp; \n session.save_path=/var/www/php_sessions;"
 
 	<Files  ~ "\.conf$">
 		Order allow,deny
