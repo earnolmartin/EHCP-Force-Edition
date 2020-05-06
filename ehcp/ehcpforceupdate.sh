@@ -3223,6 +3223,20 @@ function installPipManuallyIfNeeded(){
 	cd "$curDir"
 }
 
+function createSymlinks(){
+	if [ ! -e "/var/www/new/ehcp/webmail" ] && [ -e "/usr/share/roundcube" ]; then
+		ln -s /usr/share/roundcube /var/www/new/ehcp/webmail
+	fi
+	
+	if [ ! -e "/var/www/new/ehcp/phpmyadmin" ]  && [ -e "/usr/share/phpmyadmin" ]; then
+		ln -s /usr/share/phpmyadmin /var/www/new/ehcp/phpmyadmin
+	fi
+	
+	if [ ! -e "/var/www/new/phpmyadmin" ] && [ -e "/usr/share/phpmyadmin" ]; then
+		ln -s /usr/share/phpmyadmin "/var/www/new/phpmyadmin"
+	fi
+}
+
 ###############################
 ###START OF SCRIPT MAIN CODE###
 ###############################
@@ -3453,6 +3467,9 @@ syncDomainsEHCP
 # Enable postfix submission port by default
 echo -e "Enabling postfix submission port (587)...\n"
 postfixEnableSubmissionPortByDefault
+
+# Create symlinks
+createSymlinks
 
 echo -e "Restarting web services, synchronizing domains, and finalizing installation!\n"
 # Start the services and sync domains

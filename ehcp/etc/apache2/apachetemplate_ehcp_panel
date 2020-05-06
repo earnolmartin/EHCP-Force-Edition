@@ -30,7 +30,23 @@
 	</Files>
 
 	ProxyPassMatch ^(.*\.php)$ fcgi://127.0.0.1:9001{ehcpdir}/$1
-	ProxyFCGISetEnvIf "true" PHP_ADMIN_VALUE "open_basedir={ehcpdir}:/usr/share/php:/usr/share/pear"
-
+	ProxyFCGISetEnvIf "true" PHP_ADMIN_VALUE "open_basedir={ehcpdir}:/usr/share/php:/usr/share/pear; \n upload_tmp_dir=/tmp; \n session.save_path=/var/www/php_sessions;"
+	
+	<Location "/extplorer">
+        ProxyFCGISetEnvIf "true" PHP_ADMIN_VALUE "open_basedir={ehcpdir}:/var/www:/usr/share/php:/usr/share/pear; \n upload_tmp_dir=/tmp; \n session.save_path=/var/www/php_sessions;"
+    </Location>
+    
+    <Location "/webmail">
+        ProxyFCGISetEnvIf "true" PHP_ADMIN_VALUE "open_basedir=/var/lib/roundcube:/etc/roundcube:/usr/share:/tmp:/var/www/php_sessions:/var/log/roundcube; \n upload_tmp_dir=/tmp; \n session.save_path=/var/www/php_sessions;"
+    </Location>
+    
+    <Location "/webmail2">
+        ProxyFCGISetEnvIf "true" PHP_ADMIN_VALUE "open_basedir={ehcpdir}/webmail2; \n upload_tmp_dir={ehcpdir}/webmail2/data; \n session.save_path={ehcpdir}/webmail2/data;"
+    </Location>
+    
+    <Location "/phpmyadmin">
+        ProxyFCGISetEnvIf "true" PHP_ADMIN_VALUE "open_basedir=/usr/share/phpmyadmin:/etc/phpmyadmin:/var/lib/phpmyadmin:/tmp:/usr/share/php:/usr/share/pear:/usr/share:/var/www/php_sessions; \n upload_tmp_dir=/tmp; \n session.save_path=/var/www/php_sessions;"
+    </Location>
+    
 </VirtualHost>
 # END OF CUSTOM GLOBAL PANEL URLS Template

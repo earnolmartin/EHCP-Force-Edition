@@ -2930,6 +2930,20 @@ function installPipManuallyIfNeeded(){
 	cd "$curDir"
 }
 
+function createSymlinks(){
+	if [ ! -e "/var/www/new/ehcp/webmail" ] && [ -e "/usr/share/roundcube" ]; then
+		ln -s /usr/share/roundcube /var/www/new/ehcp/webmail
+	fi
+	
+	if [ ! -e "/var/www/new/ehcp/phpmyadmin" ]  && [ -e "/usr/share/phpmyadmin" ]; then
+		ln -s /usr/share/phpmyadmin /var/www/new/ehcp/phpmyadmin
+	fi
+	
+	if [ ! -e "/var/www/new/phpmyadmin" ] && [ -e "/usr/share/phpmyadmin" ]; then
+		ln -s /usr/share/phpmyadmin "/var/www/new/phpmyadmin"
+	fi
+}
+
 #############################################################
 # End Functions & Start Install							 #
 #############################################################
@@ -3118,6 +3132,9 @@ syncDomainsEHCP
 
 # Enable postfix submission port by default
 postfixEnableSubmissionPortByDefault
+
+# Create symlinks
+createSymlinks
 
 # Restart neccessary daemons
 echo "Initializing the EHCP Daemon"
