@@ -2792,6 +2792,7 @@ function packageCanBeInstalledFromRepo(){
 		packageSearchResult=$(apt-cache policy "$1" | grep -o "Candidate:.*" | grep -o "[^Candidate: ].*")
 		if [ ! -z "$packageSearchResult" ] && [ "$packageSearchResult" != "(none)" ]; then
 			packageSearchedExists=true
+			return
 		fi
 	fi
 	
