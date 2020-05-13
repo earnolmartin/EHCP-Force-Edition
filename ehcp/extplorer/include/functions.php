@@ -174,13 +174,13 @@ function parse_file_perms($mode) {		// parsed file permisions
 	$parsed_mode="";
 	for($i=0;$i<3;$i++) {
 		// read
-		if(($mode{$i} & 04)) $parsed_mode .= "r";
+		if(($mode[$i] & 04)) $parsed_mode .= "r";
 		else $parsed_mode .= "-";
 		// write
-		if(($mode{$i} & 02)) $parsed_mode .= "w";
+		if(($mode[$i] & 02)) $parsed_mode .= "w";
 		else $parsed_mode .= "-";
 		// execute
-		if(($mode{$i} & 01)) $parsed_mode .= "x";
+		if(($mode[$i] & 01)) $parsed_mode .= "x";
 		else $parsed_mode .= "-";
 	}
 	return $parsed_mode;
