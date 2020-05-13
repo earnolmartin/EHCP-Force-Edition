@@ -2802,16 +2802,35 @@ function indexOf(){
 }
 
 function installCertBotLetsEncrypt(){
-	if [ ! -e "/usr/local/bin/certbot" ]; then
-		curDir="$(pwd)"
-		cd "$patchDir"
-		wget -O "certbot-auto" -N https://dl.eff.org/certbot-auto --no-check-certificate
-		chmod a+x certbot-auto
-		mv certbot-auto /usr/local/bin/certbot
-		/usr/local/bin/certbot --quiet
-		cd "$curDir"
-		addSystemCronJob "45 4 * * *" "/var/www/new/ehcp/scripts/certbot_renew_certs.sh"
+	curDir="$(pwd)"
+	cd "$patchDir"
+	
+	packageCanBeInstalledFromRepo "certbot"
+	if [ "$packageSearchedExists" = true ]; then
+		# Logging
+		echo -e "Installing Let's Encrypt certbot from Ubuntu apt repository..."
+		aptgetInstall certbot
+		if [ -e "/usr/bin/certbot" ]; then
+			if [ -e "/usr/local/bin/certbot" ]; then
+				rm "/usr/local/bin/certbot"
+			fi
+			ln -s /usr/bin/certbot /usr/local/bin/certbot
+		fi
+	else
+		# Logging
+		echo -e "Installing Let's Encrypt certbot-auto from their website..."
+		
+		# Go download it
+		if [ ! -e "/usr/local/bin/certbot" ]; then
+			wget -O "certbot-auto" -N https://dl.eff.org/certbot-auto --no-check-certificate
+			chmod a+x certbot-auto
+			mv certbot-auto /usr/local/bin/certbot
+		fi
 	fi
+	
+	/usr/local/bin/certbot --quiet
+	cd "$curDir"
+	addSystemCronJob "45 4 * * *" "/var/www/new/ehcp/scripts/certbot_renew_certs.sh"
 }
 
 function adjustOperationMode(){
