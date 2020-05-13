@@ -323,12 +323,7 @@ class ext_Edit extends ext_Action {
 
 	}
 	function savefile($file_name) {			// save edited file
-		if( get_magic_quotes_gpc() ) {
-			$code = stripslashes($GLOBALS['__POST']["code"]);
-		}
-		else {
-			$code = $GLOBALS['__POST']["code"];
-		}
+		$code = $GLOBALS['__POST']["code"];
 		$langs = $GLOBALS["language"];
 		if ($langs == "japanese"){
 			$_encoding = $GLOBALS['__POST']["file_encoding"];

@@ -5,7 +5,7 @@ if( !defined( '_JEXEC' ) && !defined( '_VALID_MOS' ) ) die( 'Restricted access' 
 
 //-------------Configuration Variables---------------------------------------------
 // Send gzipped content if accepted by the browser?
-$GLOBALS['use_gzip'] = 1;
+$GLOBALS['use_gzip'] = 0;
 
 // Name of the authentication module which is used by default
 $GLOBALS['ext_conf']['authentication_method_default'] = 'ehcp';

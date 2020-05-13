@@ -56,9 +56,6 @@ class ext_TextEncoding
 	/** This function is used when the server's PHP configuration is using magic quote */
     static function magicDequote($text)
     {
-	    // If the PHP server enables magic quotes, remove them
-	    if (get_magic_quotes_gpc())
-	        return stripslashes($text);
 	    return $text;  
     }
 	                         

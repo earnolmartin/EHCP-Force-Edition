@@ -466,7 +466,7 @@ class Auth {
     {
         $storage_class = 'Auth_Container_' . $driver;
         include_once 'Auth/Container/' . $driver . '.php';
-        $obj =& new $storage_class($options);
+        $obj = new $storage_class($options);
         return $obj;
     }
 
@@ -492,15 +492,11 @@ class Auth {
 
         if (   isset($this->post[$this->_postUsername])
             && $this->post[$this->_postUsername] != '') {
-            $this->username = (get_magic_quotes_gpc() == 1
-                    ? stripslashes($this->post[$this->_postUsername])
-                    : $this->post[$this->_postUsername]);
+            $this->username = $this->post[$this->_postUsername];
         }
         if (   isset($this->post[$this->_postPassword])
             && $this->post[$this->_postPassword] != '') {
-            $this->password = (get_magic_quotes_gpc() == 1
-                    ? stripslashes($this->post[$this->_postPassword])
-                    : $this->post[$this->_postPassword] );
+            $this->password = $this->post[$this->_postPassword];
         }
     }
 
