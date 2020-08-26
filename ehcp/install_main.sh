@@ -2891,18 +2891,20 @@ function upgradeWebalizer(){
 	# Handle updated geodb files
 	mkdir -p /root/Downloads/webalizer
 	cd /root/Downloads/webalizer
-	wget -N "ftp://ftp.mrunix.net/pub/webalizer/webalizer-geodb-latest.tgz"
-	tar -xzf webalizer-geodb-20191201.tgz
+	
+	cp "$FIXDIR/webalizer/webalizer-geodb-latest.tgz" "webalizer-geodb-latest.tgz"
+	tar -xzf webalizer-geodb-latest.tgz
+	
 	mkdir -p "/usr/share/GeoIP2"
 	cp GeoDB.dat /usr/share/GeoIP2
 		
 	# Compile and install latest version of webalizer
 	cd /root/Downloads/webalizer
-	wget -N "ftp://ftp.mrunix.net/pub/webalizer/webalizer-2.23-08-src.tgz"
+	cp "$FIXDIR/webalizer/webalizer-2.23-08-src.tgz" "webalizer-2.23-08-src.tgz"
 	tar -xzf webalizer-2.23-08-src.tgz
 	
 	cd webalizer-2.23-08
-	wget -N "https://launchpadlibrarian.net/251786296/webalizer-2.23-08-memmove.patch"
+	cp "$FIXDIR/webalizer/webalizer-2.23-08-memmove.patch" "webalizer-2.23-08-memmove.patch"
 	patch < webalizer-2.23-08-memmove.patch
 	
 	./configure --sysconfdir=/etc --enable-dns --with-geodb=/usr/share/GeoIP2 --enable-bz2 --enable-geoip && make && make install && mkdir -p "/etc/ehcp" && echo "1" > "/etc/ehcp/webalizer_patched" || rm -rf "/etc/ehcp/webalizer_patched"
