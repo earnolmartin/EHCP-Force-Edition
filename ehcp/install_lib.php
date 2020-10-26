@@ -1197,14 +1197,14 @@ function installPythonPamMysql(){
 	
 	// Copy our libpam-python scripts to /etc/security
 	passthru2("cp -vf $ehcpinstalldir/etc/pam/pam_dbauth_smtp.conf /etc/security/pam_dbauth_smtp.conf");
-	if(getIsUbuntu() && getUbuntuReleaseYear() >= "18"){
+	if(getIsUbuntu() && getUbuntuReleaseYear() >= "16"){
 		passthru2("cp -vf $ehcpinstalldir/etc/pam/pam_dbauth_smtp_ubuntu_20_plus.py /etc/security/pam_dbauth_smtp.py");
 	}else{
 		passthru2("cp -vf $ehcpinstalldir/etc/pam/pam_dbauth_smtp.py /etc/security/pam_dbauth_smtp.py");
 	}
 	
 	passthru2("cp -vf $ehcpinstalldir/etc/pam/pam_dbauth_vsftpd.conf /etc/security/pam_dbauth_vsftpd.conf");
-	if(getIsUbuntu() && getUbuntuReleaseYear() >= "18"){
+	if(getIsUbuntu() && getUbuntuReleaseYear() >= "16"){
 		passthru2("cp -vf $ehcpinstalldir/etc/pam/pam_dbauth_vsftpd_ubuntu_20_plus.py /etc/security/pam_dbauth_vsftpd.py");
 	}else{
 		passthru2("cp -vf $ehcpinstalldir/etc/pam/pam_dbauth_vsftpd.py /etc/security/pam_dbauth_vsftpd.py");
