@@ -2638,6 +2638,11 @@ function installPythonPamMysql(){
 		cp -vf /var/www/new/ehcp/etc/pam/pam_dbauth_vsftpd.py /etc/security/pam_dbauth_vsftpd.py
 	fi
 	
+	if [[ "$distro" == "ubuntu" && "$yrelease" -eq "16" ]] && [[ -e "/usr/lib/python2.7/lib-dynload/_hashlib.x86_64-linux-gnu.so" ]]; then
+		rm -f /usr/lib/python2.7/lib-dynload/_hashlib.x86_64-linux-gnu.so
+		easy_install hashlib
+	fi
+	
 	# Replace EHCP mysql password with the correct one
 	sed -i "s#^password=.*#password=$EHCPMySQLPass#g" "/etc/security/pam_dbauth_smtp.conf"
 	sed -i "s#^password=.*#password=$EHCPMySQLPass#g" "/etc/security/pam_dbauth_vsftpd.conf"

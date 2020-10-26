@@ -1191,6 +1191,7 @@ function installPythonPamMysql(){
 	
 	// Install prerequisites
 	aptget(array('libpam-python', 'python-pip', 'python-dev', 'build-essential'));
+	aptget(array('python-setuptools'));
 	aptget(array('python-passlib', 'libmysqlclient-dev'));
 	passthru2("pip install passlib");
 	passthru2("pip install mysqlclient");
@@ -1203,6 +1204,13 @@ function installPythonPamMysql(){
 		passthru2("cp -vf $ehcpinstalldir/etc/pam/pam_dbauth_smtp.py /etc/security/pam_dbauth_smtp.py");
 	}
 	
+	if(getIsUbuntu() && getUbuntuReleaseYear() == "16"){
+		if(file_exists("/usr/lib/python2.7/lib-dynload/_hashlib.x86_64-linux-gnu.so")){
+			unlink("/usr/lib/python2.7/lib-dynload/_hashlib.x86_64-linux-gnu.so");
+			passthru2("easy_install hashlib");
+		}
+	}
+
 	passthru2("cp -vf $ehcpinstalldir/etc/pam/pam_dbauth_vsftpd.conf /etc/security/pam_dbauth_vsftpd.conf");
 	if(getIsUbuntu() && getUbuntuReleaseYear() >= "16"){
 		passthru2("cp -vf $ehcpinstalldir/etc/pam/pam_dbauth_vsftpd_ubuntu_20_plus.py /etc/security/pam_dbauth_vsftpd.py");
