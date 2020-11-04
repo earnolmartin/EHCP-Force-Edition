@@ -1973,6 +1973,7 @@ function installNeededDependencies(){
 	aptgetInstall php5-gd
 	aptgetInstall php7.0-gd
 	aptgetInstall php5-zip
+	aptgetInstall bc
 	
 	# Required for Certbot
 	aptgetInstall python
