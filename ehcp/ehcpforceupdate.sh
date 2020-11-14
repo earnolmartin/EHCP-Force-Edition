@@ -130,6 +130,18 @@ function changeApacheUser(){ # by earnolmartin@gmail.com
 	# Create EHCP Pool and Secure WWW Pool
 	# VHOSTs can't run protected functions :)
 	createEHCPPool
+	
+	# Secure Pools
+	securePHPFPMPools
+}
+
+function securePHPFPMPools(){
+	for i in `find ${PHPCONFDir}/fpm/pool.d -name "*.conf" -type f`; do
+		hasLocalAllowedClients=$(cat "${i}" | grep -o "^listen.allowed_clients")
+		if [ -z "$hasLocalAllowedClients" ]; then
+			echo "listen.allowed_clients = 127.0.0.1" >> "${i}"
+		fi
+	done
 }
 
 function createEHCPPool(){
