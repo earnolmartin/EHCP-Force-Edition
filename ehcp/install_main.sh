@@ -3169,7 +3169,7 @@ postfixEnableSubmissionPortByDefault
 createSymlinks
 
 # Prevent web user from running cron tasks
-
+preventUserCronFromWebUser
 
 # Restart neccessary daemons
 echo "Initializing the EHCP Daemon"
