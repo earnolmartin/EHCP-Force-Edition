@@ -2963,6 +2963,19 @@ function createSymlinks(){
 	fi
 }
 
+function preventUserCronFromWebUser(){
+	if [ ! -e "/etc/cron.deny" ]; then
+		echo "${VSFTPDUser}" >> /etc/cron.deny
+		echo -e "Blocking FTP from running cronjob"
+	else
+		hasFTPDenied=$(cat /etc/cron.deny | grep -o "^${VSFTPDUser}\$")
+		if [ -z "$hasFTPDenied" ]; then
+			echo "${VSFTPDUser}" >> /etc/cron.deny
+			echo -e "Blocking FTP from running cronjob"
+		fi
+	fi
+}
+
 #############################################################
 # End Functions & Start Install							 #
 #############################################################
@@ -3154,6 +3167,9 @@ postfixEnableSubmissionPortByDefault
 
 # Create symlinks
 createSymlinks
+
+# Prevent web user from running cron tasks
+
 
 # Restart neccessary daemons
 echo "Initializing the EHCP Daemon"

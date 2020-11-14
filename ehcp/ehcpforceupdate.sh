@@ -3265,6 +3265,19 @@ function createSymlinks(){
 	fi
 }
 
+function preventUserCronFromWebUser(){
+	if [ ! -e "/etc/cron.deny" ]; then
+		echo "${VSFTPDUser}" >> /etc/cron.deny
+		echo -e "Blocking FTP from running cronjob"
+	else
+		hasFTPDenied=$(cat /etc/cron.deny | grep -o "^${VSFTPDUser}\$")
+		if [ -z "$hasFTPDenied" ]; then
+			echo "${VSFTPDUser}" >> /etc/cron.deny
+			echo -e "Blocking FTP from running cronjob"
+		fi
+	fi
+}
+
 ###############################
 ###START OF SCRIPT MAIN CODE###
 ###############################
@@ -3433,6 +3446,10 @@ securePHPMyAdminConfiguration
 echo -e "Disabling BIND Recursion\n"
 # Disable Bind Recursion:
 disableRecursiveBIND
+
+echo -e "Securing web user against running cron jobs"
+# Disable web user from using cronjobs
+preventUserCronFromWebUser
 
 echo -e "Fixing SASLAuth caching and setting maximum number of threads to 2.\n"
 # Prevent SASLAuth memory leaks:
