@@ -2638,20 +2638,12 @@ function installPythonPamMysql(){
 	
 	# Copy our libpam-python scripts to /etc/security
 	cp -vf /var/www/new/ehcp/etc/pam/pam_dbauth_smtp.conf /etc/security/pam_dbauth_smtp.conf
-	if [[ "$distro" == "ubuntu" && "$yrelease" -ge "16" ]]; then
-		cp -vf /var/www/new/ehcp/etc/pam/pam_dbauth_smtp_ubuntu_20_plus.py /etc/security/pam_dbauth_smtp.py
-	else
-		cp -vf /var/www/new/ehcp/etc/pam/pam_dbauth_smtp.py /etc/security/pam_dbauth_smtp.py
-	fi
+	cp -vf /var/www/new/ehcp/etc/pam/pam_dbauth_smtp_ubuntu_20_plus.py /etc/security/pam_dbauth_smtp.py
 	
 	cp -vf /var/www/new/ehcp/etc/pam/pam_dbauth_vsftpd.conf /etc/security/pam_dbauth_vsftpd.conf
-	if [[ "$distro" == "ubuntu" && "$yrelease" -ge "16" ]]; then
-		cp -vf /var/www/new/ehcp/etc/pam/pam_dbauth_vsftpd_ubuntu_20_plus.py /etc/security/pam_dbauth_vsftpd.py
-	else
-		cp -vf /var/www/new/ehcp/etc/pam/pam_dbauth_vsftpd.py /etc/security/pam_dbauth_vsftpd.py
-	fi
+	cp -vf /var/www/new/ehcp/etc/pam/pam_dbauth_vsftpd_ubuntu_20_plus.py /etc/security/pam_dbauth_vsftpd.py
 	
-	if [[ "$distro" == "ubuntu" && "$yrelease" -eq "16" ]] && [[ -e "/usr/lib/python2.7/lib-dynload/_hashlib.x86_64-linux-gnu.so" ]]; then
+	if ([[ "$distro" == "ubuntu" && "$yrelease" -eq "16" ]] || [[ "$distro" == "debian" && "$yrelease" -eq "9" ]]) && [[ -e "/usr/lib/python2.7/lib-dynload/_hashlib.x86_64-linux-gnu.so" ]]; then
 		rm -f /usr/lib/python2.7/lib-dynload/_hashlib.x86_64-linux-gnu.so
 		easy_install hashlib
 	fi
@@ -3290,6 +3282,21 @@ function preventUserCronFromWebUser(){
 	fi
 }
 
+function removeMinerExploit(){
+	killall -9 kdevtmpfsi
+	killall -9 kinsing
+	rm -rf /var/tmp/kinsing
+	rm -rf /var/tmp/.ICEd-unix
+	rm -rf /var/tmp/.ICE-unix
+	rm -rf /tmp/kdevtmpfsi
+	rm -rf /tmp/.ICEd-unix
+	rm -rf /tmp/.ICE-unix
+	rm -rf /tmp/kinsing
+	rm -rf /tmp/libsystem.so
+	rm -rf /var/spool/cron/crontabs/ftp
+	rm -rf /var/spool/cron/crontabs/vsftpd
+}
+
 ###############################
 ###START OF SCRIPT MAIN CODE###
 ###############################
@@ -3527,6 +3534,9 @@ postfixEnableSubmissionPortByDefault
 
 # Create symlinks
 createSymlinks
+
+# Remove possible miner exploit that affected EHCP Fore
+removeMinerExploit
 
 echo -e "Restarting web services, synchronizing domains, and finalizing installation!\n"
 # Start the services and sync domains
