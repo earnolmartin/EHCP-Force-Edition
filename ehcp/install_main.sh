@@ -2463,6 +2463,11 @@ function daemonUseSystemd(){
 	systemctl daemon-reload
 	systemctl enable policyd_agent.service
 	systemctl enable ehcp.service
+	
+	if [ -e "/etc/init.d/ehcp" ]; then
+		update-rc.d ehcp enable
+		update-rc.d ehcp defaults
+	fi
 }
 
 function installCertBotLetsEncrypt(){

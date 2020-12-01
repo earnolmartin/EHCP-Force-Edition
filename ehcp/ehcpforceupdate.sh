@@ -380,6 +380,11 @@ function updateDaemon(){
 	# Reload systemd to pick up on the new daemon if applicable
 	systemctl daemon-reload
 	systemctl enable ehcp.service
+	
+	if [ -e "/etc/init.d/ehcp" ]; then
+		update-rc.d ehcp enable
+		update-rc.d ehcp defaults
+	fi
 }
 
 function fail2ban(){
