@@ -983,12 +983,25 @@ function genFixes(){
 			echo -e "Include /var/www/new/ehcp/apachehcp_globalpanelurls.conf" >> "/etc/apache2/apache2.conf"
 		fi
 	fi
-	# Same thing for nginx
+	
+	# Same thing for nginx (plus bad bot and ip blocker)
 	if [ -e "/etc/nginx/nginx.conf" ]; then
 		hasEHCPPanelConf=$(cat "/etc/nginx/nginx.conf" | grep -o "apachehcp_globalpanelurls.conf")
 		if [ -z "$hasEHCPPanelConf" ]; then
 			# Put it one line before close pattern
 			sed -i '$i \include /var/www/new/ehcp/apachehcp_globalpanelurls.conf;' "/etc/nginx/nginx.conf"
+		fi
+		
+		hasBlackList=$(cat "/etc/nginx/nginx.conf" | grep -o "blacklist.conf")
+		if [ -z "$hasBlackList" ]; then
+			# Put it one line before close pattern
+			sed -i '$i \include nginx-badbot-blocker/blacklist.conf;' "/etc/nginx/nginx.conf"
+		fi
+		
+		hasBlockIPList=$(cat "/etc/nginx/nginx.conf" | grep -o "blockips.conf")
+		if [ -z "$hasBlockIPList" ]; then
+			# Put it one line before close pattern
+			sed -i '$i \include nginx-badbot-blocker/blockips.conf;' "/etc/nginx/nginx.conf"
 		fi
 	fi
 	
