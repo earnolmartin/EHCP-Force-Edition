@@ -2502,7 +2502,7 @@ function installCertBotLetsEncrypt(){
 	addSystemCronJob "45 4 * * *" "/var/www/new/ehcp/scripts/certbot_renew_certs.sh"
 	
 	# Check for common errors
-	capturedCertbotOutput=$(/usr/local/bin/certbot 2>&1)
+	capturedCertbotOutput=$(/usr/local/bin/certbot -q 2>&1)
 	frozensetIssue=$(echo "$capturedCertbotOutput" | grep -o "'frozenset' object is not callable")
 	if [ ! -z "$frozensetIssue" ]; then
 		echo "Running hashlib fix!"
