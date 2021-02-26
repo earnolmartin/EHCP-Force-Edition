@@ -2500,6 +2500,20 @@ function installCertBotLetsEncrypt(){
 	/usr/local/bin/certbot --quiet
 	cd "$curDir"
 	addSystemCronJob "45 4 * * *" "/var/www/new/ehcp/scripts/certbot_renew_certs.sh"
+	
+	# Check for common errors
+	capturedCertbotOutput=$(/usr/local/bin/certbot 2>&1)
+	frozensetIssue=$(echo "$capturedCertbotOutput" | grep -o "'frozenset' object is not callable")
+	if [ ! -z "$frozensetIssue" ]; then
+		echo "Running hashlib fix!"
+		rm -rf /usr/lib/python2.7/dist-packages/chardet*.egg-info
+		rm -rf /usr/lib/python2.7/dist-packages/chardet
+		rm /usr/lib/python2.7/lib-dynload/_hashlib.x86_64-linux-gnu.so
+		rm /usr/lib/python2.7/lib-dynload/_hashlib.i386-linux-gnu.so
+		pip install requests
+		pip install chardet
+		easy_install hashlib
+	fi
 }
 
 function searchForServiceName(){	
