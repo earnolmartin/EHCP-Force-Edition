@@ -3070,7 +3070,9 @@ function installBadBotsBlockerNginx(){
 			git clone https://github.com/own3mall/nginx-badbot-blocker.git
 			if [ -e "/etc/nginx/nginx-badbot-blocker/blacklist.conf" ]; then
 				getServerIPAddr
-				sed -i "s#111.111.111.111#${MYIP}#g" "/etc/nginx/nginx-badbot-blocker/blacklist.conf"
+				if [ ! -z "$MYIP" ]; then
+					sed -i "s#111.111.111.111#${MYIP}#g" "/etc/nginx/nginx-badbot-blocker/blacklist.conf"
+				fi
 			fi
 		fi
 	fi
