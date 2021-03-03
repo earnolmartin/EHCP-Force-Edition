@@ -14635,7 +14635,7 @@ function configtest_reload_webserver(){
 		}
 
 		system(getServiceActionStr("nginx", "configtest"),$ret);
-		$out=shell_exec(getServiceActionStr("nginx", "configtest") . ' 2>&1');
+		$out=shell_exec('nginx -T 2>&1');
 
 		if($ret<>0){
 			echo "\n $webserver configuration issue detected! There is an error in the config.\n";
