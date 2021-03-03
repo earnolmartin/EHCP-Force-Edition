@@ -1,6 +1,6 @@
 $(document).ready(function() {
 	$("select#template_file").change(function(e){
-		getGlobalTemplateFile($(this).val(), $("select#webserver_mode"), $("select#webserver_type"));
+		getGlobalTemplateFile($(this).val(), $("select#webserver_mode").val(), $("select#webserver_type").val());
 	});
 	
 	if($("select#template_file").length){
