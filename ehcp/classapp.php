@@ -6220,7 +6220,7 @@ function manageGlobalWebTemplates(){
 	// Requires admin
 	$this->requireAdmin();
 	
-	$this->getVariable(array("_insert",'template_file','template_contents','saveTemplate','clearTemplate'));
+	$this->getVariable(array("_insert",'template_file','template_contents','saveTemplate','clearTemplate','webserver_type','webserver_mode'));
 	
 	if(!$_insert) {
 		
@@ -6241,7 +6241,7 @@ function manageGlobalWebTemplates(){
 		$this->output.= "<br>Edit Global Website Templates<br>Currently Using Default Template: <span class='success usingDefaultTemplateYes' style='display: none; font-weight: bold;'>Yes</span><span class='error usingDefaultTemplateNo' style='display: none; font-weight: bold;'>No</span><br>".inputform5($inputparams);
 	}else{
 		if($clearTemplate){
-			$success = $this->revertTemplateBackToEHCPDefault($template_file);
+			$success = $this->revertTemplateBackToEHCPDefault($template_file, $webserver_type, $webserver_mode);
 			
 			// Sync all domains so they use the default EHCP template again
 			$this->addDaemonOp('syncdomains','','','','sync domains');
@@ -6250,7 +6250,7 @@ function manageGlobalWebTemplates(){
 			
 			return $this->ok_err_text($success,"Selected global web server template has been reverted to the EHCP default.", "Failed to revert selected global web server template back to EHCP default.");
 		}else if($saveTemplate){
-			$success = $this->saveGlobalWebserverTemplate($template_file, $template_contents);
+			$success = $this->saveGlobalWebserverTemplate($template_file, $webserver_type, $webserver_mode, $template_contents);
 			
 			// Sync all domains so tehy use the new global template
 			$this->addDaemonOp('syncdomains','','','','sync domains');
@@ -6443,12 +6443,12 @@ function getGlobalPasswordProtectedDirectoryTemplate(){
 	return $template;
 }
 
-function saveGlobalWebserverTemplate($template, $value){
+function saveGlobalWebserverTemplate($template, $webserver_type, $webserver_mode, $value){
 	if(!empty($value)){
 		$validTemplates = array('apachetemplate', 'subdomaintemplate', 'enableddefault', 'pwdir', 'mainwebserverconf');
 		if(in_array($template, $validTemplates)){
 			// Update redirect location for this domain
-			$SQL = "INSERT INTO " . $this->conf['globalwebservertemplatestable']['tablename'] . " (template_name, template_webserver_type, template_ssl_type, template_value) VALUES ('" . $template . "', '" . $this->miscconfig['webservertype'] . "', '" . $this->miscconfig['webservermode'] . "', '" . $value . "') ON DUPLICATE KEY UPDATE template_value='" . $value . "';";
+			$SQL = "INSERT INTO " . $this->conf['globalwebservertemplatestable']['tablename'] . " (template_name, template_webserver_type, template_ssl_type, template_value) VALUES ('" . $template . "', '" . $this->escape($webserver_type) . "', '" . $this->escape($webserver_mode) . "', '" . $value . "') ON DUPLICATE KEY UPDATE template_value='" . $value . "';";
 			
 			// Run Query
 			return $this->executeQuery($SQL);
@@ -6458,10 +6458,18 @@ function saveGlobalWebserverTemplate($template, $value){
 	return false;
 }
 
-function revertTemplateBackToEHCPDefault($template){
+function revertTemplateBackToEHCPDefault($template, $type = "", $mode = ""){
+	
+	if(empty($type)){
+		$type = $this->miscconfig['webservertype'];
+	}
+	
+	if(empty($mode)){
+		$mode = $this->miscconfig['webservermode'];
+	}
 	
 	// Update redirect location for this domain
-	$SQL = "UPDATE " . $this->conf['globalwebservertemplatestable']['tablename'] . " SET template_value='' WHERE template_name ='" . $template . "' AND template_webserver_type='" . $this->miscconfig['webservertype'] . "' AND template_ssL_type='" . $this->miscconfig['webservermode'] . "'";
+	$SQL = "UPDATE " . $this->conf['globalwebservertemplatestable']['tablename'] . " SET template_value='' WHERE template_name ='" . $template . "' AND template_webserver_type='" . $this->escape($type) . "' AND template_ssL_type='" . $this->escape($mode) . "'";
 	
 	if($template == "enableddefault"){
 		$this->addDaemonOp('handle_reset_sites_enabled_default','','','','reset default sites enabled template');
