@@ -14635,6 +14635,7 @@ function configtest_reload_webserver(){
 		}
 
 		system(getServiceActionStr("nginx", "configtest"),$ret);
+		$out=shell_exec(getServiceActionStr("nginx", "configtest") . ' 2>&1');
 
 		if($ret<>0){
 			echo "\n $webserver configuration issue detected! There is an error in the config.\n";
@@ -14644,7 +14645,7 @@ function configtest_reload_webserver(){
 			echo "\n " . $subdomainContents . "\n";
 			echo "\n Configuration for passive domains is set to the following:\n";
 			echo "\n " . $pDomainContents . "\n";
-			$this->infotoadminemail("Hi EHCP Admin,<br><br>There is an error in your $webserver config.<br><br>Domain Contents:<br><pre>" . $domainContents . "</pre>Subdomain Contents:<br><pre>" . $subdomainContents . "</pre><br>Passive Domain Contents:<br><pre>" . $pDomainContents . "</pre>","Error in $webserver Config",false);
+			$this->infotoadminemail("Hi EHCP Admin,<br><br>There is an error in your $webserver config.<br><br>" . $out . "<br><br>Domain Contents:<br><pre>" . $domainContents . "</pre>Subdomain Contents:<br><pre>" . $subdomainContents . "</pre><br>Passive Domain Contents:<br><pre>" . $pDomainContents . "</pre>","Error in $webserver Config",false);
 			$success=false;
 		} else {
 			echo "\n $webserver configuration is valid and tested successfully!";
