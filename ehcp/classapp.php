@@ -6471,11 +6471,11 @@ function revertTemplateBackToEHCPDefault($template, $type = "", $mode = ""){
 	// Update redirect location for this domain
 	$SQL = "UPDATE " . $this->conf['globalwebservertemplatestable']['tablename'] . " SET template_value='' WHERE template_name ='" . $template . "' AND template_webserver_type='" . $this->escape($type) . "' AND template_ssL_type='" . $this->escape($mode) . "'";
 	
-	if($template == "enableddefault"){
+	if($template == "enableddefault" && $type == $this->miscconfig['webservertype'] && $mode == $this->miscconfig['webservermode']){
 		$this->addDaemonOp('handle_reset_sites_enabled_default','','','','reset default sites enabled template');
 	}
 	
-	if($template == "mainwebserverconf"){
+	if($template == "mainwebserverconf" && $type == $this->miscconfig['webservertype'] && $mode == $this->miscconfig['webservermode']){
 		$this->addDaemonOp('handle_reset_mainwebserverconf','','','','reset main webserver conf to default');
 	}
 	
