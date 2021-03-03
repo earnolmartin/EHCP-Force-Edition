@@ -6225,16 +6225,20 @@ function manageGlobalWebTemplates(){
 	if(!$_insert) {
 		
 		$optionsArray = array("apachetemplate"=>"Domain Template","subdomaintemplate"=>"Subdomain Template","enableddefault"=>"Default Enabled Domain","pwdir"=>"Password Protected Directory","mainwebserverconf"=>"Webserver Main Config");
+		$typeOptionsArray = array("ssl" => "ssl", "sslonly" => "sslonly", "nonssl" => "nonssl");
+		$webOptionsArray = array("apache2" => "apache2", "nginx" => "nginx");
 		
 		$inputparams=array(
 			array('template_file','select','lefttext'=>'Edit Template:','secenekler'=>$optionsArray),
+			array('webserver_type','select','lefttext'=>'Web Server:','secenekler'=>$webOptionsArray, 'default'=>$this->miscconfig['webservertype']),
+			array('webserver_mode','select','lefttext'=>'Web SSL Mode:','secenekler'=>$typeOptionsArray, 'default'=>$this->miscconfig['webservermode']),
 			array('template_contents','textarea','lefttext'=>'Template Contents:','cols'=>80,'rows'=>30),
 			array('saveTemplate','submit','default'=>'Save Template'),
 			array('clearTemplate','submit','default'=>'Revert to Default'),
 			array('op','hidden','default'=>__FUNCTION__)
 		);
 	
-		$this->output.= "<br>Edit Global Website " . $this->miscconfig['webservertype'] . " " . $this->miscconfig['webservermode'] . " Templates<br>Currently Using Default Template: <span class='success usingDefaultTemplateYes' style='display: none; font-weight: bold;'>Yes</span><span class='error usingDefaultTemplateNo' style='display: none; font-weight: bold;'>No</span><br>".inputform5($inputparams);
+		$this->output.= "<br>Edit Global Website Templates<br>Currently Using Default Template: <span class='success usingDefaultTemplateYes' style='display: none; font-weight: bold;'>Yes</span><span class='error usingDefaultTemplateNo' style='display: none; font-weight: bold;'>No</span><br>".inputform5($inputparams);
 	}else{
 		if($clearTemplate){
 			$success = $this->revertTemplateBackToEHCPDefault($template_file);
@@ -6259,7 +6263,7 @@ function manageGlobalWebTemplates(){
 	return $success;
 }
 
-function getGlobalWebTemplate($template = false){
+function getGlobalWebTemplate($template = false, $webserverMode = false, $webserverType = false){
 	// This is a JSON operation only...
 	// Only should be used with an ajax call.
 	
@@ -6273,9 +6277,26 @@ function getGlobalWebTemplate($template = false){
 		}
 	}
 	
+	if($webserverMode === false){
+		if(isset($_REQUEST['mode'])){
+			$webserverMode = $_REQUEST['mode'];
+		}else{
+			$webserverMode = $this->miscconfig['webservermode'];
+		}
+	}
+		
+	if($webserverType === false){
+		if(isset($_REQUEST['server'])){
+			$webserverType = $_REQUEST['server'];
+		}else{
+			$webserverType = $this->miscconfig['webservertype'];
+		}
+	}	
+	
+	
 	if($template !== false){
 		// Update redirect location for this domain
-		$SQL = "SELECT * FROM " . $this->conf['globalwebservertemplatestable']['tablename'] . " WHERE template_name ='" . $template . "' AND template_webserver_type='" . $this->miscconfig['webservertype'] . "' AND template_ssl_type ='" . $this->miscconfig['webservermode'] . "'";
+		$SQL = "SELECT * FROM " . $this->conf['globalwebservertemplatestable']['tablename'] . " WHERE template_name ='" . $this->escape($template) . "' AND template_webserver_type='" . $this->escape($webserverType) . "' AND template_ssl_type ='" . $this->escape($webserverMode) . "'";
 		
 		// Run Query
 		$rs = $this->query($SQL);
@@ -6285,25 +6306,57 @@ function getGlobalWebTemplate($template = false){
 		
 		if(count($rs) == 0 || empty($rs[0]["template_value"])){
 			switch($template){
-				case "apachetemplate":
-					$json["template_contents"] = file_get_contents("apachetemplate");
+				case "apachetemplate":				
+					if($webserverType == "nginx"){
+						if($webserverMode == "sslonly"){
+							$json["template_contents"] = file_get_contents("etc/nginx_sslonly/apachetemplate.nginx");
+						}else if($webserverMode == "ssl"){
+							$json["template_contents"] = file_get_contents("etc/nginx_ssl/apachetemplate.nginx");
+						}else{
+							$json["template_contents"] = file_get_contents("etc/nginx_nonssl/apachetemplate.nginx");
+						}
+					}else{
+						if($webserverMode == "sslonly"){
+							$json["template_contents"] = file_get_contents("etc/apache2_sslonly/fork/apachetemplate");
+						}else if($webserverMode == "ssl"){
+							$json["template_contents"] = file_get_contents("etc/apache2_ssl/fork/apachetemplate");
+						}else{
+							$json["template_contents"] = file_get_contents("etc/apache2/apachetemplate");
+						}
+					}
 					break;
 				case "subdomaintemplate":
-					$json["template_contents"] = file_get_contents("apache_subdomain_template");
+					if($webserverType == "nginx"){
+						if($webserverMode == "sslonly"){
+							$json["template_contents"] = file_get_contents("etc/nginx_sslonly/apache_subdomain_template.nginx");
+						}else if($webserverMode == "ssl"){
+							$json["template_contents"] = file_get_contents("etc/nginx_ssl/apache_subdomain_template.nginx");
+						}else{
+							$json["template_contents"] = file_get_contents("etc/nginx_nonssl/apache_subdomain_template.nginx");
+						}
+					}else{
+						if($webserverMode == "sslonly"){
+							$json["template_contents"] = file_get_contents("etc/apache2_sslonly/fork/apache_subdomain_template");
+						}else if($webserverMode == "ssl"){
+							$json["template_contents"] = file_get_contents("etc/apache2_ssl/fork/apache_subdomain_template");
+						}else{
+							$json["template_contents"] = file_get_contents("etc/apache2/apache_subdomain_template");
+						}
+					}
 					break;
 				case "enableddefault":
-					if($this->miscconfig['webservertype'] == "nginx"){
-						if($this->miscconfig['webservermode'] == "sslonly"){
+					if($webserverType == "nginx"){
+						if($webserverMode == "sslonly"){
 							$json["template_contents"] = file_get_contents("etc/nginx_sslonly/default.nginx");
-						}else if($this->miscconfig['webservermode'] == "ssl"){
+						}else if($webserverMode == "ssl"){
 							$json["template_contents"] = file_get_contents("etc/nginx_ssl/default.nginx");
 						}else{
 							$json["template_contents"] = file_get_contents("etc/nginx_nonssl/default.nginx");
 						}
 					}else{
-						if($this->miscconfig['webservermode'] == "sslonly"){
+						if($webserverMode == "sslonly"){
 							$json["template_contents"] = file_get_contents("etc/apache2_sslonly/fork/default");
-						}else if($this->miscconfig['webservermode'] == "ssl"){
+						}else if($webserverMode == "ssl"){
 							$json["template_contents"] = file_get_contents("etc/apache2_ssl/fork/default");
 						}else{
 							$json["template_contents"] = file_get_contents("etc/apache2/default");
@@ -6311,10 +6364,10 @@ function getGlobalWebTemplate($template = false){
 					}
 					break;
 				case "mainwebserverconf":
-					if($this->miscconfig['webservertype'] == "nginx"){
-						if($this->miscconfig['webservermode'] == "sslonly"){
+					if($webserverType == "nginx"){
+						if($webserverMode == "sslonly"){
 							$json["template_contents"] = file_get_contents("etc/nginx_sslonly/nginx.conf");
-						}else if($this->miscconfig['webservermode'] == "ssl"){
+						}else if($webserverMode == "ssl"){
 							$json["template_contents"] = file_get_contents("etc/nginx_ssl/nginx.conf");
 						}else{
 							$json["template_contents"] = file_get_contents("etc/nginx_nonssl/nginx.conf");
@@ -6330,7 +6383,7 @@ function getGlobalWebTemplate($template = false){
 					}
 					break;
 				case "pwdir":
-					if($this->miscconfig['webservertype'] == "nginx"){
+					if($webserverType == "nginx"){
 						$json["template_contents"] = file_get_contents("etc/generic_nginx_templates/password_protected_directory.conf");
 					}else{
 						$json["template_contents"] = file_get_contents("etc/generic_apache_templates/password_protected_directory.conf");

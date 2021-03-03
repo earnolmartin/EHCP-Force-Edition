@@ -1,6 +1,6 @@
 $(document).ready(function() {
 	$("select#template_file").change(function(e){
-		getGlobalTemplateFile($(this).val());
+		getGlobalTemplateFile($(this).val(), $("select#webserver_mode"), $("select#webserver_type"));
 	});
 	
 	if($("select#template_file").length){
@@ -13,8 +13,8 @@ $(document).ready(function() {
 	handleShowAdvancedAdminOptions();
 });
 
-function getGlobalTemplateFile(template){
-	$.get("index.php?op=getGlobalWebTemplate&template=" + template, function( data ) {
+function getGlobalTemplateFile(template, webserverMode, webserverType){
+	$.get("index.php?op=getGlobalWebTemplate&template=" + template + "&server=" + webserverType + "&mode=" + webserverMode, function( data ) {
 		try{
 			if(data.hasOwnProperty('template_contents')){
 				if($("textarea#template_contents").length){
