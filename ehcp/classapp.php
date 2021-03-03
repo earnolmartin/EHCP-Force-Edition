@@ -6257,7 +6257,7 @@ function manageGlobalWebTemplates(){
 			
 			$this->showSimilarFunctions('global_templates');
 			
-			return $this->ok_err_text($success,"Successfully saved selected global webserver template into the database. This template will be used for all domains unless a custom template has been defined for a specific domain.","Failed to save global template.");
+			return $this->ok_err_text($success,"Successfully saved selected global webserver template into the database.","Failed to save global template.");
 		}
 	}
 	return $success;
