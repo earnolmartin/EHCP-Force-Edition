@@ -6213,7 +6213,7 @@ function getPublicServerSettings(){
 /* Global Web Templates */
 
 function manageGlobalWebTemplates(){
-	global $_insert, $template_file, $template_contents, $saveTemplate, $clearTemplate;
+	global $_insert, $template_file, $template_contents, $saveTemplate, $clearTemplate, $webserver_type, $webserver_mode;
 	
 	$success = true;
 	
