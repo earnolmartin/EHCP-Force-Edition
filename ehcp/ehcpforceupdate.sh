@@ -18,6 +18,11 @@ function setGlobalVars(){
 	if [ ! -e "$backupDir" ]; then
 		mkdir -p "$backupDir"
 	fi
+	userScriptDir="/root/scripts"
+	if [ ! -e "$userScriptDir" ]; then
+		mkdir -p "$userScriptDir"
+	fi
+	
 	getVSFTPDUser
 	getPHPConfigPath
 	installerDir="$(pwd)"
@@ -26,6 +31,7 @@ function setGlobalVars(){
 		systemdPresent=1
 	fi
 	EHCPMySQLPass=$(cat "/var/www/new/ehcp/config.php" | grep -o "dbpass=.*" | grep -o "=.*" | grep -o "[^='].*" | grep -o ".*[^';]")
+	UserDefinedPostScript="/root/scripts/ehcp_force_post_update_script.sh"
 }
 
 function detectRunningWebServer(){
@@ -767,6 +773,11 @@ function finalize(){
 	
 	echo -e "\nRunning final cleanup.\n"
 	finalCleanup
+	
+	if [ -e "$UserDefinedPostScript" ]; then
+		echo -e "\nRunning user defined post update script.\n"
+		bash "$UserDefinedPostScript"
+	fi
 }
 
 # Get distro name , by Marcel <marcelbutucea@gmail.com>, thanks to marcel for fixing whole code syntax

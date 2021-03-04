@@ -68,6 +68,10 @@ function setGlobalVars(){
 	if [ ! -e "$backupDir" ]; then
 		mkdir -p "$backupDir"
 	fi
+	userScriptDir="/root/scripts"
+	if [ ! -e "$userScriptDir" ]; then
+		mkdir -p "$userScriptDir"
+	fi
 	FQDNCFG="fqdn_amavis.cfg"
 	if [ -e "$FQDNCFG" ]; then
 		source "$FQDNCFG"
@@ -81,6 +85,7 @@ function setGlobalVars(){
 	if [ "$initProcessStr" == "systemd" ]; then
 		systemdPresent=1
 	fi
+	UserDefinedPostScript="/root/scripts/ehcp_force_post_install_script.sh"
 }
 
 function installaptget () {
@@ -2614,6 +2619,11 @@ function finalCleanup(){
 	echo -e "Restarting php-fpm one last time...\n"
 	sleep 10s
 	managePHPFPMService
+	
+	if [ -e "$UserDefinedPostScript" ]; then
+		echo -e "\nRunning user defined post install script.\n"
+		bash "$UserDefinedPostScript"
+	fi
 }
 
 function fixMariaDBSkippingInnoDB(){
