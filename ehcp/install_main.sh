@@ -2953,6 +2953,9 @@ function updateWebalizerGeoDBFile(){
 	mkdir -p /root/Downloads/webalizer
 	cd /root/Downloads/webalizer
 	
+	if [ -e "webalizer-geodb-latest.tgz" ]; then
+		rm "webalizer-geodb-latest.tgz"
+	fi
 	
 	# Download the latest GEO DB
 	wget -O "webalizer-geodb-latest.tgz" -N "ftp://ftp.mrunix.net/pub/webalizer/webalizer-geodb-latest.tgz" 
