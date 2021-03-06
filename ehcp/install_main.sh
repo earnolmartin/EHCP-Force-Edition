@@ -2969,6 +2969,14 @@ function updateWebalizerGeoDBFile(){
 	
 	mkdir -p "/usr/share/GeoIP2"
 	cp GeoDB.dat /usr/share/GeoIP2
+	
+	if [ -e "/usr/share/GeoIP" ]; then
+		cp GeoDB.dat "/usr/share/GeoIP"
+	fi
+	
+	if [ -e "/usr/share/GeoDB" ]; then
+		cp GeoDB.dat "/usr/share/GeoDB"
+	fi
 }
 
 function postfixEnableSubmissionPortByDefault(){
