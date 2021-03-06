@@ -3197,8 +3197,9 @@ function adjustOpenSSLConfiguration(){
 }
 
 function updateWebalizerIfNeeded(){
+	curDir=$(pwd)
+	
 	if [[ "$distro" == "ubuntu" && "$yrelease" -lt "18" ]] || [[ "$distro" == "debian" && "$yrelease" -lt "10" ]]; then  # Only applies to Ubuntu 14.04 and 16.04 / applies to Debian 8 & 9
-		curDir=$(pwd)
 		whichWebalizer=$(which webalizer)
 		if [ -z "$whichWebalizer" ]; then
 			upgradeWebalizer
@@ -3223,9 +3224,10 @@ function updateWebalizerIfNeeded(){
 				fi
 			fi
 		fi
-		
-		cd "$curDir"
 	fi
+	
+	updateWebalizerGeoDBFile
+	cd "$curDir"
 }
 
 function upgradeWebalizer(){
@@ -3240,15 +3242,7 @@ function upgradeWebalizer(){
 		rm -rf "/root/Downloads/webalizer"
 	fi
 				
-	# Handle updated geodb files
-	mkdir -p /root/Downloads/webalizer
-	cd /root/Downloads/webalizer
-	
-	cp "$FIXDIR/webalizer/webalizer-geodb-latest.tgz" "webalizer-geodb-latest.tgz"
-	tar -xzf webalizer-geodb-latest.tgz
-	
-	mkdir -p "/usr/share/GeoIP2"
-	cp GeoDB.dat /usr/share/GeoIP2
+	updateWebalizerGeoDBFile
 		
 	# Compile and install latest version of webalizer
 	cd /root/Downloads/webalizer
@@ -3260,6 +3254,29 @@ function upgradeWebalizer(){
 	patch < webalizer-2.23-08-memmove.patch
 	
 	./configure --sysconfdir=/etc --enable-dns --with-geodb=/usr/share/GeoIP2 --enable-bz2 --enable-geoip && make && make install && mkdir -p "/etc/ehcp" && echo "1" > "/etc/ehcp/webalizer_patched" || rm -rf "/etc/ehcp/webalizer_patched"
+}
+
+function updateWebalizerGeoDBFile(){
+	# Handle updated geodb files
+	mkdir -p /root/Downloads/webalizer
+	cd /root/Downloads/webalizer
+	
+	if [ -e "webalizer-geodb-latest.tgz" ]; then
+		rm "webalizer-geodb-latest.tgz"
+	fi
+	
+	# Download the latest GEO DB
+	wget -O "webalizer-geodb-latest.tgz" -N "ftp://ftp.mrunix.net/pub/webalizer/webalizer-geodb-latest.tgz" 
+	
+	# If mirror isn't online, then use our local copy
+	if [ $? -ne 0 ] || [ ! -s "webalizer-geodb-latest.tgz" ]; then
+		cp "$FIXDIR/webalizer/webalizer-geodb-latest.tgz" "webalizer-geodb-latest.tgz"
+	fi
+	
+	tar -xzf webalizer-geodb-latest.tgz
+	
+	mkdir -p "/usr/share/GeoIP2"
+	cp GeoDB.dat /usr/share/GeoIP2
 }
 
 function postfixEnableSubmissionPortByDefault(){
