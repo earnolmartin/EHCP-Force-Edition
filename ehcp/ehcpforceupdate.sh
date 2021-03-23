@@ -3085,6 +3085,12 @@ function fixQuotaForEmailsPostfix3x(){
 
 function getServerIPAddr(){
 	MYIP=$(wget -qO- "https://dynamix.run/ip.php" | xargs)
+	if [ $? -ne 0 ] || [ -z "$MYIP" ]; then
+		MYIP=$(wget -qO- "http://dinofly.com/ip.php" | xargs)
+	fi
+	if [ $? -ne 0 ] || [ -z "$MYIP" ]; then
+		MYIP=$(wget -qO- "https://hostmon.tk/ip.php" | xargs)
+	fi
 }
 
 function installBadBotsBlockerNginx(){
