@@ -1200,10 +1200,10 @@ function installPythonPamMysql(){
 	passthru2("cp -vf $ehcpinstalldir/etc/pam/pam_dbauth_smtp.conf /etc/security/pam_dbauth_smtp.conf");
 	passthru2("cp -vf $ehcpinstalldir/etc/pam/pam_dbauth_smtp_ubuntu_20_plus.py /etc/security/pam_dbauth_smtp.py");
 	
-	if((getIsUbuntu() && getUbuntuReleaseYear() == "16") || (getIsDebian() && getUbuntuReleaseYear() == "9")){
+	if((getIsUbuntu() && getUbuntuReleaseYear() >= "16") || (getIsDebian() && getUbuntuReleaseYear() >= "9")){
 		if(file_exists("/usr/lib/python2.7/lib-dynload/_hashlib.x86_64-linux-gnu.so")){
 			unlink("/usr/lib/python2.7/lib-dynload/_hashlib.x86_64-linux-gnu.so");
-			passthru2("easy_install hashlib");
+			passthru2("pip install hashlib");
 		}
 	}
 

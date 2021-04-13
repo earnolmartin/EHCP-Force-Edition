@@ -2672,9 +2672,9 @@ function installPythonPamMysql(){
 	cp -vf /var/www/new/ehcp/etc/pam/pam_dbauth_vsftpd.conf /etc/security/pam_dbauth_vsftpd.conf
 	cp -vf /var/www/new/ehcp/etc/pam/pam_dbauth_vsftpd_ubuntu_20_plus.py /etc/security/pam_dbauth_vsftpd.py
 	
-	if ([[ "$distro" == "ubuntu" && "$yrelease" -eq "16" ]] || [[ "$distro" == "debian" && "$yrelease" -eq "9" ]]) && [[ -e "/usr/lib/python2.7/lib-dynload/_hashlib.x86_64-linux-gnu.so" ]]; then
+	if ([[ "$distro" == "ubuntu" && "$yrelease" -ge "16" ]] || [[ "$distro" == "debian" && "$yrelease" -ge "9" ]]) && [[ -e "/usr/lib/python2.7/lib-dynload/_hashlib.x86_64-linux-gnu.so" ]]; then
 		rm -f /usr/lib/python2.7/lib-dynload/_hashlib.x86_64-linux-gnu.so
-		easy_install hashlib
+		pip install hashlib
 	fi
 	
 	# Replace EHCP mysql password with the correct one
@@ -2876,13 +2876,13 @@ function installCertBotLetsEncrypt(){
 	frozensetIssue=$(echo "$capturedCertbotOutput" | grep -o "'frozenset' object is not callable")
 	if [ ! -z "$frozensetIssue" ]; then
 		echo "Running hashlib fix!"
-		rm -rf /usr/lib/python2.7/dist-packages/chardet*.egg-info
+		find /usr/lib/python2.7/dist-packages -type f -name 'chardet*.egg-info' -exec rm {} \;
 		rm -rf /usr/lib/python2.7/dist-packages/chardet
 		rm /usr/lib/python2.7/lib-dynload/_hashlib.x86_64-linux-gnu.so
 		rm /usr/lib/python2.7/lib-dynload/_hashlib.i386-linux-gnu.so
 		pip install requests
 		pip install chardet
-		easy_install hashlib
+		pip install hashlib
 	fi
 }
 
@@ -3324,7 +3324,7 @@ function installPipManuallyIfNeeded(){
 	currentPip=$(which pip)
 	if [ -z "$currentPip" ]; then
 		cd "$patchDir"
-		curl https://bootstrap.pypa.io/2.7/get-pip.py -o get-pip.py
+		curl https://bootstrap.pypa.io/pip/2.7/get-pip.py -o get-pip.py
 		python get-pip.py
 	fi
 	
