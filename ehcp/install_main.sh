@@ -1994,6 +1994,7 @@ function installNeededDependencies(){
 	
 	# Required for Certbot
 	aptgetInstall python
+	aptgetInstall python2.7
 	aptgetInstall libexpat1-dev
 	aptgetInstall libpython-dev
 	aptgetInstall libpython2.7-dev
@@ -2518,6 +2519,7 @@ function installCertBotLetsEncrypt(){
 		pip install requests
 		pip install chardet
 		pip install hashlib
+		pip install mysqlclient
 	fi
 }
 
