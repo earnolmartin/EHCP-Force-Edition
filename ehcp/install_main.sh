@@ -881,29 +881,16 @@ function apacheUseFPM(){
 	a2dismod php7.4
 	
 	# We need a newer version of Apache for this to work properly!
-	if [[ "$distro" == "ubuntu" && "$yrelease" -eq "16" && "$mrelease" == "04" ]] || [[ "$distro" == "debian" && "$yrelease" -eq "9" ]]; then
+	if [[ "$distro" == "ubuntu" && "$yrelease" -eq "16" && "$mrelease" == "04" ]] then
 		add-apt-repository -y ppa:ondrej/apache2
 		aptget_Update
-		
-		# Harder to use PPAs from Ubuntu on Debian, but still possible :)
-		if [ "$distro" == "debian" ] && [ "$yrelease" -eq "9" ]; then
-			sed -i "s/cosmic/xenial/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-cosmic.list"
-			sed -i "s/cosmic/xenial/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-cosmic.list.save"
-			
-			sed -i "s/eoan/xenial/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-eoan.list"
-			sed -i "s/eoan/xenial/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-eoan.list.save"
-			
-			sed -i "s/focal/xenial/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-focal.list"
-			sed -i "s/focal/xenial/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-focal.list.save"
-			
-			# figure out what to replace dynamically
-			ondrejKeyword=$(ls /etc/apt/sources.list.d/ondrej-* | head -n 1 | cut -d '-' -f4 | cut -d '.' -f1)
-			if [ ! -z "$ondrejKeyword" ]; then
-				sed -i "s/$ondrejKeyword/xenial/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-${ondrejKeyword}.list"
-				sed -i "s/$ondrejKeyword/xenial/g" "/etc/apt/sources.list.d/ondrej-ubuntu-apache2-${ondrejKeyword}.list.save"
-			fi
-		fi
-		
+		apt-get install -y --allow-unauthenticated -o Dpkg::Options::="--force-confold" apache2
+	fi
+	
+	if [ "$distro" == "debian" ] && [ "$yrelease" -eq "9" ]; then
+		apt-get -y install apt-transport-https lsb-release ca-certificates curl
+		wget -O /etc/apt/trusted.gpg.d/apache2.gpg https://packages.sury.org/apache2/apt.gpg
+		sh -c 'echo "deb https://packages.sury.org/apache2/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/apache2.list'
 		aptget_Update
 		apt-get install -y --allow-unauthenticated -o Dpkg::Options::="--force-confold" apache2
 	fi
