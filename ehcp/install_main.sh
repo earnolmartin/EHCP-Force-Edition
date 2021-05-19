@@ -881,7 +881,7 @@ function apacheUseFPM(){
 	a2dismod php7.4
 	
 	# We need a newer version of Apache for this to work properly!
-	if [[ "$distro" == "ubuntu" && "$yrelease" -eq "16" && "$mrelease" == "04" ]] then
+	if [[ "$distro" == "ubuntu" && "$yrelease" -eq "16" && "$mrelease" == "04" ]]; then
 		add-apt-repository -y ppa:ondrej/apache2
 		aptget_Update
 		apt-get install -y --allow-unauthenticated -o Dpkg::Options::="--force-confold" apache2
