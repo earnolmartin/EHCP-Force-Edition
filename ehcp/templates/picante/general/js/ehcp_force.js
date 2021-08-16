@@ -511,7 +511,7 @@
 	  if(domainSelected){
 		  // Remove text, add icon class, and shrink to 10%
 		  var firstChild = $("div.menu .menuItem:nth-child(1)");
-		  firstChild.width('10%');
+		  firstChild.width('25%');
 		  firstChild.text("Home");
 		  firstChild.addClass("homeBackgroundIcon");
 		  
@@ -521,7 +521,7 @@
 		  // Resize all but the first
 		  $("div.menu .menuItem:visible").each(function(e){
 			if(!$(this).is(firstChild)){
-				$(this).width('30%');
+				$(this).width('25%');
 			}
 		  });
 		  

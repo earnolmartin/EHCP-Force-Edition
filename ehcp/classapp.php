@@ -3785,6 +3785,12 @@ if ($homefile<>'') {
 			$homepage='homepage_reseller';
 		}else{
 			$homepage='homepage_paneluser';
+			
+			// Older theme compatibility
+			$file="templates/$this->template/$this->currentlanguage/".$homepage."_".$this->currentlanguage.".html";
+			if(!file_exists($file)){
+				$homepage='homepage_reseller';
+			}
 		}
    }else{
 	   $homepage='homepage_domainadmin_forreseller';
