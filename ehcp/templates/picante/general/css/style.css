@@ -152,7 +152,7 @@ div.fixedNavBarLinkIconsSide a {display: inline-block;}
 .ddMenu li.ddMenuLink a{color: inherit; display: inline-block; width: 270px;} 
 .fakeLink{text-decoration: none;}
 .dropDownIcon{background-image: url('../images/dd.png'); background-position: 95% 50%; background-repeat: no-repeat;} 
-.homeBackgroundIcon{background-image: url('../images/picante_home.png'); background-position: 20% center; background-repeat: no-repeat; padding-left: 40px;}
+.homeBackgroundIcon{background-image: url('../images/picante_home.png'); background-position: 20% center; background-repeat: no-repeat; padding-left: 40px; box-sizing: border-box;}
 table.list{border-collapse: collapse;}
 table.list td.list, table.list th.list{padding-left: 5px; padding-right: 5px; border: 1px solid black;}
 table.genericList{border-collapse: collapse;}
