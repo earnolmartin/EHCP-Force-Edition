@@ -2953,7 +2953,7 @@ function updateWebalizerGeoDBFile(){
 	fi
 	
 	# Download the latest GEO DB
-	wget -O "webalizer-geodb-latest.tgz" -N "ftp://ftp.mrunix.net/pub/webalizer/webalizer-geodb-latest.tgz" 
+	wget --tries=2 -O "webalizer-geodb-latest.tgz" -N "ftp://ftp.mrunix.net/pub/webalizer/webalizer-geodb-latest.tgz" 
 	
 	# If mirror isn't online, then use our local copy
 	if [ $? -ne 0 ] || [ ! -s "webalizer-geodb-latest.tgz" ]; then
