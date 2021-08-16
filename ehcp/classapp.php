@@ -3780,8 +3780,15 @@ if ($homefile<>'') {
 } elseif($this->userinfo['maxdomains']==1) {
 	$homepage='homepage_domainadmin';
 } elseif(!$this->isadmin() and $this->userinfo['maxdomains']>1) {
-   if($this->selecteddomain=='') $homepage='homepage_reseller';
-   else $homepage='homepage_domainadmin_forreseller';
+   if($this->selecteddomain==''){
+		if($this->userinfo['maxpanelusers'] > 0){
+			$homepage='homepage_reseller';
+		}else{
+			$homepage='homepage_paneluser';
+		}
+   }else{
+	   $homepage='homepage_domainadmin_forreseller';
+   }
 } elseif($this->isadmin()) {
 	if($this->selecteddomain=='') $homepage='homepage_serveradmin';
 	else $homepage='homepage_domainadmin_forreseller'; # domain pages for reseller and admin  are same

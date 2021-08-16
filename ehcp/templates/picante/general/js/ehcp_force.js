@@ -512,7 +512,7 @@
 		  // Remove text, add icon class, and shrink to 10%
 		  var firstChild = $("div.menu .menuItem:nth-child(1)");
 		  firstChild.width('10%');
-		  firstChild.text("");
+		  firstChild.text("Home");
 		  firstChild.addClass("homeBackgroundIcon");
 		  
 		  // Hide first select action

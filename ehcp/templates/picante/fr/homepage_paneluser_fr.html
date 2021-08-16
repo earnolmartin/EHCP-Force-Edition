@@ -1,0 +1,69 @@
+<table class="submain">
+                                <tr class="display">
+                                  <td class="darkBorderBottom">
+                                      <div class="titleDiv darkBG">Op&eacute;rations Des Domaines</div><img src="templates/picante/general/images/collapse.gif" alt="collapse" onclick="collapse(this)" class="func">
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td class="action">
+                                    <table border="0" cellspacing="0" cellpadding="0" class="submain"><tr class="itemRow"><td class="category">Ajouter</td><td><div class="items darkText itemAdddomaintothisuser" onclick="location.href='index.php?op=addDomainToThisPaneluser'" title="Ajouter Un Domaine Sur Mon Compte"><img src="templates/picante/general/images/adddomaintothispaneluser.png" alt="Ajouter Un Domaine Sur Mon Compte" class="item" />
+                                       <br>
+                                       <span class="itemText">Ajouter Un Domaine Sur Mon Compte</span></div><div class="items darkText itemAdddomainbulk" onclick="location.href='index.php?op=bulkadddomain'" title="Ajouter des Domaines en Masse"><img src="templates/picante/general/images/bulkadddomain.png" alt="Ajouter des Domaines en Masse" class="item" />
+                                       <br>
+                                       <span class="itemText">Ajouter des Domaines en Masse</span></div><div class="items darkText itemAdddomaindns" onclick="location.href='index.php?op=adddnsonlydomain'" title="Ajouter H&eacute;bergement DNS"><img src="templates/picante/general/images/adddnsonlydomain.png" alt="Ajouter H&eacute;bergement DNS" class="item" />
+                                       <br>
+                                       <span class="itemText">Ajouter H&eacute;bergement DNS</span></div><div class="items darkText itemAdddomaindnstouser" onclick="location.href='index.php?op=adddnsonlydomainwithpaneluser'" title="Ajouter H&eacute;bergement DNS Aux Autre Comptes"><img src="templates/picante/general/images/adddnsonlydomainwithpaneluser.png" alt="Ajouter H&eacute;bergement DNS Aux Autre Comptes" class="item" />
+                                       <br>
+                                       <span class="itemText">Ajouter H&eacute;bergement DNS Aux Autre Comptes</span></div></td></tr><tr class="itemRow"><td class="category">Liste</td><td><div class="items darkText itemListdomains" onclick="location.href='index.php?op=selectdomain'" title="Liste des Domaines"><img src="templates/picante/general/images/selectdomain.png" alt="Liste des Domaines" class="item" />
+                                       <br>
+                                       <span class="itemText">Liste des Domaines</span></div><div class="items darkText itemListdomainspassive" onclick="location.href='index.php?op=listpassivedomains'" title="Liste Des Domaines Passifs"><img src="templates/picante/general/images/listpassivedomains.png" alt="Liste Des Domaines Passifs" class="item" />
+                                       <br>
+                                       <span class="itemText">Liste Des Domaines Passifs</span></div></td></tr><tr class="itemRow"><td class="category">Gérer</td><td><div class="items darkText itemSelectdomaintomanage" onclick="location.href='index.php?op=selectdomain'" title="Sélectionnez le Domaine à Gérer"><img src="templates/picante/general/images/selectdomain.png" alt="Sélectionnez le Domaine à Gérer" class="item" />
+                                       <br>
+                                       <span class="itemText">Sélectionnez le Domaine à Gérer</span></div></td></tr></table>
+                                  </td>
+                                </tr>
+                              </table>
+                              <br><table class="submain">
+                                <tr class="display">
+                                  <td class="darkBorderBottom">
+                                      <div class="titleDiv darkBG">Show All</div><img src="templates/picante/general/images/collapse.gif" alt="collapse" onclick="collapse(this)" class="func">
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td class="action">
+                                    <table border="0" cellspacing="0" cellpadding="0" class="submain"><tr class="itemRow"><td class="category">Liste</td><td><div class="items darkText itemListdomains" onclick="location.href='index.php?op=selectdomain'" title="Liste des Domaines"><img src="templates/picante/general/images/selectdomain.png" alt="Liste des Domaines" class="item" />
+                                       <br>
+                                       <span class="itemText">Liste des Domaines</span></div><div class="items darkText itemListmysqldb" onclick="location.href='index.php?op=domainop&action=listdb'" title="Liste de Databases MySQL"><img src="templates/picante/general/images/domainop_listdb.png" alt="Liste de Databases MySQL" class="item" />
+                                       <br>
+                                       <span class="itemText">Liste de Databases MySQL</span></div><div class="items darkText itemListemailaccounts" onclick="location.href='index.php?op=listallemailusers'" title="Liste des Comptes Emails"><img src="templates/picante/general/images/listallemailusers.png" alt="Liste des Comptes Emails" class="item" />
+                                       <br>
+                                       <span class="itemText">Liste des Comptes Emails</span></div><div class="items darkText itemListftpaccounts" onclick="location.href='index.php?op=listallftpusers'" title="Liste des Comptes FTP"><img src="templates/picante/general/images/listallftpusers.png" alt="Liste des Comptes FTP" class="item" />
+                                       <br>
+                                       <span class="itemText">Liste des Comptes FTP</span></div></td></tr></table>
+                                  </td>
+                                </tr>
+                              </table>
+                              <br><table class="submain">
+                                <tr class="display">
+                                  <td class="darkBorderBottom">
+                                      <div class="titleDiv darkBG">Utilities</div><img src="templates/picante/general/images/collapse.gif" alt="collapse" onclick="collapse(this)" class="func">
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td class="action">
+                                    <table border="0" cellspacing="0" cellpadding="0" class="submain"><tr class="itemRow"><td class="category">Système</td><td><div class="items darkText itemWebmail" onclick="window.open('webmail')" title="Webmail Client"><img src="templates/picante/general/images/launchmail.png" alt="Webmail Client" class="item" />
+                                       <br>
+                                       <span class="itemText">Webmail Client</span></div><div class="items darkText itemPhpmyadmin" onclick="window.open('http://{myip}/phpmyadmin')" title="PHPMyAdmin"><img src="templates/picante/general/images/phpmyadmin.png" alt="PHPMyAdmin" class="item" />
+                                       <br>
+                                       <span class="itemText">PHPMyAdmin</span></div><div class="items darkText itemNet2ftp" onclick="window.open('net2ftp')" title="Gestionnaire de Fichiers"><img src="templates/picante/general/images/webftp.png" alt="Gestionnaire de Fichiers" class="item" />
+                                       <br>
+                                       <span class="itemText">Gestionnaire de Fichiers</span></div><div class="items darkText itemExtplorer" onclick="window.open('extplorer')" title="Extplorer File Manager"><img src="templates/picante/general/images/extplorer.png" alt="Extplorer File Manager" class="item" />
+                                       <br>
+                                       <span class="itemText">Extplorer File Manager</span></div><div class="items darkText itemPolicyd" onclick="window.open('policyd')" title="Policyd Management"><img src="templates/picante/general/images/policyd.png" alt="Policyd Management" class="item" />
+                                       <br>
+                                       <span class="itemText">Policyd Management</span></div></td></tr></table>
+                                  </td>
+                                </tr>
+                              </table>
+                              <br>
