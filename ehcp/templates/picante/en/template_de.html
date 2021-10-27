@@ -1,0 +1,65 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//DE" "http://www.w3.org/TR/html4/loose.dtd">
+<!--
+German translation:	Daniel Luginbuehl
+@author:	        Eric Arnol-Martin (earnolmartin@gmail.com)
+Date:		        27. Oktober 2021
+Template:	        Picante
+Version:                1.0
+Von Hand gecodet mit richtigem HTML 
+Vorlagendateien für die Hauptseite, die von meinen benutzerdefinierten PHP-Skripten generiert wurden
+-->
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta name="author" content="Daniel Luginbuehl">
+	<title>EHCP Force Edition - Easy Hosting Control Panel - {myip}</title>	
+	{extra_js}
+	<script type="text/javascript" src="templates/picante/general/js/jquery.xcolor.min.js"></script>
+	<script type="text/javascript" src="templates/picante/general/js/magnific.js"></script>
+	<script type="text/javascript" src="templates/picante/general/js/colorpicker.js"></script>
+	<script type="text/javascript" src="templates/picante/general/js/ehcp_force.js"></script>
+	<link rel="stylesheet" type="text/css" href="templates/picante/general/css/style.css" />
+	<link rel="stylesheet" type="text/css" href="templates/picante/general/css/magnific.css" />
+	<link rel="stylesheet" type="text/css" href="templates/picante/general/css/colorpicker.css" />
+</head>
+<body>
+<div class="main">
+	<div class="header superDarkBG">
+		<div class="logo">
+			<div class="textLogo">EHCP Force Edition</div>
+		</div>
+	</div>
+	<div class="menu">
+		<div class="menuItem darkBG" onclick="location.href='index.php?op=deselectdomain';">Hauptoptionen</div>
+		<div class="menuItem darkBG" onclick="location.href='index.php?op=listselectdomain'">Domain auswählen</div>
+		<div class="menuItem darkBG" onclick="location.href='index.php'">Verwalte {domain}</div>
+		<div class="menuItem darkBG" onclick="window.open('http://{myip}/phpmyadmin');">PHPMyAdmin</div>
+		<div class="menuItem darkBG" onclick="window.open('webmail');">Webmail</div>
+	</div>
+	<div class="sessionBar whiteBG">
+		<div class="username"><p class="leftPadding">Willkommen {username}!</p></div>
+		<div class="changeColor">Wähle eine Farbe:&nbsp; <div id="colorpicker"></div> &nbsp; Kontrast-Stil auswählen:&nbsp; <select id="themeContrastSelect"><option value="light">Light</option><option value="dark">Dark</option></select><br><div class="infobox" id="infobox"></div></div>
+		<div class="logout"><p class="rightPadding"><a href="?op=logout" title="Von EHCP ausloggen">Ausloggen</a></p></div>
+	</div>
+	<div class="ehcp_content">
+		<!-- Hauptinhalt, der vom Benutzerkonto generiert wird -->
+		<table border=0 cellspacing=0 cellpadding=0 class="startOfInsides">
+			<tr>
+				<td class="inWidth">
+					<br>
+					{ickisim}
+					<br>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div class="footer">
+	<p class="copyright"><a href="http://ehcpforce.tk" target="_blank">EHCP Force Edition</a><br>
+	Theme &copy; Eric Arnol-Martin 2014 &nbsp; <a href="?op=changetemplate" class="copy">Template ändern</a></p>
+	</div>
+</div>
+</body>
+</html>
+
+	
+	
