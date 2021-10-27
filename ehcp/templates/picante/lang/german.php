@@ -62,7 +62,7 @@ $langDef["SERVERADMIN_OTHER_STATUS"] = "EHCP Server Status &amp; Info";
 */
 
 $langDef["ADDPANELUSER"] = "Neuen Benutzer oder Client hinzufügen";
-$langDef["EASYINSTALLSCRIPTS"] = "Easy Installationsskripte";
+$langDef["EASYINSTALLSCRIPTS"] = "Installationsskripte";
 $langDef["RELOADDNS"] = "DNS-Zonen neu laden";
 $langDef["SYNCDOMAINS"] = "Domänen synchronisieren";
 $langDef["CHANGEMYPASS"] = "Mein Passwort ändern";
@@ -152,7 +152,7 @@ $langDef["ADDSCRIPT"] = "Easy Installationsskripte";
 $langDef["ADDHOSTINGPLAN"] = "Vorlage für Hostingplan hinzufügen";
 $langDef["REMOVEHOSTINGPLAN"] = "Hostingplan-Vorlage(n) entfernen";
 $langDef["MANAGEGLOBALWEBTEMPLATES"] = "Globale Webserver-Vorlagen verwalten";
-$langDef["ADDPANELUSERWITHPREDEFINEDPLAN"] = "Neuen Benutzer w/ Hosting-Vorlage hinzufügen";
+$langDef["ADDPANELUSERWITHPREDEFINEDPLAN"] = "Neuen Benutzer mit Hosting-Vorlage hinzufügen";
 
 // Operation Types
 $langDef["ADD"] = "Hinzufügen";
