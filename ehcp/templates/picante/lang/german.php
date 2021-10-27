@@ -114,6 +114,7 @@ $langDef["DELETEDOMAIN"] = "Lösche Domain";
 $langDef["WEBSTATS"] = "Statistik (Webstats)";
 $langDef["DOMAINREDIRECT"] = "Domains umleiten";
 $langDef["DOMAINTRANSFER"] = "Domain an einen anderen Benutzer übertragen";
+$langDef["MOVEDOMAINTOANOTHERACCOUNT"] = "Domain an einen anderen Benutzer übertragen";
 $langDef["DOMAINEDIT"] = "Domain aktivieren oder deaktivieren";
 $langDef["DOMAINSETTINGS"] = "Domain Einstellungen";
 $langDef["PHPMYADMIN"] = "PHPMyAdmin";
