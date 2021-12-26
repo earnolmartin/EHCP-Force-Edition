@@ -136,6 +136,11 @@ server {
 			root /usr/share/;
 		}
 	}
+	
+	location /.well-known {
+		auth_basic off;
+		allow all; # Allow all to see content
+	}
 
 	# any files that should be avoided, may be put here:
 	location ~ (apache_subdomain_template|apachetemplate|apachetemplate_ipbased|apachetemplate_passivedomains|/\.conf$|/\.ht|access_log|error_log|access\.log|error\.log) {   
