@@ -1514,6 +1514,8 @@ function installsql() {
 
 	writeoutput($ehcpinstalldir."/ehcp1.sql",$filecontent,"w");
 
+	// Import timezone info into MySQL
+	$mysqlTimezoneImportSuccess = exec("mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root --password=$tmprootpass mysql 2>&1", $outputLines);
 
 	// Import ehcp1.sql
 	echo "importing ehcp1 sql: \n";

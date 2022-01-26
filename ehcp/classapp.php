@@ -2488,8 +2488,9 @@ function options(){
 
 		# operations that needs daemon or other settings.
 		
-		if($dnsip<>$this->miscconfig['dnsip']){ # fix all dnsip related config if dnsip is changed...
-			$this->addDaemonOp("fixmailconfiguration",'','','','fix mail configuration'); # fixes postfix configuration, hope this works..yes, works...
+		if($dnsip != $this->miscconfig['dnsip']){ # fix all dnsip related config if dnsip is changed...
+			$this->addDaemonOp("fixmailconfiguration",'','','','fix mail configuration'); # fixes postfix configuration
+			$this->addDaemonOp('syncdns','','','','sync dns'); # syncs the DNS zones to use the new IP address
 		}
 		
 		$addSyncOpAfterSettingsReloaded = false;
@@ -2507,6 +2508,7 @@ function options(){
 		if($updatehostsfile<>'')  $this->addDaemonOp("updatehostsfile",'','','','update hostsfile'); # updateHostsFile degistiginden dolayi
 		if($addSyncOpAfterSettingsReloaded){
 			$this->addDaemonOp('syncdomains','','','','sync domains');
+			$this->addDaemonOp('syncdns','','','','sync dns'); # syncs the DNS zones to use the new IP address
 		}
 		
 		$this->output.="..update complete.";
