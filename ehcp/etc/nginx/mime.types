@@ -23,6 +23,7 @@ types {
         image/x-ms-bmp                          bmp;
         image/svg+xml                           svg svgz;
 
+		application/csv                         csv;
         application/java-archive                jar war ear;
         application/json                        json;
         application/mac-binhex40                hqx;
