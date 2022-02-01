@@ -2613,6 +2613,11 @@ function finalCleanup(){
 		echo -e "\nRunning user defined post install script.\n"
 		bash "$UserDefinedPostScript"
 	fi
+	
+	# Disable cloud init Ubuntu 20.04+
+	if [ -e "/etc/cloud" ] && [ ! -e "/etc/cloud/cloud-init.disabled" ]; then
+		> /etc/cloud/cloud-init.disabled 
+	fi
 }
 
 function fixMariaDBSkippingInnoDB(){
