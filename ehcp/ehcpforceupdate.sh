@@ -3289,7 +3289,7 @@ function updateWebalizerGeoDBFile(){
 function postfixEnableSubmissionPortByDefault(){
 	PostFixMaster="/etc/postfix/master.cf"
 	if [ -e "$PostFixMaster" ]; then
-		sed -i 's/^#submission inet.*/submission inet n       -       y       -       -       smtpd/g' "$PostFixMaster"
+		sed -i 's/^submission inet.*/submission inet n       -       y       -       -       smtpd/g' "$PostFixMaster"
 	fi
 }
 
@@ -3364,6 +3364,16 @@ function removeMinerExploit(){
 	rm -rf /tmp/libsystem.so
 	rm -rf /var/spool/cron/crontabs/ftp
 	rm -rf /var/spool/cron/crontabs/vsftpd
+}
+
+function fixEHCPAutoReplyPostfixMasterCF(){
+	# Respace auto response code
+	PostFixMaster="/etc/postfix/master.cf"
+	sed -i 's/.*# ehcp: autoresponder code:.*/# ehcp: autoresponder code:/g' "$PostFixMaster"
+	sed -i 's/.*ehcp_autoreply unix - n n - - pipe.*/ehcp_autoreply unix - n n - - pipe/g' "$PostFixMaster"
+	sed -i 's/.*user=vmail.*/  user=vmail/g' "$PostFixMaster"
+	sed -i 's#.*argv=/var/www/new/ehcp/misc/autoreply.php \$sender \$recipient.*#  argv=/var/www/new/ehcp/misc/autoreply.php \$sender \$recipient#g' "$PostFixMaster"
+	sed -i 's/.*submission inet n       -       -       -       -       smtpd.*//g' "$PostFixMaster"
 }
 
 ###############################
@@ -3600,6 +3610,9 @@ syncDomainsEHCP
 # Enable postfix submission port by default
 echo -e "Enabling postfix submission port (587)...\n"
 postfixEnableSubmissionPortByDefault
+
+# Fix auto response spacing
+fixEHCPAutoReplyPostfixMasterCF
 
 # Create symlinks
 createSymlinks

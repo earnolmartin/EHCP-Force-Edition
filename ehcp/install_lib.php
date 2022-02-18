@@ -721,16 +721,14 @@ hosts = localhost";
 	writeoutput("/etc/postfix/mysql-virtual_transports.cf",$filecontent,"w");
 
 	# edit main.cf:
-	$add="
-	# ehcp: autoresponder code:
-	ehcp_autoreply unix - n n - - pipe
-	  user=vmail
-	  argv=".$ehcpinstalldir."/misc/autoreply.php \$sender \$recipient
-	";
+	$add="# ehcp: autoresponder code:
+ehcp_autoreply unix - n n - - pipe
+  user=vmail
+  argv=".$ehcpinstalldir."/misc/autoreply.php \$sender \$recipient";
+    $add .= "\n\n";
 
 	add_if_not_exists2($add,'/etc/postfix/master.cf'); # this function may also be used to setup spamassassin and related stuff. soon to implement spamassassin support in ehcp automatically. (manually always possible..)
-	replace_in_file("#submission inet n       -       -       -       -       smtpd","submission inet n       -       -       -       -       smtpd",'/etc/postfix/master.cf','/etc/postfix/master.cf');
-	add_if_not_exists2("submission inet n       -       -       -       -       smtpd",'/etc/postfix/master.cf');  # 587 kullanan yerler icin.. 
+	add_if_not_exists2("submission inet n       -       y       -       -       smtpd",'/etc/postfix/master.cf');  # 587 kullanan yerler icin.. 
 
 	# classapp'da checktable yapılacak yenile..
 	# end autoreply configuration

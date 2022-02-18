@@ -2982,7 +2982,7 @@ function updateWebalizerGeoDBFile(){
 function postfixEnableSubmissionPortByDefault(){
 	PostFixMaster="/etc/postfix/master.cf"
 	if [ -e "$PostFixMaster" ]; then
-		sed -i 's/^#submission inet.*/submission inet n       -       y       -       -       smtpd/g' "$PostFixMaster"
+		sed -i 's/^submission inet.*/submission inet n       -       y       -       -       smtpd/g' "$PostFixMaster"
 	fi
 }
 
