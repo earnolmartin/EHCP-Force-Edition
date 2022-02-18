@@ -1472,4 +1472,27 @@ function buildquery2($select,$filtre,$orderby){ // v1.0
 	};
     return $res;
 }
+
+if(!function_exists('add_line_if_not_exists')){
+	function add_line_if_not_exists($findLine, $file) {
+		$lineExists = false;
+		
+		if(file_exists($file)){
+			$handle = fopen($file, "r");
+			if ($handle) {
+				while (($line = fgets($handle)) !== false) {
+					if(trim($line) == trim($findLine)){
+						$lineExists = true;
+						break;
+					}
+				}
+				fclose($handle);
+			}
+			
+			if(!$lineExists){
+				 file_put_contents($file, $findLine . PHP_EOL, FILE_APPEND | LOCK_EX);
+			}
+		}
+	}
+}
 ?>

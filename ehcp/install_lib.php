@@ -249,6 +249,28 @@ function add_if_not_exists2($what,$where,$addfile_if_not_exists=False) {
 	return true;
 }
 
+function add_line_if_not_exists($findLine, $file) {
+	$lineExists = false;
+	
+	if(file_exists($file)){
+		$handle = fopen($file, "r");
+		if ($handle) {
+			while (($line = fgets($handle)) !== false) {
+				if(trim($line) == trim($findLine)){
+					$lineExists = true;
+					break;
+				}
+			}
+			fclose($handle);
+		}
+		
+		if(!$lineExists){
+			 file_put_contents($file, $findLine . PHP_EOL, FILE_APPEND | LOCK_EX);
+		}
+	}
+}
+
+
 function fail2ban_install(){ # thanks to  earnolmartin@gmail.com
 	global $installmode;
 	
@@ -728,7 +750,7 @@ ehcp_autoreply unix - n n - - pipe
     $add .= "\n\n";
 
 	add_if_not_exists2($add,'/etc/postfix/master.cf'); # this function may also be used to setup spamassassin and related stuff. soon to implement spamassassin support in ehcp automatically. (manually always possible..)
-	add_if_not_exists2("submission inet n       -       y       -       -       smtpd",'/etc/postfix/master.cf');  # 587 kullanan yerler icin.. 
+	add_line_if_not_exists("submission inet n       -       y       -       -       smtpd",'/etc/postfix/master.cf');  # 587 kullanan yerler icin.. 
 
 	# classapp'da checktable yapılacak yenile..
 	# end autoreply configuration
