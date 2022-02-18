@@ -2457,6 +2457,17 @@ function daemonUseSystemd(){
 	systemctl enable policyd_agent.service
 	systemctl enable ehcp.service
 	
+	# Enable webserver service by default so it's enabled on system boot
+	if [[ "$distro" == "ubuntu" && "$yrelease" -gt "14" ]] || [[ "$distro" == "debian" && "$yrelease" -gt "8" ]]; then
+		update-rc.d apache2 enable
+		update-rc.d apache2 defaults
+		systemctl enable apache2.service	
+	else
+		update-rc.d nginx enable
+		update-rc.d nginx defaults
+		systemctl enable nginx.service	
+	fi
+	
 	if [ -e "/etc/init.d/ehcp" ]; then
 		update-rc.d ehcp enable
 		update-rc.d ehcp defaults
