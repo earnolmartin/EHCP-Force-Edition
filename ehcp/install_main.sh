@@ -3092,6 +3092,8 @@ function fixUbuntu14SSL(){
 		/usr/bin/c_rehash /etc/ssl/certs
 		rm -rf /usr/local/ssl/certs
 		ln -s /etc/ssl/certs /usr/local/ssl/certs
+		rm -rf /usr/local/ssl/private
+		ln -s /etc/ssl/private /usr/local/ssl/private
 		
 		cd $origDir
 	fi
