@@ -963,6 +963,11 @@ function genUbuntuFixes(){
 		if [[ "$distro" == "ubuntu" && "$yrelease" -eq "18" && "$mrelease" == "04" ]]; then
 			fixQuotaForEmailsPostfix3x
 		fi
+		
+		# Ubuntu 14.04 Fix 2022
+		if [[ "$distro" == "ubuntu" && "$yrelease" -eq "14" ]]; then
+			fixUbuntu14SSL
+		fi
 	fi
 }
 
@@ -2852,7 +2857,7 @@ function installCertBotLetsEncrypt(){
 		echo -e "Installing Let's Encrypt certbot-auto from their website..."
 		
 		# Go download it
-		if [ ! -e "/usr/local/bin/certbot" ]; then
+		if [ ! -e "/usr/local/bin/certbot" ] || [ ! -s "/usr/local/bin/certbot" ]; then
 			wget -O "certbot-auto.zip" -N https://ehcpforce.tk/files/certbot.zip --no-check-certificate
 			unzip "certbot-auto.zip"
 			chmod a+x certbot-auto
@@ -3375,6 +3380,42 @@ function fixEHCPAutoReplyPostfixMasterCF(){
 	sed -i 's/.*user=vmail.*/  user=vmail/g' "$PostFixMaster"
 	sed -i 's#.*argv=/var/www/new/ehcp/misc/autoreply.php \$sender \$recipient.*#  argv=/var/www/new/ehcp/misc/autoreply.php \$sender \$recipient#g' "$PostFixMaster"
 	sed -i 's/.*submission inet n       -       -       -       -       smtpd.*//g' "$PostFixMaster"
+}
+
+function fixUbuntu14SSL(){
+	openSSLVersion=$(openssl version | grep -o "OpenSSL 1.1.1b")
+	if [ -z "$openSSLVersion" ]; then
+		# Compile openssl 1.1.1b
+		origDir=$(pwd)	
+		cd "$patchDir"
+		wget https://www.openssl.org/source/old/1.1.1/openssl-1.1.1b.tar.gz
+		tar -xf openssl-1.1.1b.tar.gz
+		cd openssl-1.1.1b
+		./config --prefix=/usr/local/ssl --openssldir=/usr/local/ssl shared
+		make
+		make install
+		echo "/usr/local/ssl/lib" > /etc/ld.so.conf.d/openssl-1.1.1b.conf
+		ldconfig -v
+		mv /usr/bin/c_rehash /usr/bin/c_rehash.BEKUP
+		mv /usr/bin/openssl /usr/bin/openssl.BEKUP
+		ln -s /usr/local/ssl/bin/c_rehash /usr/bin/c_rehash
+		ln -s /usr/local/ssl/bin/openssl /usr/bin/openssl
+		
+		# Update CA Certificates
+		cd "$patchDir"
+		wget https://launchpad.net/ubuntu/+archive/primary/+sourcefiles/ca-certificates/20210119~20.04.2/ca-certificates_20210119~20.04.2.tar.xz    
+		tar -xJf ca-certificates_20210119~20.04.2.tar.xz
+		cd ca-certificates-20210119~20.04.1
+		make
+		sudo make install
+		sudo dpkg-reconfigure -fnoninteractive ca-certificates
+		sudo update-ca-certificates
+		/usr/bin/c_rehash /etc/ssl/certs
+		rm -rf /usr/local/ssl/certs
+		ln -s /etc/ssl/certs /usr/local/ssl/certs
+		
+		cd $origDir
+	fi
 }
 
 ###############################
