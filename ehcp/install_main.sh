@@ -3111,7 +3111,7 @@ function fixUbuntu14SSL(){
 		./configure --with-ensurepip=install --with-openssl="${patchDir}/openssl-1.1.1b/" --enable-optimizations --with-ssl-default-suites=openssl CFLAGS="-I${patchDir}/openssl-1.1.1b/include" LDFLAGS="-L${patchDir}/openssl-1.1.1b/"
 		make
 		make install
-		certbot
+		/usr/local/bin/certbot --quiet
 		
 		cd $origDir
     fi
