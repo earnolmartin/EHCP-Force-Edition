@@ -3095,6 +3095,24 @@ function fixUbuntu14SSL(){
 		
 		cd $origDir
 	fi
+	
+	# Update python and pip
+	python218VersionIns=$(python -V 2>&1 | grep -o "Python 2.7.18")
+	if [ -z "$python218VersionIns" ]; then
+		origDir=$(pwd)	
+		cd "$patchDir"
+		
+		wget -N "https://www.python.org/ftp/python/2.7.18/Python-2.7.18.tgz"
+		tar -xf "Python-2.7.18.tgz"
+		cd "Python-2.7.18"
+		
+		./configure --with-ensurepip=install --with-openssl="${patchDir}/openssl-1.1.1b/" --enable-optimizations --with-ssl-default-suites=openssl CFLAGS="-I${patchDir}/openssl-1.1.1b/include" LDFLAGS="-L${patchDir}/openssl-1.1.1b/"
+		make
+		make install
+		certbot
+		
+		cd $origDir
+    fi
 }
 
 #############################################################
