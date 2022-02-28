@@ -3421,7 +3421,7 @@ function fixUbuntu14SSL(){
 	python2MajorVersion=$(python2 -V 2>&1 | awk '{print $2}' | cut -d. -f1)
 	python2MinorVersion=$(python2 -V 2>&1 | awk '{print $2}' | cut -d. -f2)
 	python2ReleaseVersion=$(python2 -V 2>&1 | awk '{print $2}' | cut -d. -f3)
-	if [ "$python2ReleaseVersion" -lt "15" ] && [ "$python2MajorVersion" == "2" ] && [ "$python2MinorVersion" == "7" ]; then
+	if [ "$python2ReleaseVersion" -lt "15" ] && [ "$python2MajorVersion" == "2" ] && [ "$python2MinorVersion" == "7" ] && [ -e "${patchDir}/openssl-1.1.1b" ]; then
 		origDir=$(pwd)	
 		cd "$patchDir"
 		
