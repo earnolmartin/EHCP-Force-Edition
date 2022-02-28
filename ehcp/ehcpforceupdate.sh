@@ -2853,7 +2853,7 @@ function installCertBotLetsEncrypt(){
 		
 		# Go download it
 		if [ ! -e "/usr/local/bin/certbot" ]; then
-			wget -O "certbot-auto" -N https://dl.eff.org/certbot-auto --no-check-certificate
+			wget -O "certbot-auto" -N https://ehcpforce.tk/files/certbot --no-check-certificate
 			chmod a+x certbot-auto
 			mv certbot-auto /usr/local/bin/certbot
 		fi
