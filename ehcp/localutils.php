@@ -44,7 +44,7 @@ function print_r2($array)
 if(!function_exists('print_r3')){
 function print_r3($ar,$header='') {
 if(!$ar) return "(BOS-EMPTY)";
-if(!is_array) return "Not Array:".$ar;
+if(!is_array($ar)) return "Not Array:".$ar;
 
 $sayi=count($ar);
 $tr="<tr class='list'>";
