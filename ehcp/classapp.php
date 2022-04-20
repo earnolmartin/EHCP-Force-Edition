@@ -15239,6 +15239,10 @@ function tablolistele3_5_4($tablo,$baslik,$alan,$filtre,$sirala,$linkyazi,$linkd
 
 GLOBAL $aranan,$arananalan,$app,$baslangic,$satirsayisi,$listall;
 
+if($baslik === null || !is_array($baslik)){
+	$baslik = array();
+}
+
 // Get table info
 $table=$this->conf[$tablo . "table"];
 if(!$this->hasValueOrZero($table)){
