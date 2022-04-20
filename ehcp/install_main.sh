@@ -3330,17 +3330,18 @@ preventUserCronFromWebUser
 # Restart neccessary daemons
 echo "Initializing the EHCP Daemon"
 restartDaemons
-# Inform installation is complete
-postInstallInformation
-
-# Run final cleanup
-finalCleanup
 
 # Make sure python2 pip is installed
 installPipManuallyIfNeeded
 
 # Install pip packages
 installPipPackages
+
+# Inform installation is complete
+postInstallInformation
+
+# Run final cleanup
+finalCleanup
 
 # Launch firefox and the panel
 ##############################################
