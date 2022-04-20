@@ -577,10 +577,14 @@ $tr="<tr class='list'>";
 $td="<td class='list'>";
 $th="<th class='list'>";
 
+if($baslik === null || !is_array($baslik)){
+	$baslik = array();
+}
+
 $alansayisi=count($alan);
 
 		$result2=" \n $tr";
-        if ($baslik !== null && is_array($baslik) && count($baslik)>0)
+        if (count($baslik)>0)
         {
 			for ($i=0;$i<$alansayisi;$i++){
 				if($baslik[$i]<>"") {
