@@ -580,7 +580,7 @@ $th="<th class='list'>";
 $alansayisi=count($alan);
 
 		$result2=" \n $tr";
-        if (count($baslik)>0)
+        if ($baslik !== null && is_array($baslik) && count($baslik)>0)
         {
 			for ($i=0;$i<$alansayisi;$i++){
 				if($baslik[$i]<>"") {
