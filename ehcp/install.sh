@@ -195,7 +195,7 @@ function checkDistro() {
 
 function installInitialPrereqs(){
 	if [ "$distro" == "ubuntu" ]; then
-		add-apt-repository universe
+		add-apt-repository -y universe
 	fi
 	
 	apt-get update
