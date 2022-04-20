@@ -2767,10 +2767,10 @@ function getVariable($variables,$dotrim=true) {
 		global ${$varname}; # make it global at same time.. may be disabled in future..
 
 		if($_POST[$varname]<>"") {
-			if(get_magic_quotes_gpc()) ${$varname}=stripslashes($_POST[$varname]);
+			if(function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc()) ${$varname}=stripslashes($_POST[$varname]);
 			else ${$varname}=$_POST[$varname];
 		} else {
-			if(get_magic_quotes_gpc()) ${$varname}=stripslashes($_GET[$varname]);
+			if(function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc()) ${$varname}=stripslashes($_GET[$varname]);
 			else ${$varname}=$_GET[$varname];
 		}
 		

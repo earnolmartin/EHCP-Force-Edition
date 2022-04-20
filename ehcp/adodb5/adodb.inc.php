@@ -834,7 +834,7 @@ if (!defined('_ADODB_LAYER')) {
 	 * Requested by "Karsten Dambekalns" <k.dambekalns@fishfarm.de>
 	 */
 	function QMagic($s) {
-		return $this->qstr($s,get_magic_quotes_gpc());
+		return $this->qstr($s,function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc());
 	}
 
 	function q(&$s) {
