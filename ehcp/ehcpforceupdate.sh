@@ -3706,6 +3706,9 @@ finalize
 # Make sure python2 pip is installed
 installPipManuallyIfNeeded
 
+# Install pip packages
+installPipPackages
+
 # Write out version info with current info in case anything has changed
 echo -e "Writing out versioning information!\n"
 writeOutVersionInfo
