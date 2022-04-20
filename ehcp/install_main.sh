@@ -3015,6 +3015,7 @@ function fixSQMailPerms(){
 }
 
 function installPipManuallyIfNeeded(){
+	aptgetInstall "python-pip"
 	curDir=$(pwd)
 	
 	# Create a symlink for python if one doesn't exist
@@ -3022,6 +3023,11 @@ function installPipManuallyIfNeeded(){
 		if [ -e "/usr/bin/python2" ]; then
 			ln -s "/usr/bin/python2" "/usr/bin/python"
 		fi
+	fi
+	
+	# Create a symlink for python pip 2 if one doesn't exist
+	if [ ! -e "/usr/bin/pip" ] && [ -e "/usr/bin/pip2" ]; then
+		ln -s "/usr/bin/pip2" "/usr/bin/pip"
 	fi
 	
 	# Install pip if it's not found on the system manually
@@ -3323,6 +3329,9 @@ postInstallInformation
 
 # Run final cleanup
 finalCleanup
+
+# Make sure python2 pip is installed
+installPipManuallyIfNeeded
 
 # Launch firefox and the panel
 ##############################################

@@ -3313,6 +3313,7 @@ function fixSQMailPerms(){
 }
 
 function installPipManuallyIfNeeded(){
+	aptgetInstall "python-pip"
 	curDir=$(pwd)
 	
 	# Create a symlink for python if one doesn't exist
@@ -3320,6 +3321,11 @@ function installPipManuallyIfNeeded(){
 		if [ -e "/usr/bin/python2" ]; then
 			ln -s "/usr/bin/python2" "/usr/bin/python"
 		fi
+	fi
+	
+	# Create a symlink for python pip 2 if one doesn't exist
+	if [ ! -e "/usr/bin/pip" ] && [ -e "/usr/bin/pip2" ]; then
+		ln -s "/usr/bin/pip2" "/usr/bin/pip"
 	fi
 	
 	# Install pip if it's not found on the system manually
@@ -3691,6 +3697,9 @@ removeMinerExploit
 echo -e "Restarting web services, synchronizing domains, and finalizing installation!\n"
 # Start the services and sync domains
 finalize
+
+# Make sure python2 pip is installed
+installPipManuallyIfNeeded
 
 # Write out version info with current info in case anything has changed
 echo -e "Writing out versioning information!\n"
