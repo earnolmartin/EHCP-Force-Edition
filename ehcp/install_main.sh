@@ -2100,6 +2100,7 @@ function installPolicyD(){
 		# install prereqs
 		aptgetInstall libconfig-inifiles-perl
 		aptgetInstall libcache-fastmmap-perl
+		aptgetInstall libdbd-mysql-perl
 		
 		#create policyd users
 		policyDUserCheck=$(cat /etc/passwd | grep "cbpolicyd")

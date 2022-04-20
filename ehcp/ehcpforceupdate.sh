@@ -2207,6 +2207,9 @@ function installNewPackages(){
 	
 	# ifconfig
 	aptgetInstall net-tools
+	
+	# Needed for PolicyD
+	aptgetInstall libdbd-mysql-perl
 }
 
 function getRidOfExtraPHPMyAdminAlias(){

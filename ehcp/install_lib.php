@@ -1496,7 +1496,12 @@ function installsql() {
 	echo "extracting and importing sql to mysql:\n";
 
 	# check if ehcp db already exists...
-	$baglanti=@mysqli_connect("localhost", "root", $tmprootpass, "ehcp");
+	$baglanti = false;
+	try
+	{
+		$baglanti=@mysqli_connect("localhost", "root", $tmprootpass, "ehcp");
+	}
+	catch (exception $e){}
 
 
 	if($baglanti){
@@ -1623,7 +1628,10 @@ function installsql() {
 
 function checkmysqlpass($user,$pass){
 	echo "mysql root pass being checked ...\n";
-	$baglanti=@mysqli_connect("localhost", $user, $pass);
+	$baglanti = false;
+	try{
+		$baglanti=@mysqli_connect("localhost", $user, $pass);
+	}catch (exception $e){}
 	if(!$baglanti){
 		return false;
 	} else return true;
