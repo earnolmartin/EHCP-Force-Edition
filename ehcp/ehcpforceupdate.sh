@@ -2662,8 +2662,7 @@ function installPythonPamMysql(){
 	aptgetInstall "python-passlib"
 	aptgetInstall "libmysqlclient-dev"
 	installPipManuallyIfNeeded
-	pip install passlib
-	pip install mysqlclient
+	installPipPackages
 	
 	# Copy our libpam-python scripts to /etc/security
 	cp -vf /var/www/new/ehcp/etc/pam/pam_dbauth_smtp.conf /etc/security/pam_dbauth_smtp.conf
@@ -2674,7 +2673,6 @@ function installPythonPamMysql(){
 	
 	if ([[ "$distro" == "ubuntu" && "$yrelease" -ge "16" ]] || [[ "$distro" == "debian" && "$yrelease" -ge "9" ]]) && [[ -e "/usr/lib/python2.7/lib-dynload/_hashlib.x86_64-linux-gnu.so" ]]; then
 		rm -f /usr/lib/python2.7/lib-dynload/_hashlib.x86_64-linux-gnu.so
-		pip install hashlib
 	fi
 	
 	# Replace EHCP mysql password with the correct one
@@ -2686,6 +2684,8 @@ function installPythonPamMysql(){
 account required pam_python.so /etc/security/pam_dbauth_vsftpd.py" > "/etc/pam.d/vsftpd"
 	echo "auth required pam_python.so /etc/security/pam_dbauth_smtp.py
 account required pam_python.so /etc/security/pam_dbauth_smtp.py" > "/etc/pam.d/smtp"
+
+	installPipPackages
 }
 
 function updatePolicyDDaemon(){
@@ -2881,10 +2881,7 @@ function installCertBotLetsEncrypt(){
 		rm -rf /usr/lib/python2.7/dist-packages/chardet
 		rm /usr/lib/python2.7/lib-dynload/_hashlib.x86_64-linux-gnu.so
 		rm /usr/lib/python2.7/lib-dynload/_hashlib.i386-linux-gnu.so
-		pip install requests
-		pip install chardet
-		pip install hashlib
-		pip install mysqlclient
+		installPipPackages
 	fi
 }
 
@@ -3447,7 +3444,15 @@ function fixUbuntu14SSL(){
 		
 		cd $origDir
     fi
-	
+}
+
+function installPipPackages(){
+	pip install requests
+	pip install chardet
+	pip install hashlib
+	pip install mysqlclient
+	pip install passlib
+	pip install mysqlclient
 }
 
 ###############################

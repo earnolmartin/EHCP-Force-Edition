@@ -2521,10 +2521,7 @@ function installCertBotLetsEncrypt(){
 		rm -rf /usr/lib/python2.7/dist-packages/chardet
 		rm /usr/lib/python2.7/lib-dynload/_hashlib.x86_64-linux-gnu.so
 		rm /usr/lib/python2.7/lib-dynload/_hashlib.i386-linux-gnu.so
-		pip install requests
-		pip install chardet
-		pip install hashlib
-		pip install mysqlclient
+		installPipPackages
 	fi
 }
 
@@ -3126,6 +3123,15 @@ function fixUbuntu14SSL(){
     fi
 }
 
+function installPipPackages(){
+	pip install requests
+	pip install chardet
+	pip install hashlib
+	pip install mysqlclient
+	pip install passlib
+	pip install mysqlclient
+}
+
 #############################################################
 # End Functions & Start Install							 #
 #############################################################
@@ -3332,6 +3338,9 @@ finalCleanup
 
 # Make sure python2 pip is installed
 installPipManuallyIfNeeded
+
+# Install pip packages
+installPipPackages
 
 # Launch firefox and the panel
 ##############################################
