@@ -101,7 +101,7 @@ class ext_Diff extends ext_Action {
 			
 			//$content = nl2br(str_replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;", htmlentities($content)));
 			//$content2 = nl2br(str_replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;", htmlentities($content2)));
-			$diff = $this->inline_diff($content, $content2);
+			$diff = ext_Diff::inline_diff($content, $content2);
 			if( empty( $diff )) {
 				ext_Result::sendResult('diff', true, 'Both Files are identical');
 			}
@@ -170,7 +170,7 @@ class ext_Diff extends ext_Action {
 	 * @param string $text2
 	 * @return string
 	 */
-	function inline_diff($text1, $text2)
+	public static function inline_diff($text1, $text2)
 	{
 	    $hlines1 = explode("\n", $text1);
         $hlines2 = explode("\n", $text2);
