@@ -84,14 +84,14 @@ function get_abs_dir($dir) {			// get absolute path
 	return $realpath;
 }
 //------------------------------------------------------------------------------
-function get_abs_item($dir, $item) {		// get absolute file+path
+function get_abs_item($dir, $item, $useFullPath = false) {		// get absolute file+path
 	if( is_array( $item )) {
 		// FTP Mode
 		$abs_item = '/' . get_abs_dir($dir)."/".$item['name'];
 		if( get_is_dir($item)) $abs_item.='/';
 		return extPathName($abs_item); 
 	}
-	if(empty($dir)){
+	if(empty($dir) && $useFullPath){
 		return extPathName(get_abs_dir($dir).$item);
 	}else{
 		return extPathName( get_abs_dir($dir)."/".basename($item) );

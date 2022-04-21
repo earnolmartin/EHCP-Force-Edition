@@ -76,7 +76,7 @@ class ext_Diff extends ext_Action {
 		}
 		$item2 = extGetParam( $_POST, 'item2');
 		if ($item2 !== null) {
-	        $fname2 = get_abs_item('', utf8_decode($item2));
+	        $fname2 = get_abs_item('', utf8_decode($item2), true);
 		}
 		elseif( $cnt >= 2 ) {
 			$item2 = $GLOBALS['__POST']["selitems"][1];
