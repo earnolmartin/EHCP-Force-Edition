@@ -16,7 +16,6 @@ defined( '_VALID_MOS' ) or die( 'Restricted access' );
 define( 'EXT_STANDALONE', 1 );
 
 error_reporting(0);
-session_start();
 
 if (version_compare( phpversion(), '5.0' ) < 0) {
 	require_once( dirname( __FILE__ ) . '/compat.php50x.php' );
@@ -60,7 +59,7 @@ class extMainFrame {
 	* @param string The url option
 	* @param string The path of the ext directory
 	*/
-	function extMainFrame() {
+	function __construct() {
 		session_start();
 		if( !isset( $_SESSION['_userstate'])) {
 			$_SESSION['_userstate'] = array();
