@@ -56,7 +56,6 @@ class ext_Edit extends ext_Action {
 	);
 
 	public static function execAction($dir, $item) {		// edit file
-		error_reporting(-1);
 		global $mainframe, $mosConfig_live_site;
 
 		if(($GLOBALS["permissions"]&01)!=01) {
