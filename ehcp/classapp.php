@@ -11426,7 +11426,7 @@ function dnsNamedConfFile($arr){// for daemon mode
 	$out.=$this->putArrayToStrDns($arr2);  # for slave dns, we should use $dnsnamedconftemplate_slave if domain has dnsmaster field set. will code later. 
 	$file=$this->conf['namedbase']."/named_ehcp.conf";
 	echo "\n\nwriting namedfile: $file \n\n";
-	$success = writeoutput2($file,$out,w);
+	$success = writeoutput2($file,$out,"w");
 	
 	// Fix perms on the bind file
 	$this->fixBindFilePerms($file);
@@ -13227,7 +13227,7 @@ function new_sync_domains($file=''){
 
 	$multiserver=false;
 	foreach($webservers as $w){
-		if($this->get_server_access_ip($w[ip])<>'localhost') {
+		if($this->get_server_access_ip($w["ip"])<>'localhost') {
 			$multiserver=True;
 		}
 	}
@@ -15261,13 +15261,17 @@ if(!isset($baslangic1)) $baslangic1=$baslangic;
 if(!isset($satirsayisi1) or $satirsayisi1==0) $satirsayisi1=$satirsayisi;
 
 if(!isset($baslangic1)) $baslangic1=0;
-if(!isset($satirsayisi1) or $satirsayisi1==0) $satirsayisi1=10;
+if(!isset($satirsayisi1) or $satirsayisi1==0 or empty($satirsayisi1y)) $satirsayisi1=10;
 
 
 
 $result2='';
 $alansayisi=count($alan);
-$alansayisi2=count($linkyazi);
+if(is_array($linkyazi)){
+	$alansayisi2=count($linkyazi);
+}else{
+	$alansayisi2 = 0;
+}
 $satirno=0;
 $ilkfiltre=$filtre;
 

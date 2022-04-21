@@ -603,12 +603,14 @@ $alansayisi=count($alan);
         }
         
         // Handle extra
-		for ($i=0;$i<count($extra);$i++){
-			$indexToStart = count($baslik) - count($extra) + $i;
-			if($alansayisi + count($extra) == count($baslik)){
-				$result2.="$th" . (isset($baslik) && is_array($baslik) && array_key_exists($indexToStart, $baslik) && !empty($baslik[$indexToStart]) ? $baslik[$indexToStart] : "") . "</th>";
-			}else{
-				$result2.=$th . "</th>";
+        if(is_array($extra)){
+			for ($i=0;$i<count($extra);$i++){
+				$indexToStart = count($baslik) - count($extra) + $i;
+				if($alansayisi + count($extra) == count($baslik)){
+					$result2.="$th" . (isset($baslik) && is_array($baslik) && array_key_exists($indexToStart, $baslik) && !empty($baslik[$indexToStart]) ? $baslik[$indexToStart] : "") . "</th>";
+				}else{
+					$result2.=$th . "</th>";
+				}
 			}
 		}
 		
