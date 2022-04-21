@@ -38,7 +38,7 @@ if( ! defined( '_JEXEC' ) && ! defined( '_VALID_MOS' ) )
  */
 class ext_Extract extends ext_Action {
 
-	function execAction( $dir, $item ) {
+	public static function execAction( $dir, $item ) {
 		
 		if( ! ext_isArchive( $item ) ) {
 			ext_Result::sendResult( 'archive', false, $item.': '.ext_Lang::err( 'extract_noarchive' ) ) ;

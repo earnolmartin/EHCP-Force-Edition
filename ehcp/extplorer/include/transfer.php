@@ -37,7 +37,7 @@ if( !defined( '_JEXEC' ) && !defined( '_VALID_MOS' ) ) die( 'Restricted access' 
 class ext_Transfer extends ext_Action {
 	var $_downloadMethods;
 
-	function execAction( $dir, $item="" ) {
+	public static function execAction( $dir, $item="" ) {
 
 		if(($GLOBALS["permissions"]&01)!=01) {
 			ext_Result::sendResult('upload', false, $GLOBALS["error_msg"]["accessfunc"]);

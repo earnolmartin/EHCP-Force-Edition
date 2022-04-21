@@ -101,7 +101,7 @@ function decryptPassword($password_encrypted) {
 //	else {
 		$password = "";
 		$encryption_string = sha1($net2ftp_settings["encryption_string"]);
-		if ($encryption_string % 2 == 1) { // we need even number of characters
+		if (strlen($encryption_string) % 2 == 1) { // we need even number of characters
 			$encryption_string .= $encryption_string[0];
 		}
 		for ($i=0; $i < strlen($password_encrypted); $i += 2) { // decrypts two bytes - one character at once

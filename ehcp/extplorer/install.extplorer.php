@@ -14,7 +14,7 @@ if(function_exists ('jimport')){
 }
 if(!function_exists ('com_install')){
 	function com_install($mypath =''){
-		error_reporting( E_ALL ^ E_NOTICE );
+		//error_reporting(0);
 		global $database;
 		
 		if( is_callable( array( 'JFactory', 'getDBO' ))) {

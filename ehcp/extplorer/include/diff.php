@@ -57,7 +57,7 @@ class ext_Diff extends ext_Action {
 		'slovenian' => 'sk'
 	);
 
-	function execAction($dir, $item) {
+	public static function execAction($dir, $item) {
 
 		if(($GLOBALS["permissions"]&01)!=01) {
 			ext_Result::sendResult('diff', false, ext_Lang::err('accessfunc' ));

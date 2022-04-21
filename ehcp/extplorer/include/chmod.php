@@ -38,7 +38,7 @@ if( !defined( '_JEXEC' ) && !defined( '_VALID_MOS' ) ) die( 'Restricted access' 
  *
  */
 class ext_Chmod extends ext_Action {
-	function execAction($dir, $item) {		// change permissions
+	public static function execAction($dir, $item) {		// change permissions
 
 		if(($GLOBALS["permissions"]&01)!=01) ext_Result::sendResult( 'chmod', false, $GLOBALS["error_msg"]["accessfunc"]);
 

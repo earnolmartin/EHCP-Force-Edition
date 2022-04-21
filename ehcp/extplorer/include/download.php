@@ -40,7 +40,7 @@ if (!defined('_JEXEC') && !defined('_VALID_MOS')) die('Restricted access');
 class ext_Download extends ext_Action {
 
 	// download file
-	function execAction($dir, $item, $unlink=false) {
+	public static function execAction($dir, $item, $unlink=false) {
 
 		//die($dir);
 

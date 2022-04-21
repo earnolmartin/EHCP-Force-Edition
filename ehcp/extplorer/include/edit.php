@@ -55,7 +55,7 @@ class ext_Edit extends ext_Action {
 		'slovenian' => 'sk'
 	);
 
-	function execAction($dir, $item) {		// edit file
+	public static function execAction($dir, $item) {		// edit file
 		global $mainframe, $mosConfig_live_site;
 
 		if(($GLOBALS["permissions"]&01)!=01) {

@@ -43,10 +43,8 @@ $GLOBALS['ext_version'] = '2.1.9';
 $GLOBALS['ext_home'] = 'http://extplorer.net';
 $dir = '';
 
-//------------------------------------------------------------------------------
-if( defined( 'E_STRICT' ) ) { // Suppress Strict Standards Warnings
-	error_reporting(E_ALL & ~E_STRICT & ~E_NOTICE);
-}
+error_reporting(0);
+
 //------------------------------------------------------------------------------
 umask(0002); // Added to make created files/dirs group writable
 //------------------------------------------------------------------------------

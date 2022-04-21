@@ -15,9 +15,8 @@
 defined( '_VALID_MOS' ) or die( 'Restricted access' );
 define( 'EXT_STANDALONE', 1 );
 
-if( defined( 'E_STRICT' ) ) { // Suppress Strict Standards Warnings
-	error_reporting(E_ALL);
-}
+error_reporting(0);
+session_start();
 
 if (version_compare( phpversion(), '5.0' ) < 0) {
 	require_once( dirname( __FILE__ ) . '/compat.php50x.php' );
