@@ -1086,6 +1086,8 @@ function installMySQLServ(){#by earnolmartin@gmail.com
 	
 	replacelineinfile("character-set-server","character-set-server = utf8","/etc/mysql/my.cnf", false);
 	replacelineinfile("collation-server","collation-server = utf8_general_ci","/etc/mysql/my.cnf", false);
+	
+	aptget(array('libmariadbclient-dev'),$usePrompts);
 }
 
 function installPHPMYAdmin(){#by earnolmartin@gmail.com
