@@ -2183,6 +2183,7 @@ function installNewPackages(){
 	aptgetInstall php5-zip
 	aptgetInstall bc
 	aptgetInstall libmariadbclient-dev
+	aptgetInstall libmariadb-dev
 	
 	# Required for Certbot
 	aptgetInstall python
