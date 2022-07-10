@@ -3255,7 +3255,10 @@ fixBINDPerms
 # Fix generic problems in Ubuntu
 genUbuntuFixes
 # Secure BIND9 Configuration
-disableRecursiveBIND
+if [ ! -e "/etc/bind/ehcp-skip-recursion" ]; then
+	# Disable Bind Recursion:
+	disableRecursiveBIND
+fi
 # Make it so that strangers can't just browse folders without an index file
 secureApache
 # Allow .htaccess file overrides for Ubuntu 14.04 and up (hopefully versions above)

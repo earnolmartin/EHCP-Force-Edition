@@ -3622,9 +3622,11 @@ echo -e "Securing PHPMyAdmin Configuration!\n"
 # Secure PHPMyAdmin Configuration to Prevent Root Logins Except for Local Connections
 securePHPMyAdminConfiguration
 
-echo -e "Disabling BIND Recursion\n"
-# Disable Bind Recursion:
-disableRecursiveBIND
+if [ ! -e "/etc/bind/ehcp-skip-recursion" ]; then
+	echo -e "Disabling BIND Recursion\n"
+	# Disable Bind Recursion:
+	disableRecursiveBIND
+fi
 
 echo -e "Securing web user against running cron jobs"
 # Disable web user from using cronjobs
