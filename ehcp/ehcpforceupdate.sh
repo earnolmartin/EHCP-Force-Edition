@@ -22,6 +22,10 @@ function setGlobalVars(){
 	if [ ! -e "$userScriptDir" ]; then
 		mkdir -p "$userScriptDir"
 	fi
+	ehcpConfigDir="/root/ehcp/config"
+	if [ ! -e "$ehcpConfigDir" ]; then
+		mkdir -p "$ehcpConfigDir"
+	fi
 	
 	getVSFTPDUser
 	getPHPConfigPath
@@ -1513,14 +1517,25 @@ function installExtras(){
 	# Spam Assassin
 	AntiSpamInstalled=$(which "spamassassin")
 	if [ -z "$AntiSpamInstalled" ]; then
-		echo ""
-		echo -n "Install Amavis, SpamAssassin, and ClamAV? [y/n]: "
-		read insMode
-		
-		insMode=$(echo "$insMode" | awk '{print tolower($0)}')
-		
-		if [ "$insMode" != "n" ]; then
-			installAntiSpam
+		if [ ! -e "${ehcpConfigDir}/skip_amvis_spam_clamav" ]; then
+			echo ""
+			echo -n "Install Amavis, SpamAssassin, and ClamAV? [y/n]: "
+			read insMode
+			
+			insMode=$(echo "$insMode" | awk '{print tolower($0)}')
+			
+			if [ "$insMode" != "n" ]; then
+				installAntiSpam
+			else
+				echo -n "Prompt on future run to install Amavis, SpamAssassin, and ClamAV? [y/n]: "
+				read insMode
+				insMode=$(echo "$insMode" | awk '{print tolower($0)}')
+				if [ "$insMode" == "n" ]; then
+					> "${ehcpConfigDir}/skip_amvis_spam_clamav"
+				fi
+			fi
+		else
+			echo -e "Skipping anti-spam software installation prompts..."
 		fi
 	else
 		echo -e "Anti-Spam software has been detected and is already installed."
@@ -1528,17 +1543,28 @@ function installExtras(){
 	
 	# PolicyD
 	if [ ! -e "/var/www/new/ehcp/policyd" ]; then
-		if ([[ "$distro" == "ubuntu" && "$yrelease" -ge "14" ]] || [[ "$distro" == "debian" && "$yrelease" -ge "8" ]]) && [ "$promptForPolicyD" = true ]; then
-			echo ""
-			echo -n "ADVANCED: Would you like to install PolicyD (Ubuntu 14.04, Debian 8, and Up ONLY)? [y/n]: "
-			read policyDI
-			policyDI=$(echo "$policyDI" | awk '{print tolower($0)}')
-			if [ "$policyDI" == "y" ] ||  "$policyDI" == "yes" ]; then
-				insPolicyD=true
-				echo -e "Installing PolicyD"
-				installPolicyD
-				echo -e "Installation of PolicyD complete."			
+		if [ ! -e "${ehcpConfigDir}/skip_policy_d_install_prompt" ]; then
+			if ([[ "$distro" == "ubuntu" && "$yrelease" -ge "14" ]] || [[ "$distro" == "debian" && "$yrelease" -ge "8" ]]) && [ "$promptForPolicyD" = true ]; then
+				echo ""
+				echo -n "ADVANCED: Would you like to install PolicyD (Ubuntu 14.04, Debian 8, and Up ONLY)? [y/n]: "
+				read policyDI
+				policyDI=$(echo "$policyDI" | awk '{print tolower($0)}')
+				if [ "$policyDI" == "y" ] ||  "$policyDI" == "yes" ]; then
+					insPolicyD=true
+					echo -e "Installing PolicyD"
+					installPolicyD
+					echo -e "Installation of PolicyD complete."			
+				else
+					echo -n "Prompt on future run to install PolicyD? [y/n]: "
+					read insMode
+					insMode=$(echo "$insMode" | awk '{print tolower($0)}')
+					if [ "$insMode" == "n" ]; then
+						> "${ehcpConfigDir}/skip_policy_d_install_prompt"
+					fi
+				fi
 			fi
+		else
+			echo -e "Skipping PolicyD software installation prompts..."
 		fi
 	else
 		echo -e "PolicyD software has been detected and is already installed."
@@ -1550,16 +1576,27 @@ function installExtras(){
 	# Fail2Ban
 	Fail2BanInstalled=$(which "fail2ban-server")
 	if [ -z "$Fail2BanInstalled" ]; then
-		echo ""
-		echo -n "Install fail2ban? [y/n]: "
-		read insMode
-		
-		insMode=$(echo "$insMode" | awk '{print tolower($0)}')
-		
-		if [ "$insMode" != "n" ]; then
-			echo -e "Installing Fail2Ban\n"
-			# Install Fail2Ban
-			fail2ban
+		if [ ! -e "${ehcpConfigDir}/skip_fail2ban_install_prompt" ]; then
+			echo ""
+			echo -n "Install fail2ban? [y/n]: "
+			read insMode
+			
+			insMode=$(echo "$insMode" | awk '{print tolower($0)}')
+			
+			if [ "$insMode" != "n" ]; then
+				echo -e "Installing Fail2Ban\n"
+				# Install Fail2Ban
+				fail2ban
+			else
+				echo -n "Prompt on future run to install PolicyD? [y/n]: "
+				read insMode
+				insMode=$(echo "$insMode" | awk '{print tolower($0)}')
+				if [ "$insMode" == "n" ]; then
+					> "${ehcpConfigDir}/skip_fail2ban_install_prompt"
+				fi
+			fi
+		else
+			echo -e "Skipping Fail2Ban software installation prompts..."
 		fi
 	else
 		echo -e "Fail2Ban has been detected and is already installed."
@@ -1594,17 +1631,28 @@ function installExtras(){
 	fi
 	
 	if [ "$PromptForApacheSecurityAndEvasive" = true ]; then	
-		echo ""
-		echo -n "Install and enable Apache2 security modules (mod-security and mod-evasive)? [y/n]: "
-		read insMode
-		
-		insMode=$(echo "$insMode" | awk '{print tolower($0)}')
-		
-		if [ "$insMode" != "n" ]; then
-			echo -e "Installing Apache2 Security Modules\n"
-			# Install Apache2 Security Modules
-			apacheSecurity
-		fi
+		if [ ! -e "${ehcpConfigDir}/skip_apache2_security_modules_install_prompt" ]; then
+			echo ""
+			echo -n "Install and enable Apache2 security modules (mod-security and mod-evasive)? [y/n]: "
+			read insMode
+			
+			insMode=$(echo "$insMode" | awk '{print tolower($0)}')
+			
+			if [ "$insMode" != "n" ]; then
+				echo -e "Installing Apache2 Security Modules\n"
+				# Install Apache2 Security Modules
+				apacheSecurity
+			else
+				echo -n "Prompt on future run to install Apache2 security modules? [y/n]: "
+				read insMode
+				insMode=$(echo "$insMode" | awk '{print tolower($0)}')
+				if [ "$insMode" == "n" ]; then
+					> "${ehcpConfigDir}/skip_apache2_security_modules_install_prompt"
+				fi
+			fi
+		else
+			echo -e "Skipping Apache2 Security Modules software installation prompts..."
+		fi	
 	else
 		echo -e "Apache2 security and evasive modules have been detected and are already installed."
 		
