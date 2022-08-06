@@ -183,6 +183,7 @@ function apacheUseFPM(){
 	a2dismod php7.2
 	a2dismod php7.3
 	a2dismod php7.4
+	a2dismod php8.1
 	
 	# We need a newer version of Apache for this to work properly!
 	if [[ "$distro" == "ubuntu" && "$yrelease" -eq "16" && "$mrelease" == "04" ]]; then
@@ -2226,8 +2227,10 @@ function installNewPackages(){
 	aptgetInstall debconf-utils
 	aptgetInstall php-mail-mimedecode
 	aptgetInstall php7.0-zip
+	aptgetInstall php-zip
 	aptgetInstall php5-gd
 	aptgetInstall php7.0-gd
+	aptgetInstall php-gd
 	aptgetInstall php5-zip
 	aptgetInstall bc
 	aptgetInstall libmariadbclient-dev
@@ -3019,6 +3022,10 @@ function managePHPFPMService(){
 		manageService "php-fpm" "${fpmAction}"
 		manageService "php7.0-fpm" "${fpmAction}"
 		manageService "php7.1-fpm" "${fpmAction}"
+		manageService "php7.2-fpm" "${fpmAction}"
+		manageService "php7.3-fpm" "${fpmAction}"
+		manageService "php7.4-fpm" "${fpmAction}"
+		manageService "php8.1-fpm" "${fpmAction}"
 	fi
 }
 
@@ -3046,6 +3053,8 @@ function enablePHPFPMService(){
 		update-rc.d "php7.3-fpm" defaults
 		update-rc.d "php7.4-fpm" enable
 		update-rc.d "php7.4-fpm" defaults
+		update-rc.d "php8.1-fpm" enable
+		update-rc.d "php8.1-fpm" defaults
 		
 		systemctl daemon-reload
 		systemctl enable php5-fpm.service
@@ -3055,6 +3064,7 @@ function enablePHPFPMService(){
 		systemctl enable php7.2-fpm.service
 		systemctl enable php7.3-fpm.service
 		systemctl enable php7.4-fpm.service
+		systemctl enable php8.1-fpm.service
 	fi
 }
 
