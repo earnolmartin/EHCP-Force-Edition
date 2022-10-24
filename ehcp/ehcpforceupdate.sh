@@ -1911,6 +1911,9 @@ smtp-amavis     unix    -       -       -       -       2       smtp
 }
 
 function fixSASLAUTH(){
+	update-rc.d saslauthd defaults
+	systemctl enable saslauthd
+	
 	# Fix SASLAUTH CACHE and limit to no threads for better performance
 	if [ -e "/etc/default/saslauthd" ]; then
 		backupFile "/etc/default/saslauthd"
