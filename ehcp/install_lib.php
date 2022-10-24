@@ -1228,7 +1228,6 @@ function installPythonPamMysql(){
 	if((getIsUbuntu() && getUbuntuReleaseYear() >= "16") || (getIsDebian() && getUbuntuReleaseYear() >= "9")){
 		if(file_exists("/usr/lib/python2.7/lib-dynload/_hashlib.x86_64-linux-gnu.so")){
 			unlink("/usr/lib/python2.7/lib-dynload/_hashlib.x86_64-linux-gnu.so");
-			passthru2("pip install hashlib");
 		}
 	}
 
