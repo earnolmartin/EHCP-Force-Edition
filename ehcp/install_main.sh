@@ -3030,6 +3030,13 @@ function installPipManuallyIfNeeded(){
 		if [ -e "/usr/bin/python2" ]; then
 			ln -s "/usr/bin/python2" "/usr/bin/python"
 		fi
+	else
+		currentPythonVersion=$(python --version 2>&1 | grep -o "Python 3")
+		if [ ! -z "$currentPythonVersion" ]; then
+			if [ -e "/usr/bin/python2" ]; then
+				ln -f -s "/usr/bin/python2" "/usr/bin/python"
+			fi
+		fi
 	fi
 	
 	# Create a symlink for python pip 2 if one doesn't exist
@@ -3039,7 +3046,17 @@ function installPipManuallyIfNeeded(){
 	
 	# Install pip if it's not found on the system manually
 	currentPip=$(which pip)
-	if [ -z "$currentPip" ]; then
+	insPip2=0
+	if [ ! -z "$currentPip" ]; then
+		currentPipVersion=$(pip --version 2>&1 | grep -o "python3")
+		if [ ! -z "$currentPipVersion" ]; then
+			insPip2=1
+		fi
+	else
+		insPip2=1
+	fi
+
+	if [ "$insPip2" == 1 ]; then
 		cd "$patchDir"
 		curl https://bootstrap.pypa.io/pip/2.7/get-pip.py -o get-pip.py
 		python get-pip.py
