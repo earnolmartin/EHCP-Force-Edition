@@ -3136,7 +3136,6 @@ function fixUbuntu14SSL(){
 function installPipPackages(){
 	pip install requests
 	pip install chardet
-	pip install hashlib
 	pip install mysqlclient
 	pip install passlib
 	pip install mysqlclient
