@@ -1215,7 +1215,10 @@ function installPythonPamMysql(){
 	global $ehcpinstalldir, $ehcpmysqlpass;
 	
 	// Install prerequisites
-	aptget(array('libpam-python', 'python-pip', 'python-dev', 'build-essential'));
+	aptget(array('libpam-python'));
+	aptget(array('python-pip'));
+	aptget(array('python-dev'));
+	aptget(array('build-essential'));
 	aptget(array('python-setuptools'));
 	aptget(array('python-passlib', 'libmysqlclient-dev'));
 	passthru2("pip install passlib");

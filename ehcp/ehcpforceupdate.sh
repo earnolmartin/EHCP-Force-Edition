@@ -2714,7 +2714,10 @@ function convertToMariaDBFromMYSQL(){
 
 function installPythonPamMysql(){
 	# Install Python Prereqs
-	aptgetInstall "libpam-python python-pip python-dev build-essential"
+	aptgetInstall "libpam-python"
+	aptgetInstall "python-pip"
+	aptgetInstall "python-dev"
+	aptgetInstall "build-essential"
 	aptgetInstall "python-passlib"
 	aptgetInstall "libmysqlclient-dev"
 	installPipManuallyIfNeeded
