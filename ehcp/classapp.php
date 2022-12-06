@@ -6239,7 +6239,7 @@ function manageGlobalWebTemplates(){
 	
 	if(!$_insert) {
 		
-		$optionsArray = array("apachetemplate"=>"Domain Template","subdomaintemplate"=>"Subdomain Template","enableddefault"=>"Default Enabled Domain","pwdir"=>"Password Protected Directory","mainwebserverconf"=>"Webserver Main Config");
+		$optionsArray = array("apachetemplate"=>"Domain Template","subdomaintemplate"=>"Subdomain Template","enableddefault"=>"Default Enabled Domain","redirect"=>"Redirect Template","pwdir"=>"Password Protected Directory","mainwebserverconf"=>"Webserver Main Config");
 		$typeOptionsArray = array("ssl" => "ssl", "sslonly" => "sslonly", "nonssl" => "nonssl");
 		$webOptionsArray = array("apache2" => "apache2", "nginx" => "nginx");
 		
@@ -6404,6 +6404,25 @@ function getGlobalWebTemplate($template = false, $webserverMode = false, $webser
 						$json["template_contents"] = file_get_contents("etc/generic_apache_templates/password_protected_directory.conf");
 					}
 					break;
+				case "redirect":
+					if($webserverType == "nginx"){
+						if($webserverMode == "sslonly"){
+							$json["template_contents"] = file_get_contents("etc/nginx_sslonly/redirect");
+						}else if($webserverMode == "ssl"){
+							$json["template_contents"] = file_get_contents("etc/nginx_ssl/redirect");
+						}else{
+							$json["template_contents"] = file_get_contents("etc/nginx_nonssl/redirect");
+						}
+					}else{
+						if($webserverMode == "sslonly"){
+							$json["template_contents"] = file_get_contents("etc/apache2_sslonly/fork/redirect");
+						}else if($webserverMode == "ssl"){
+							$json["template_contents"] = file_get_contents("etc/apache2_ssl/fork/redirect");
+						}else{
+							$json["template_contents"] = file_get_contents("etc/apache2/redirect");
+						}
+					}
+					break;
 			}
 			$json["using_default"] = true;
 		}else{
@@ -6458,11 +6477,25 @@ function getGlobalPasswordProtectedDirectoryTemplate(){
 	return $template;
 }
 
+function getGlobalRedirectTemplate(){
+	$template = "";
+	$SQL = "SELECT * FROM " . $this->conf['globalwebservertemplatestable']['tablename'] . " WHERE template_name ='redirect' AND template_webserver_type='" . $this->miscconfig['webservertype'] . "' AND template_ssl_type='" . $this->miscconfig['webservermode'] . "'";
+		
+	// Run Query
+	$rs = $this->query($SQL);
+	
+	if(count($rs) == 1){
+		$template = $rs[0]["template_value"];
+	}
+	
+	return $template;
+}
+
 function saveGlobalWebserverTemplate($template, $webserver_type, $webserver_mode, $value){
 	if(!empty($value)){
-		$validTemplates = array('apachetemplate', 'subdomaintemplate', 'enableddefault', 'pwdir', 'mainwebserverconf');
+		$validTemplates = array('apachetemplate', 'subdomaintemplate', 'enableddefault', 'pwdir', 'mainwebserverconf', 'redirect');
 		if(in_array($template, $validTemplates)){
-			// Update redirect location for this domain
+			// Insert or update global template
 			$SQL = "INSERT INTO " . $this->conf['globalwebservertemplatestable']['tablename'] . " (template_name, template_webserver_type, template_ssl_type, template_value) VALUES ('" . $template . "', '" . $this->escape($webserver_type) . "', '" . $this->escape($webserver_mode) . "', '" . $value . "') ON DUPLICATE KEY UPDATE template_value='" . $value . "';";
 			
 			// Run Query
@@ -6483,7 +6516,7 @@ function revertTemplateBackToEHCPDefault($template, $type = "", $mode = ""){
 		$mode = $this->miscconfig['webservermode'];
 	}
 	
-	// Update redirect location for this domain
+	// Clear template value
 	$SQL = "UPDATE " . $this->conf['globalwebservertemplatestable']['tablename'] . " SET template_value='' WHERE template_name ='" . $template . "' AND template_webserver_type='" . $this->escape($type) . "' AND template_ssL_type='" . $this->escape($mode) . "'";
 	
 	if($template == "enableddefault" && $type == $this->miscconfig['webservertype'] && $mode == $this->miscconfig['webservermode']){
@@ -13801,7 +13834,11 @@ function adjustDomainTemplateForRedirect($webserver_template, &$ar1, $type = 'do
 	// If the domain should be redirected, we need to use a different webserver_template_file
 	if(!empty($ar1['domainname_redirect']) && $ar1['domainname_redirect'] != $ar1['domainname'] && $ar1['domainname_redirect'] != '%{HTTP_HOST}' && $ar1['domainname_redirect'] != '$host'){
 		$this->echoln("domain redirect is set to: " . $ar1['domainname_redirect'] . " for the domain of " . $ar1['domainname'] . "!");
-		$webserver_template=file_get_contents($this->ehcpdir . "/apachetemplate_redirect");
+		
+		$webserver_template = $this->getGlobalRedirectTemplate();
+		if(empty($webserver_template)){
+			$webserver_template=file_get_contents($this->ehcpdir . "/apachetemplate_redirect");
+		}
 					
 		// See if we should include the request URI as part of the redirect template (a redirect URL without a slash in it)
 		$removeProt = array("https://", "http://");
@@ -13844,8 +13881,12 @@ function adjustDomainTemplateDependingOnSSLSettings($webserver_template, &$ar1, 
 				$this->echoln2("Removing Non-SSL portions from template for " . $type . " " . $ar1["subdomain"] . " and redirecting all standard HTTP requests to HTTPS!");
 			}
 		}
-			
-		$redirectTemplate = file_get_contents($this->ehcpdir . "/apachetemplate_redirect");
+		
+		$redirectTemplate = $this->getGlobalRedirectTemplate();	
+		if(empty($redirectTemplate)){
+			$redirectTemplate = file_get_contents($this->ehcpdir . "/apachetemplate_redirect");
+		}
+		
 		$httpOnlyRedirect = stripContentsAfterLine("# FOR SSL CONFIG", $redirectTemplate);
 		$httpOnlyRedirect = str_replace("{domainname_redirect}", "https://{domainname_redirect}", $httpOnlyRedirect);
 		$ar1['domainname_redirect'] = $ar1['domainname'];
