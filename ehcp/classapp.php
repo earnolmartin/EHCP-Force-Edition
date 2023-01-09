@@ -7806,6 +7806,18 @@ function deleteDomainDirect($domainname,$syncdomains=True){
 function removeLetsEncryptCertificates($domains){
 	$success = true;
 	foreach($domains as $domain){
+		// Get subdomains as well
+		$subdoms=$this->getSubDomains("domainname = '" . $domain . "'");
+		if(is_array($subdoms) && count($subdoms) > 0){		
+			foreach($subdoms as $subdom){
+				$fullDomain = $subdom["subdomain"] . "." . $subdom["domainname"];
+				$this->runCommandInDaemon("/usr/local/bin/certbot delete --cert-name " . $fullDomain);
+				$this->bashDelete("/etc/letsencrypt/live/" . $fullDomain, true);
+				$this->bashDelete("/etc/letsencrypt/archive/" . $fullDomain, true);
+				$this->bashDelete("/etc/letsencrypt/renewal/" . $fullDomain . ".conf", true);
+			}
+		}
+		
 		// Actually run the delete operation from certbot to handle any additional cleanup
 		$this->runCommandInDaemon("/usr/local/bin/certbot delete --cert-name " . $domain);
 		
