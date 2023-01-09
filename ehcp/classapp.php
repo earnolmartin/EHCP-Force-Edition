@@ -13556,7 +13556,7 @@ function syncDomains($file='',$domainname='') {
 			echo "\nUsing Let's Encrypt SSL certificate for domain " . $dom['domainname'] . ".\n";
 			$dmnNamesToEncrypt = array($dom['domainname']);
 			$parts = explode(".", $dom['domainname']);
-			if(count($parts) <= 2){
+			if(strtolower($parts[0]) != "www"){
 				array_push($dmnNamesToEncrypt, "www." . $dom['domainname']);
 			}
 			$encDomains["domainnames"] = $dmnNamesToEncrypt;
