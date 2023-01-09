@@ -5856,6 +5856,7 @@ function removeSSLSettingForDomain($domainname, $removeSSLLetsEnc=true){
 	
 	if($success){
 		$this->deleteSSLCustomKeys($domainname);
+		$this->removeLetsEncryptCertificates(array($domainname, 'www.' . $domainname));
 	}
 	
 	return $success;
@@ -13556,9 +13557,7 @@ function syncDomains($file='',$domainname='') {
 			echo "\nUsing Let's Encrypt SSL certificate for domain " . $dom['domainname'] . ".\n";
 			$dmnNamesToEncrypt = array($dom['domainname']);
 			$parts = explode(".", $dom['domainname']);
-			if(strtolower($parts[0]) != "www"){
-				array_push($dmnNamesToEncrypt, "www." . $dom['domainname']);
-			}
+			array_push($dmnNamesToEncrypt, "www." . $dom['domainname']); // Add www. as alias for cert
 			$encDomains["domainnames"] = $dmnNamesToEncrypt;
 			$encDomains["domainpath"] = $dom['homedir'] . "/httpdocs";
 			$this->getAndUseLetsEncryptCert($encDomains, $this->getClientEmailFromPanelUsername($dom['panelusername']));
