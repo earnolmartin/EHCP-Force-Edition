@@ -225,7 +225,7 @@ class Application
 			'resellerfield'=>'reseller',
 			'usernamefield'=>'panelusername',
 			'passwordfield'=>'password',
-						'listlabels'=>array('ID','Reseller','Username','Max Domains','Max Emails','Quota','Max Panel Users','Max FTP Users','Max MySQL Databases','Full Name','Email','Theme Color','Theme Contrast','Maser Reseller','Max Sub Domains'),
+			'listlabels'=>array('ID','Reseller','Username','Max Domains','Max Emails','Quota','Max Panel Users','Max FTP Users','Max MySQL Databases','Full Name','Email','Theme Color','Theme Contrast','Master Reseller','Max Sub Domains', 'Edit User', 'Delete User'),
 			'listfields'=>array('id','reseller','panelusername','maxdomains','maxemails','quota','maxpanelusers','maxftpusers','maxdbs','name','email','theme_color','theme_contrast','master_reseller','maxsubdomains'),
 			'clickimages'=>array('images/edit.gif','images/delete1.jpg'),
 			'clickfiles'=>array('?op=editpaneluser','?op=deletepaneluser'),
@@ -851,6 +851,7 @@ function runOp($op){ # these are like url to function mappers...  maps op variab
 		case 'addpaneluser'				: return $this->addPanelUser();break;
 		case 'addpaneluserwithpredefinedplan'	: return $this->addPanelUserWithHostingPlan();break;
 		case 'editpaneluser'			: return $this->editPanelUser();break;
+		case 'impersonatepaneluser'			: return $this->impersonatePanelUser();break;
 		case 'editftpuser'				: return $this->editFtpUser();break;
 		
 		// Domain ordering settings which are no longer used
@@ -4543,6 +4544,25 @@ function editPanelUser(){
 	}
 	
 	$this->output.="<br><a href='?op=listpanelusers'>&larr; Back to User List</a>";
+}
+
+function impersonatePanelUser(){
+	global $id;
+	
+	$this->requireAdmin();
+	$this->getVariable(array("id")); # can edit only if (s)he is reseller of that panel user or is admin..
+
+	$info=$this->getPanelUserInfo($id);
+	
+	if($info !== false && $info != null && array_key_exists("panelusername", $info) && !empty($info["panelusername"]) && $info["panelusername"] != "admin"){
+		$username = $info["panelusername"];
+		$this->dologin2($username,'');
+		header('Location: index.php');
+	}else{
+		$this->ok_err_text(false, "User exists.", "User doesn't exist or you are already signed in as admin.");
+	}
+	
+	return false;
 }
 
 // No longer used 
@@ -8918,8 +8938,25 @@ function listAllFtpUsers($filt=''){
 function listpanelusers(){
 	$table=$this->conf['paneluserstable'];
 	$filter=$this->globalfilter;
+	
+	
+	/*
+	 *      // DEFAULT
+	 *      'clickimages'=>array('images/edit.gif','images/delete1.jpg'),
+			'clickfiles'=>array('?op=editpaneluser','?op=deletepaneluser'),
+	*/
+	
+	$actionLinkImages = $table['clickimages'];
+	$actionLinkURLs = $table['clickfiles'];
+	
+	if($this->isadmin()){
+		$actionLinkImages[] = 'images/openinnew.gif';
+		$actionLinkURLs[] = '?op=impersonatepaneluser';
+		$this->conf['paneluserstable']['listlabels'][] = 'Impersonate User';
+	}
+	
 	$this->output.="<div align=center>Panel Users".
-		$this->tablolistele3_5_4($table['tablename'],array('','','','','','Quota (MB*)'),$table['listfields'],$filter,$sirala,$table['clickimages'],$table['clickfiles'],$table['linkfield'],$listrowstart,$listrowcount)
+		$this->tablolistele3_5_4($table['tablename'],array('','','','','','Quota (MB*)'),$table['listfields'],$filter,$sirala,$actionLinkImages,$actionLinkURLs,$table['linkfield'],$listrowstart,$listrowcount)
 		."<a href='?op=addpaneluser'>Add Paneluser/Reseller</a></div>";
 	$this->showSimilarFunctions('panelusers');
 }
@@ -10217,7 +10254,21 @@ function dologin2($username,$password,$usernamefield='',$passwordfield='',$login
 # sets session values if password comparison succeeds..
 	$this->debugecho2("file:".__FILE__.", Line:".__LINE__.", Function:".__FUNCTION__.": $username,$password,$usernamefield,$passwordfield,$logintable<BR>",4);
 
-	if($this->isPasswordOk($username,$password,$usernamefield,$passwordfield,$logintable)) {
+	if($this->isPasswordOk($username,$password,$usernamefield,$passwordfield,$logintable) || ($this->isadmin() && empty($password))) {
+		
+		if($this->isadmin() && empty($password)){
+			// Admin is impersonating
+			$origSession = $this->array_copy($_SESSION);
+			
+			if(!array_key_exists("PREVIOUS_LOGGEDIN_INFO", $_SESSION)){
+				// Clear some session information
+				$this->logout2(false);
+				$_SESSION["PREVIOUS_LOGGEDIN_INFO"] = $origSession;
+			}
+			
+			$_SESSION["IMPERSONATION"] = true;
+		}
+		
 		$this->debugecho2("<hr>logging in user....",2);
 		$_SESSION['loggedin_kullaniciadi'] = $username;
 		$_SESSION['activeuser'] = $username;
@@ -10309,23 +10360,39 @@ function dologin3($tablo,$username,$password,$usernamefield,$passwordfield,$md5=
 
 
 function logout(){
-	$this->logout2();
-	header('Location: index.php');
+	if(array_key_exists("PREVIOUS_LOGGEDIN_INFO", $_SESSION)){
+		$origSessCopy = $this->array_copy($_SESSION);
+		$origSessionInfo = $origSessCopy["PREVIOUS_LOGGEDIN_INFO"];
+		$this->logout2(false);
+		$_SESSION = $origSessionInfo;
+		header('Location: index.php');
+	}else{
+		$this->logout2();
+		header('Location: index.php');
+	}
 }
 
-function logout2(){
+function logout2($destroy=true){
 	$_SESSION['loggedin_kullaniciadi'] = '';
 	$_SESSION['loggedin_username'] = '';
 	$_SESSION['isloggedin']=false;
 	$_SESSION['FTP_HOME_PATH'] = '';
 	$_SESSION['temp_id'] = '';
+	$_SESSION['IMPERSONATION'] = '';
+	$_SESSION['PREVIOUS_LOGGEDIN_INFO'] = '';
+	
+	// Remove from array
+	unset($_SESSION['IMPERSONATION']);
+	unset($_SESSION['PREVIOUS_LOGGEDIN_INFO']);
 	
 	$this->isloggedin=false;
 	$this->loggedin_kullaniciadi='';
 	$this->loggedin_username='';
 
-	session_unset();
-	session_destroy();
+	if($destroy){
+		session_unset();
+		session_destroy();
+	}
 	return True;
 }
 
@@ -15607,6 +15674,16 @@ function generateMySQLInClause($arrayOfInputs){
 	$inClause .= "')";
 		
 	return $inClause;
+}
+
+function array_copy($arr) {
+	$newArray = array();
+	foreach($arr as $key => $value) {
+		if(is_array($value)) $newArray[$key] = $this->array_copy($value);
+		else if(is_object($value)) $newArray[$key] = clone $value;
+		else $newArray[$key] = $value;
+	}
+	return $newArray;
 }
 
 }// end class
