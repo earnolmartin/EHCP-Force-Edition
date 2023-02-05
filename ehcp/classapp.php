@@ -13636,7 +13636,9 @@ function syncDomains($file='',$domainname='') {
 			echo "\nUsing Let's Encrypt SSL certificate for domain " . $dom['domainname'] . ".\n";
 			$dmnNamesToEncrypt = array($dom['domainname']);
 			$parts = explode(".", $dom['domainname']);
-			array_push($dmnNamesToEncrypt, "www." . $dom['domainname']); // Add www. as alias for cert
+			if(count($parts) <= 2 || $this->domainIsCCTLD($dom['domainname'])){
+				array_push($dmnNamesToEncrypt, "www." . $dom['domainname']); // Add www. as alias for cert
+			}
 			$encDomains["domainnames"] = $dmnNamesToEncrypt;
 			$encDomains["domainpath"] = $dom['homedir'] . "/httpdocs";
 			$this->getAndUseLetsEncryptCert($encDomains, $this->getClientEmailFromPanelUsername($dom['panelusername']));
@@ -15684,6 +15686,27 @@ function array_copy($arr) {
 		else $newArray[$key] = $value;
 	}
 	return $newArray;
+}
+
+function domainIsCCTLD($domain){
+	$domain = strtolower($domain);
+	$finalList = array();
+	$csv = array_map('str_getcsv', file($this->ehcpInstallPath . '/misc/SLDs.csv'));
+	foreach($csv as $key => $value){
+		if(is_array($value) && count($value) == 2){
+			$finalList[] = strtolower($value[1]);
+		}else if(!is_array($value)){
+			$finalList[] = strtolower($value);
+		}
+	}
+	
+	foreach($finalList as $val){
+		if(endsWith($domain, $val)){
+			return true;
+		}
+	}
+	
+	return false;
 }
 
 }// end class
