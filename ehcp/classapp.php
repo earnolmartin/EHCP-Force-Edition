@@ -6672,7 +6672,7 @@ function addRemoteBackup(){ # coded by earnolmartin@gmail.com
 			array('dayofweek','select','lefttext'=>'Day of Week:','secenekler'=>$this->remoteDayOfWeek,'default'=>(!empty($row["dayofweek"]) ? $row["dayofweek"] : '')),
 			array('time','select','lefttext'=>'Time:','secenekler'=>$this->remoteBackupTime,'default'=>(!empty($row["time"]) ? $row["time"] : '')),
 			array('transfer_method','select','lefttext'=>'Transfer Method:','secenekler'=>$this->remoteBackupMethod,'default'=>(!empty($row["transfer_method"]) ? $row["transfer_method"] : '')),
-			array('transfer_host','input','lefttext'=>'Transfer Host IP Address:','default'=>(!empty($row["transfer_host"]) ? $row["transfer_host"] : '')),
+			array('transfer_host','input','lefttext'=>'Transfer Host:','default'=>(!empty($row["transfer_host"]) ? $row["transfer_host"] : '')),
 			array('transfer_port','input','lefttext'=>'Transfer Port:','default'=>(!empty($row["transfer_port"]) ? $row["transfer_port"] : '')),
 			array('transfer_login','input','lefttext'=>'Host Login:','default'=>(!empty($row["transfer_login"]) ? $row["transfer_login"] : '')),
 			array('transfer_pass','input','lefttext'=>'Host Password:','default'=>(!empty($row["transfer_pass"]) ? $row["transfer_pass"] : '')),
