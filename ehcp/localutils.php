@@ -1501,4 +1501,17 @@ if(!function_exists('add_line_if_not_exists')){
 		}
 	}
 }
+
+
+
+if(!function_exists("isValidHostname")){
+	function isValidHostname($host){
+		if(filter_var(gethostbyname($host), FILTER_VALIDATE_IP))
+		{
+			return TRUE;
+		}
+		
+		return false;
+	}
+}
 ?>

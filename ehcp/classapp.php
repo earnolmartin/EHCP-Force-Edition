@@ -34,6 +34,7 @@ class Application
 	var $ftpgroup="www-data"; # with this config, ftp user is able to see/delete files written by webserver. 
 	
 	var $webstats_auth_file = "webstats_auth_file";
+	var $csvCCTLD = array();
 	
 	var $binduser="bind"; # we need to know which user bind runs under
 	
@@ -6709,8 +6710,8 @@ function addRemoteBackup(){ # coded by earnolmartin@gmail.com
 			$errors[] = "Please enter a name that starts with a letter.";
 		}
 		
-		if(empty($transfer_host) || $this->validate_ip_address($transfer_host)){
-			$errors[] = "Please enter a valid IP address as your host.";
+		if(empty($transfer_host) || (!isValidIPAddress($transfer_host, true) && !isValidHostname($transfer_host))){
+			$errors[] = "Please enter a valid IP address or hostname as your host.";
 		}
 		
 		if(empty($transfer_port) || strlen($transfer_port) > 5){
@@ -8555,7 +8556,7 @@ function showSimilarFunctions($func){
 }
 
 function validate_ip_address($ip){
-	if(validateIpAddress($ip)===false) $this->errorTextExit("The IP address entered is wrong. Here's a working IP address example: 85.98.112.34.  You entered this IP Address: $ip)");
+	if(validateIpAddress($ip)===false) $this->errorTextExit("The IP address entered is wrong. Here's a working IP address example: 85.98.112.34.  You entered this IP Address: $ip");
 }
 
 function add_ip_to_this_server(){
@@ -9313,30 +9314,58 @@ function applyGlobalFilter($filter){
 	return $filt;
 }
 
+/* Test Area */
+
 function test(){
-	#return executeprog2("mkdir xxx");
-	return false;
-	$suc=True;
-	$ss=false;
-	$suc=$suc && $ss;
-	$this->isTrue($suc,'test icinde');
-
-	$suc=True;
-	$ss=True;
-
-	$suc=$suc && $ss=$gg=false;
-	$this->isTrue($suc,'test icinde, True olmali.');
-
-
-	$this->isTrue(True);
-	$this->isTrue(false);
-	$this->isTrue(null);
-	$this->isTrue(0);
-	$this->isTrue('');
-	$this->output.="<hr>finished first test</hr>";
+	$host = "ehcpforce.tk";
+	$this->testHostIPs($host);
+	
+	$host = "1.1.1.1";
+	$this->testHostIPs($host);
+	
+	$host = "192.168.1.1";
+	$this->testHostIPs($host);
+	
+	$host = "yahoo.com";
+	$this->testHostIPs($host);
+	
+	$host = "332.222.222.222";
+	$this->testHostIPs($host);
+	
+	$host = "asdfadsflkadsasdfkkasjflkjasdlfjkakdsfjkladsfjkladsjfkladsfjkl.com";
+	$this->testHostIPs($host);
+	
+	$csv = array_map('str_getcsv', file($this->ehcpInstallPath . '/misc/SLDs.csv'));
+	$this->testCCTLD("mohaaaa.co.uk", $csv);
+	$this->testCCTLD("fasdfadsf.mohaaaa.co.uk", $csv);
+	$this->testCCTLD("ehcpforce.tk", $csv);
+	$this->testCCTLD("right.ehcpforce.fr", $csv);
+	$this->testCCTLD("lol.google.com", $csv);
 }
 
+function testHostIPs($host){
+	if(empty($host) || (!isValidIPAddress($host, true) && !isValidHostname($host))){
+		echo "$host is not valid\n\n";
+		return true;
+	}else{
+		echo "$host is valid\n\n";
+		return false;
+	}
+}
 
+function testCCTLD($domain, $csv = ""){
+
+	$parts = explode(".", $domain);
+	if(count($parts) <= 2 || $this->domainIsCCTLD($domain, $csv)){
+		echo "$domain gets www appended to it for let's encrypt certificate!\n\n";
+		return true;
+	}
+	
+	echo "$domain doesn't get www appended to it for let's encrypt certificate!\n\n";
+	return false;
+}
+
+/* END TEST AREA */
 
 #============================= utility functions, query etc..
 function exist($table,$where){
@@ -13555,6 +13584,8 @@ function syncDomains($file='',$domainname='') {
 	$globalWebServerTemplate = $this->getGlobalDomainTemplate();
 	
 	$ips=array();
+	
+	$csv = array_map('str_getcsv', file($this->ehcpInstallPath . '/misc/SLDs.csv'));
 
 	foreach($arr as $dom) { // setup necessry dirs/files if doesnt exist..
 		$this->initializeDomainFiles($dom,$domainname);		
@@ -13636,7 +13667,7 @@ function syncDomains($file='',$domainname='') {
 			echo "\nUsing Let's Encrypt SSL certificate for domain " . $dom['domainname'] . ".\n";
 			$dmnNamesToEncrypt = array($dom['domainname']);
 			$parts = explode(".", $dom['domainname']);
-			if(count($parts) <= 2 || $this->domainIsCCTLD($dom['domainname'])){
+			if(count($parts) <= 2 || $this->domainIsCCTLD($dom['domainname'], $csv)){
 				array_push($dmnNamesToEncrypt, "www." . $dom['domainname']); // Add www. as alias for cert
 			}
 			$encDomains["domainnames"] = $dmnNamesToEncrypt;
@@ -15688,19 +15719,25 @@ function array_copy($arr) {
 	return $newArray;
 }
 
-function domainIsCCTLD($domain){
+function domainIsCCTLD($domain, $csv = ""){
 	$domain = strtolower($domain);
 	$finalList = array();
-	$csv = array_map('str_getcsv', file($this->ehcpInstallPath . '/misc/SLDs.csv'));
-	foreach($csv as $key => $value){
-		if(is_array($value) && count($value) == 2){
-			$finalList[] = strtolower($value[1]);
-		}else if(!is_array($value)){
-			$finalList[] = strtolower($value);
-		}
+	if(empty($csv) || !is_array($csv)){
+		$csv = array_map('str_getcsv', file($this->ehcpInstallPath . '/misc/SLDs.csv'));
 	}
 	
-	foreach($finalList as $val){
+	if(empty($this->csvCCTLD)){
+		foreach($csv as $key => $value){
+			if(is_array($value) && count($value) == 2){
+				$finalList[] = strtolower($value[1]);
+			}else if(!is_array($value)){
+				$finalList[] = strtolower($value);
+			}
+		}
+		$this->csvCCTLD = $finalList;
+	}
+	
+	foreach($this->csvCCTLD as $val){
 		if(endsWith($domain, $val)){
 			return true;
 		}
