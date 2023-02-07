@@ -3476,7 +3476,7 @@ function fixEHCPAutoReplyPostfixMasterCF(){
 
 function fixUbuntu14SSL(){
 	openSSLVersion=$(openssl version | grep -o "OpenSSL 1.1.1b")
-	if [ -z "$openSSLVersion" ]; then
+	if [ -z "$openSSLVersion" ] || [ ! -e "${patchDir}/openssl-1.1.1b" ]; then
 		# Compile openssl 1.1.1b
 		origDir=$(pwd)	
 		cd "$patchDir"
