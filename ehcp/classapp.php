@@ -2039,7 +2039,7 @@ function updateWebstats(){
 	$str='';
 	foreach($res as $dom){
 		passthru2("mkdir -p ".$dom['homedir']."/httpdocs/webstats/");
-		$str.="webalizer -Q -p -n www.".$dom['domainname']." -o ".$dom['homedir']."/httpdocs/webstats ".$dom['homedir']."/logs/access_log -R 100 TopReferrers -r ".$dom['domainname']." HideReferrer \n";
+		$str.="webalizer -Q -p -j -n www.".$dom['domainname']." -o ".$dom['homedir']."/httpdocs/webstats ".$dom['homedir']."/logs/access_log -R 100 TopReferrers -r ".$dom['domainname']." HideReferrer \n";
 	}
 	echo $str;
 
