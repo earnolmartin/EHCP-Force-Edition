@@ -3032,6 +3032,17 @@ function installPipManuallyIfNeeded(){
 	aptgetInstall "python-pip"
 	curDir=$(pwd)
 	
+	if [ -e "/usr/bin/python2" ]; then
+		# We need python2 still
+		cd "$patchDir"
+		wget -N "https://www.python.org/ftp/python/2.7.18/Python-2.7.18.tgz"
+		tar zxvf "Python-2.7.18.tgz"
+		cd "Python-2.7.18"
+		./configure --prefix=/usr --with-ensurepip=install
+		make
+		make install
+	fi
+	
 	# Create a symlink for python if one doesn't exist
 	if [ ! -e "/usr/bin/python" ]; then
 		if [ -e "/usr/bin/python2" ]; then
