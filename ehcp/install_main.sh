@@ -1416,12 +1416,17 @@ maxretry = 4" >> "/etc/fail2ban/jail.local"
 }
 
 function installAntiSpam(){
+	logToInstallLogFile "Start of install anti-spam function call..."
+	
 	# Postfix must be installed
 	CURDIR=$(pwd)	
 	ANTISPAMINSTALLED=$(which "spamassassin")
 	POSTFIXInstalled=$(which "postfix")
 	postFixUserExists=$(grep postfix /etc/passwd)
 	if [ ! -z "$POSTFIXInstalled" ] && [ ! -z "$postFixUserExists" ] && [ "$installmode" == "extra" ]; then
+		
+		logToInstallLogFile "Installing spam assassin..."
+		
 		# SpamAssassin is not installed / configured
 		# Lets roll
 		# Set variables
@@ -1477,9 +1482,10 @@ function installAntiSpam(){
 		
 		# Only keep going if we have the basic packages installed
 		AMAVISINS=$(which amavisd-new)
+		AMAVISINSNEW=$(which amavisd)
 		SPAMASSASSINS=$(which spamassassin)
 				
-		if [ ! -z "$AMAVISINS" ] && [ ! -z "$SPAMASSASSINS" ]; then
+		if [[ ! -z "$AMAVISINS" || ! -z "$AMAVISINSNEW" ]] && [ ! -z "$SPAMASSASSINS" ]; then
 		
 			# Add Users
 			adduser clamav amavis
@@ -2114,7 +2120,10 @@ function setDefaultRoundCubeServer(){
 }
 
 function installPolicyD(){
+	logToInstallLogFile "Installing policyd if requirements are met..."
 	if [[ "$distro" == "ubuntu" && "$yrelease" -ge "14" ]] || [[ "$distro" == "debian" && "$yrelease" -ge "8" ]]; then
+		logToInstallLogFile "Installing policyd..."
+	
 		# Create policyd mysql database under ehcp mysql user and populate it with policyd sql
 		curDir=$(pwd)
 		
