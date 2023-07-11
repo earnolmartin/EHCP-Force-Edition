@@ -786,7 +786,7 @@ function checkDistro() {
 		# Get distro properly
 		# Get distro properly
 		if [ -e /etc/issue ]; then
-			distro=$( cat /etc/issue | awk '{ print $1 }' )
+			distro=$( cat /etc/issue | awk '{ print $1 }' | head -n 1 )
 		fi
 		
 		if [ ! -z "$distro" ]; then
@@ -797,7 +797,7 @@ function checkDistro() {
 		
 		if [ -z "$distro" ] || [[ "$distro" != "ubuntu" && "$distro" != "debian" ]]; then
 			if [ -e /etc/os-release ]; then
-				distro=$( cat /etc/os-release | grep -o "^NAME=.*" | grep -o "[^NAME=\"].*[^\"]" )
+				distro=$( cat /etc/os-release | grep -o "^NAME=.*" | grep -o "[^NAME=\"].*[^\"]" | awk '{print $1}' | awk '{print tolower($0)}' )
 			fi
 		fi
 		
