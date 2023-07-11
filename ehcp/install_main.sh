@@ -780,6 +780,10 @@ function fixEHCPPerms(){ # by earnolmartin@gmail.com
 		rm "/var/www/new/ehcp/install_log.txt"
 	fi
 	
+	if [ -e "/var/www/new/ehcp/install_log_bash.txt" ]; then
+		rm "/var/www/new/ehcp/install_log_bash.txt"
+	fi
+	
 	chmod 700 "/var/www/new/ehcp/install_1.php"
 	chmod 700 "/var/www/new/ehcp/install_2.php"
 	chmod 700 "/var/www/new/ehcp/install_lib.php"
