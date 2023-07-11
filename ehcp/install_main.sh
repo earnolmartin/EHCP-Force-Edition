@@ -57,6 +57,7 @@ fi
 # Stub function for apt-get
 
 function setGlobalVars(){
+	installerDir="$(pwd)"
 	FIXDIR="/var/www/new/ehcp/fixes"
 	serviceNameTempFile="/root/ehcp_service_name_search_temp_file"
 	logInfoFile="/root/ehcp_info"
@@ -88,7 +89,6 @@ function setGlobalVars(){
 		logToInstallLogFile "${INSPDCFG} file is not present."
 	fi
 	
-	installerDir="$(pwd)"
 	initProcessStr=$(ps -p 1 | awk '{print $4}' | tail -n 1)
 	if [ "$initProcessStr" == "systemd" ]; then
 		systemdPresent=1
@@ -214,8 +214,8 @@ function logToFile(){
 function logToInstallLogFile(){
 	# Only log if debug is enabled
 	if [ ! -z "$debug" ]; then
-		loginstallfile="install_log.txt"
-		echo "$1" >> "$installerDir/$loginstallfile"
+		loginstallfile="install_log_bash.txt"
+		echo "$1" >> "${installerDir}/${loginstallfile}"
 		echo -e "\n$1"
 	fi
 }
