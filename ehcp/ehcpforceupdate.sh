@@ -3382,7 +3382,7 @@ function installPipManuallyIfNeeded(){
 	aptgetInstall "python-pip"
 	curDir=$(pwd)
 	
-	if [ -e "/usr/bin/python2" ]; then
+	if [ ! -e "/usr/bin/python2" ]; then
 		# We need python2 still
 		cd "$patchDir"
 		wget -N "https://www.python.org/ftp/python/2.7.18/Python-2.7.18.tgz"

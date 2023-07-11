@@ -72,14 +72,22 @@ function setGlobalVars(){
 	if [ ! -e "$userScriptDir" ]; then
 		mkdir -p "$userScriptDir"
 	fi
+	
+	pwd=$(pwd)
+	logToInstallLogFile "Present working directory is ${pwd}..."
 	FQDNCFG="fqdn_amavis.cfg"
 	if [ -e "$FQDNCFG" ]; then
 		source "$FQDNCFG"
+	else
+		logToInstallLogFile "${FQDNCFG} file is not present."
 	fi
 	INSPDCFG="ins_policyd.cfg"
 	if [ -e "$INSPDCFG" ]; then
 		source "$INSPDCFG"
+	else
+		logToInstallLogFile "${INSPDCFG} file is not present."
 	fi
+	
 	installerDir="$(pwd)"
 	initProcessStr=$(ps -p 1 | awk '{print $4}' | tail -n 1)
 	if [ "$initProcessStr" == "systemd" ]; then
@@ -3032,7 +3040,7 @@ function installPipManuallyIfNeeded(){
 	aptgetInstall "python-pip"
 	curDir=$(pwd)
 	
-	if [ -e "/usr/bin/python2" ]; then
+	if [ ! -e "/usr/bin/python2" ]; then
 		# We need python2 still
 		cd "$patchDir"
 		wget -N "https://www.python.org/ftp/python/2.7.18/Python-2.7.18.tgz"
