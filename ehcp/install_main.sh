@@ -339,7 +339,7 @@ function aptgetRemove(){
 function checkDistro() {		
 		# Get distro properly
 		if [ -e /etc/issue ]; then
-			distro=$( cat /etc/issue | awk '{ print $1 }' )
+			distro=$( cat /etc/issue | awk '{ print $1 }' | head -n 1 )
 		fi
 		
 		if [ ! -z "$distro" ]; then
@@ -350,7 +350,7 @@ function checkDistro() {
 		
 		if [ -z "$distro" ] || [[ "$distro" != "ubuntu" && "$distro" != "debian" ]]; then
 			if [ -e /etc/os-release ]; then
-				distro=$( cat /etc/os-release | grep -o "^NAME=.*" | grep -o "[^NAME=\"].*[^\"]" )
+				distro=$( cat /etc/os-release | grep -o "^NAME=.*" | grep -o "[^NAME=\"].*[^\"]" | awk '{print $1}' | awk '{print tolower($0)}' )
 			fi
 		fi
 		
@@ -388,9 +388,13 @@ function checkDistro() {
 		# version=$(lsb_release -r | awk '{ print $2 }')
 		
 		echo "Your distro is $distro runnning version $version."
+		logToInstallLogFile "Your distro is $distro runnning version $version."
 		if [ "$distro" != "debian" ]; then
 			echo "Your distros yearly release is $yrelease. Your distros monthly release is $mrelease."
+			logToInstallLogFile "Your distros yearly release is $yrelease. Your distros monthly release is $mrelease."
 		fi
+		
+		logToInstallLogFile "OSBits is set to ${OSBits}"
 		
 		if [ "$distro" == "debian" ] && [ "$yrelease" -lt "8" ]; then
 			echo "Debian 7.x and lower are no longer supported."

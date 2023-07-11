@@ -759,6 +759,10 @@ function runOp($op){ # these are like url to function mappers...  maps op variab
 		case 'dostopvsftpd'				: $this->requireAdmin(); return $this->add_daemon_op(array('op'=>'service','info'=>'vsftpd','info2'=>'stop')); break;
 		case 'dostartvsftpd'			: $this->requireAdmin(); return $this->add_daemon_op(array('op'=>'service','info'=>'vsftpd','info2'=>'start')); break;
 		case 'dorestartvsftpd'			: $this->requireAdmin(); return $this->add_daemon_op(array('op'=>'service','info'=>'vsftpd','info2'=>'restart')); break;
+		
+		case 'dostopmysqld'				: $this->requireAdmin(); return $this->add_daemon_op(array('op'=>'service','info'=>'mysql','info2'=>'stop')); break;
+		case 'dostartmysqld'			: $this->requireAdmin(); return $this->add_daemon_op(array('op'=>'service','info'=>'mysql','info2'=>'start')); break;
+		case 'dorestartmysqld'			: $this->requireAdmin(); return $this->add_daemon_op(array('op'=>'service','info'=>'mysql','info2'=>'restart')); break;
 
 		case 'dostopbind'				: $this->requireAdmin(); return $this->add_daemon_op(array('op'=>'service','info'=>'bind9','info2'=>'stop')); break;
 		case 'dostartbind'				: $this->requireAdmin(); return $this->add_daemon_op(array('op'=>'service','info'=>'bind9','info2'=>'start')); break;
@@ -1433,6 +1437,13 @@ function executeProg3($prog,$echooutput=False){
 function check_program_service($progname,$start_opname,$stop_opname,$restart_opname){
 	$this->output.="<tr><td>$progname: </td><td>";
 	$serviceCount=$this->executeProg3("ps ax | grep $progname | grep -v grep | wc -l");
+	
+	if($serviceCount == 0 && $progname == "mysqld"){
+		// Try mariadb instead
+		$progname = "mariadbd";
+		$serviceCount=$this->executeProg3("ps ax | grep $progname | grep -v grep | wc -l");
+	}
+	
 	if ($serviceCount > 0) $this->output.="<font color='#00cc00'><strong>YES</strong></font>";
 		else $this->output.="<font color='#ff0000'><strong>NO</strong></font>";
 	$this->output.="</td><td> (<a href='?op=$start_opname'>Start</a> | <a href='?op=$stop_opname'>Stop</a> | <a href='?op=$restart_opname'>Restart</a>)  Attention, by stopping your services, you may lose your conn. to panel.</td></tr>";
