@@ -741,9 +741,6 @@ function runOp($op){ # these are like url to function mappers...  maps op variab
 		#case 'showconf'					: return $this->showConfig();break;
 		case 'changemypass'				: return $this->changeMyPass();break;
 
-		# for mysql, stop and start is meaningless, because if mysql cannot run, then, panel also cannot be accessible or this functions do not work.
-		case 'dorestartmysql'			: $this->requireAdmin(); return passthru2_silent("service mysql restart", true, true); break;
-
 		case 'dostopapache2'			: $this->requireAdmin(); return $this->add_daemon_op(array('op'=>'service','info'=>'apache2','info2'=>'stop')); break;
 		case 'dostartapache2'			: $this->requireAdmin(); return $this->add_daemon_op(array('op'=>'service','info'=>'apache2','info2'=>'start')); break;
 		case 'dorestartapache2'			: $this->requireAdmin(); return $this->add_daemon_op(array('op'=>'service','info'=>'apache2','info2'=>'restart')); break;
@@ -759,10 +756,6 @@ function runOp($op){ # these are like url to function mappers...  maps op variab
 		case 'dostopvsftpd'				: $this->requireAdmin(); return $this->add_daemon_op(array('op'=>'service','info'=>'vsftpd','info2'=>'stop')); break;
 		case 'dostartvsftpd'			: $this->requireAdmin(); return $this->add_daemon_op(array('op'=>'service','info'=>'vsftpd','info2'=>'start')); break;
 		case 'dorestartvsftpd'			: $this->requireAdmin(); return $this->add_daemon_op(array('op'=>'service','info'=>'vsftpd','info2'=>'restart')); break;
-		
-		case 'dostopmysqld'				: $this->requireAdmin(); return passthru2_silent("service mysql stop", true, true); break;
-		case 'dostartmysqld'			: $this->requireAdmin(); return passthru2_silent("service mysql start", true, true); break;
-		case 'dorestartmysqld'			: $this->requireAdmin(); return passthru2_silent("service mysql restart", true, true); break;
 
 		case 'dostopbind'				: $this->requireAdmin(); return $this->add_daemon_op(array('op'=>'service','info'=>'bind9','info2'=>'stop')); break;
 		case 'dostartbind'				: $this->requireAdmin(); return $this->add_daemon_op(array('op'=>'service','info'=>'bind9','info2'=>'start')); break;
@@ -1446,7 +1439,12 @@ function check_program_service($progname,$start_opname,$stop_opname,$restart_opn
 	
 	if ($serviceCount > 0) $this->output.="<font color='#00cc00'><strong>YES</strong></font>";
 		else $this->output.="<font color='#ff0000'><strong>NO</strong></font>";
-	$this->output.="</td><td> (<a href='?op=$start_opname'>Start</a> | <a href='?op=$stop_opname'>Stop</a> | <a href='?op=$restart_opname'>Restart</a>)  Attention, by stopping your services, you may lose your conn. to panel.</td></tr>";
+	
+	if(	$progname != "mysqld" && $progname != "mariadbd" ){
+		$this->output.="</td><td> (<a href='?op=$start_opname'>Start</a> | <a href='?op=$stop_opname'>Stop</a> | <a href='?op=$restart_opname'>Restart</a>)  Attention, by stopping your services, you may lose your conn. to panel.</td></tr>";
+	}else{
+		$this->output.="</td><td></td></tr>";
+	}
 }
 
 function serverStatus(){
