@@ -3195,6 +3195,15 @@ function installPipPackages(){
 	pip install mysqlclient
 	pip install passlib
 	pip install mysqlclient
+	
+	pip2Instance=$(which "pip2")
+	if [ ! -z "$pip2Instance" ]; then
+		pip2 install requests
+		pip2 install chardet
+		pip2 install mysqlclient
+		pip2 install passlib
+		pip2 install mysqlclient
+	fi
 }
 
 #############################################################

@@ -1738,9 +1738,10 @@ function installAntiSpam(){
 		
 		# Only keep going if we have the basic packages installed
 		AMAVISINS=$(which amavisd-new)
+		AMAVISINSNEW=$(which amavisd)
 		SPAMASSASSINS=$(which spamassassin)
 				
-		if [ ! -z "$AMAVISINS" ] && [ ! -z "$SPAMASSASSINS" ]; then
+		if [[ ! -z "$AMAVISINS" || ! -z "$AMAVISINSNEW" ]] && [ ! -z "$SPAMASSASSINS" ]; then
 		
 			# Add Users
 			adduser clamav amavis
@@ -3549,6 +3550,15 @@ function installPipPackages(){
 	pip install mysqlclient
 	pip install passlib
 	pip install mysqlclient
+	
+	pip2Instance=$(which "pip2")
+	if [ ! -z "$pip2Instance" ]; then
+		pip2 install requests
+		pip2 install chardet
+		pip2 install mysqlclient
+		pip2 install passlib
+		pip2 install mysqlclient
+	fi
 }
 
 ###############################
