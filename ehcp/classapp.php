@@ -1440,7 +1440,7 @@ function check_program_service($progname,$start_opname,$stop_opname,$restart_opn
 	if ($serviceCount > 0) $this->output.="<font color='#00cc00'><strong>YES</strong></font>";
 		else $this->output.="<font color='#ff0000'><strong>NO</strong></font>";
 	
-	if(	$progname != "mysqld" && $progname != "mariadbd" ){
+	if($progname != "mysqld" && $progname != "mariadbd"){
 		$this->output.="</td><td> (<a href='?op=$start_opname'>Start</a> | <a href='?op=$stop_opname'>Stop</a> | <a href='?op=$restart_opname'>Restart</a>)  Attention, by stopping your services, you may lose your conn. to panel.</td></tr>";
 	}else{
 		$this->output.="</td><td></td></tr>";
