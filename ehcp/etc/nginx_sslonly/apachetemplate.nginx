@@ -44,7 +44,7 @@ server {
 	}
 	
 
-	location /phpmyadmin {
+	location /phpmyadmin/ {
 		root /usr/share/;
 		index index.php index.html index.htm;
 		
@@ -66,11 +66,7 @@ server {
 		}
 	}
 
-	location /phpMyAdmin {
-		rewrite ^/* /phpmyadmin last;
-	}
-
-	location /webmail2 {
+	location /webmail2/ {
 		root {ehcpdir}/;
 		index index.php index.html index.htm;
 		
@@ -90,11 +86,11 @@ server {
 		}
 	}
 	
-	location /webmail {
+	location /webmail/ {
 		rewrite ^/* /roundcube last;
 	}
 	
-	location /ehcp {
+	location /ehcp/ {
 		root /var/www/new/;
 		index index.php index.html index.htm;
 		
@@ -130,7 +126,7 @@ server {
 		}
 	}
 
-	location /roundcube {
+	location /roundcube/ {
 		root /usr/share/;
 		index index.php index.html index.htm;
 		
@@ -153,6 +149,32 @@ server {
 	location /.well-known {
 		auth_basic off;
 		allow all; # Allow all to see content
+	}
+	
+	# Alias Section
+	
+	location = /ehcp { 
+		return 301 /ehcp/;
+	}
+	
+	location = /webmail2 {
+		return 301 /webmail2/;
+	}
+	
+	location = /webmail {
+		return 301 /roundcube/;
+	}
+	
+	location = /roundcube {
+		return 301 /roundcube/;
+	}
+	
+	location = /phpMyAdmin {
+		return 301 /phpmyadmin/;
+	}
+	
+	location = /phpmyadmin { 
+		return 301 /phpmyadmin/;
 	}
 
 	# any files that should be avoided, may be put here:

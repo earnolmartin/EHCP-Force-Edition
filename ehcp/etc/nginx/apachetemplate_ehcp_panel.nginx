@@ -42,7 +42,7 @@ server {
 			limit_req zone=one burst=5;
 		}
         
-        location /phpmyadmin {
+        location /phpmyadmin/ {
 			root /usr/share/;
 			index index.php index.html index.htm;
 			location ~ ^/phpmyadmin/(.+\.php)$ {
@@ -66,7 +66,7 @@ server {
 		rewrite ^/* /phpmyadmin last;
 	}
 
-	location /webmail2 {
+	location /webmail2/ {
 		root {ehcpdir}/;
 		index index.php index.html index.htm;
 		
@@ -86,11 +86,11 @@ server {
 		}
 	}
 	
-	location /webmail {
+	location /webmail/ {
 		rewrite ^/* /roundcube last;
 	}
 
-	location /roundcube {
+	location /roundcube/ {
 		root /usr/share/;
 		index index.php index.html index.htm;
 		
@@ -108,6 +108,46 @@ server {
 		location ~* ^/roundcube/(.+\.(jpg|jpeg|gif|css|png|js|ico|html|xml|txt))$ {
 			root /usr/share/;
 		}
+	}
+	
+	location /extplorer/ {
+		root {ehcpdir}/;
+		index index.php index.html index.htm;
+		
+		location ~ ^/extplorer/(.+\.php)$ {
+			try_files $uri =404;
+			root {ehcpdir}/;
+			fastcgi_pass 127.0.0.1:9001;
+			fastcgi_index index.php;
+			fastcgi_param SCRIPT_FILENAME $request_filename;
+			fastcgi_param  PHP_ADMIN_VALUE "open_basedir=/var/www:/tmp:/usr/share:/var/www/php_sessions \n upload_tmp_dir=/tmp \n session.save_path=/var/www/php_sessions";
+			include /etc/nginx/fastcgi_params;
+			limit_req zone=one burst=5;
+		}
+	}
+	
+	location /webmail2 {
+		return 301 /webmail2/;
+	}
+	
+	location /webmail {
+		return 301 /roundcube/;
+	}
+	
+	location /roundcube {
+		return 301 /roundcube/;
+	}
+	
+	location /phpMyAdmin {
+		return 301 /phpmyadmin/;
+	}
+	
+	location = /phpmyadmin { 
+		return 301 /phpmyadmin/;
+	}
+	
+	location = /extplorer { 
+		return 301 /extplorer/;
 	}
 }
 # END OF CUSTOM GLOBAL PANEL URLS Template

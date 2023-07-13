@@ -47,7 +47,7 @@ server {
 			limit_req zone=one burst=5;
 		}
         
-        location /phpmyadmin {
+        location /phpmyadmin/ {
 			root /usr/share/;
 			index index.php index.html index.htm;
 			location ~ ^/phpmyadmin/(.+\.php)$ {
@@ -66,12 +66,8 @@ server {
 				   root /usr/share/;
 			}
 		}
-		
-		location /phpMyAdmin {
-		rewrite ^/* /phpmyadmin last;
-	}
 
-	location /webmail2 {
+	location /webmail2/ {
 		root {ehcpdir}/;
 		index index.php index.html index.htm;
 		
@@ -91,11 +87,11 @@ server {
 		}
 	}
 	
-	location /webmail {
+	location /webmail/ {
 		rewrite ^/* /roundcube last;
 	}
 
-	location /roundcube {
+	location /roundcube/ {
 		root /usr/share/;
 		index index.php index.html index.htm;
 		
@@ -115,7 +111,7 @@ server {
 		}
 	}
 	
-	location /extplorer {
+	location /extplorer/ {
 		root {ehcpdir}/;
 		index index.php index.html index.htm;
 		
@@ -129,6 +125,32 @@ server {
 			include /etc/nginx/fastcgi_params;
 			limit_req zone=one burst=5;
 		}
+	}
+	
+	# Alias
+	
+	location = /webmail2 {
+		return 301 /webmail2/;
+	}
+	
+	location = /webmail {
+		return 301 /roundcube/;
+	}
+	
+	location = /roundcube {
+		return 301 /roundcube/;
+	}
+	
+	location = /phpMyAdmin {
+		return 301 /phpmyadmin/;
+	}
+	
+	location = /phpmyadmin { 
+		return 301 /phpmyadmin/;
+	}
+	
+	location = /extplorer { 
+		return 301 /extplorer/;
 	}
 }
 # END OF CUSTOM GLOBAL PANEL URLS Template
