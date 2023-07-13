@@ -99,14 +99,14 @@
 	UseCanonicalName Off
 	DocumentRoot {homedir}/httpdocs
 	DirectoryIndex index.htm index.html index.php
-        
+
 	# this combined log format is understandable by webalizer... some other formats are not recognised by webalizer.. thats why, specified here explicitly..     
 	LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
 	LogFormat "%v:%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" vhost_combined
 	LogFormat "%v:%p %h %l %u %t \"%{Host}i\" \"%r\" %>s %O \"%{Referer}i\" \"%{User-Agent}i\"" vhost_combined_host
 	CustomLog  {homedir}/logs/access_log combined
 	CustomLog  /var/log/apache2/access_log_multi.log vhost_combined_host
-	    
+
 	ProxyPassMatch ^(.*\.php)$ fcgi://127.0.0.1:9000{homedir}/httpdocs/$1
 	ProxyFCGISetEnvIf "true" PHP_ADMIN_VALUE "open_basedir={homedir}:/usr/share/php:/usr/share/pear; \n upload_tmp_dir={homedir}/phptmpdir; \n session.save_path={homedir}/phptmpdir;"
 
@@ -115,7 +115,7 @@
 	SSLCertificateFile {ssl_cert_path}
 	SSLCertificateKeyFile {ssl_cert_key_path}
 	{ssl_cert_chain_setting_with_path}
-	    
+	
 	{customhttp}
 	{root_password_protected_dirs}
 	{password_protected_dirs}

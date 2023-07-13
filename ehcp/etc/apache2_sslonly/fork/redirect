@@ -1,12 +1,12 @@
 # this file used in Easy Hosting Control Panel (ehcp), www.ehcp.net
 
 <VirtualHost *:443>
-        ServerName   {domainname}
-        ServerAlias  www.{domainname} *.{domainname} 
-        SSLEngine on
-        SSLCertificateFile /etc/ssl/certs/server.crt
-        SSLCertificateKeyFile /etc/ssl/private/server.key
-        RewriteEngine On
-		RewriteCond %{HTTPS} on
-		RewriteRule (.*) {domainname_redirect}%{REQUEST_URI}
+	ServerName   {domainname}
+	ServerAlias  www.{domainname} *.{domainname} 
+	SSLEngine on
+	SSLCertificateFile /etc/ssl/certs/server.crt
+	SSLCertificateKeyFile /etc/ssl/private/server.key
+	RewriteEngine On
+	RewriteCond %{HTTPS} on
+	RewriteRule (.*) {domainname_redirect}%{REQUEST_URI}
 </VirtualHost>
