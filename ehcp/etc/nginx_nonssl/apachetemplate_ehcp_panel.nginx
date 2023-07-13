@@ -83,11 +83,11 @@ server {
 		}
 	}
 	
-	location /webmail {
+	location /webmail/ {
 		rewrite ^/* /roundcube last;
 	}
 
-	location /roundcube {
+	location /roundcube/ {
 		root /usr/share/;
 		index index.php index.html index.htm;
 		

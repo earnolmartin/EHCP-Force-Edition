@@ -61,10 +61,6 @@ server {
 				   root /usr/share/;
 			}
 		}
-		
-		location /phpMyAdmin {
-		rewrite ^/* /phpmyadmin last;
-	}
 
 	location /webmail2/ {
 		root {ehcpdir}/;
