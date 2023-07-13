@@ -11133,13 +11133,28 @@ function daemondomain($action,$info,$info2='',$info3=''){// domain operations in
 			
 			$index=$this->loadTemplate('defaultindexforsubdomains',False);
 			if(trim($index)==''){
-				$index='<div style="text-align: center; font-family: \'arial\';">
+				$index='<?php
+	$request = parse_url($_SERVER[\'REQUEST_URI\']);
+	$path = $request["path"];
+	$result = rtrim(str_replace(basename($_SERVER[\'SCRIPT_NAME\']), \'\', $path), \'/\');
+	if(!empty($result) && $result != "/" && !file_exists(__DIR__ . $result)){
+		header("HTTP/1.0 404 Not Found");
+		include \'error_page.html\';
+		exit();
+	}
+?>
+						<div style="text-align: center; font-family: \'arial\';">
 							<h2>Subdomain Under Construction</h2>
 							<h4><a href="http://ehcpforce.tk" target="_blank">EHCP Force Edition</a></h4>
 						</div>';
 			}	
 			
-			if((!file_exists($info3."/index.html"))or(!file_exists($info3."/index.htm"))) $this->write_file_if_not_exists($info3."/index.php",$index);			
+			if((!file_exists($info3."/index.html"))or(!file_exists($info3."/index.htm"))){
+				 $this->write_file_if_not_exists($info3."/index.php",$index);		
+				 if(!file_exists("$homedir/httpdocs/$f")){
+					passthru2("cp -f \"error_page.html\" \"$info3\"");
+				}
+			}	
 			
 			return True;
 		break;
