@@ -2504,6 +2504,9 @@ function options(){
 		if($dnsip != $this->miscconfig['dnsip']){ # fix all dnsip related config if dnsip is changed...
 			$this->addDaemonOp("fixmailconfiguration",'','','','fix mail configuration'); # fixes postfix configuration
 			$this->addDaemonOp('syncdns','','','','sync dns'); # syncs the DNS zones to use the new IP address
+			if($updatehostsfile<>'') {
+				$this->addDaemonOp("updatehostsfile",'','','','update hostsfile'); # Update hosts file too
+			}
 		}
 		
 		$addSyncOpAfterSettingsReloaded = false;
