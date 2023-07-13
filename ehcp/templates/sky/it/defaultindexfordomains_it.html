@@ -1,3 +1,13 @@
+<?php
+	$request = parse_url($_SERVER['REQUEST_URI']);
+	$path = $request["path"];
+	$result = rtrim(str_replace(basename($_SERVER['SCRIPT_NAME']), '', $path), '/');
+	if(!empty($result) && $result != "/" && !file_exists(__DIR__ . $result)){
+		header("HTTP/1.0 404 Not Found");
+		include 'error_page.html';
+		exit();
+	}
+?>
 <div style="text-align: center">
 	<h2>In Costruzione</h2><br>
 	{domainname} inizio

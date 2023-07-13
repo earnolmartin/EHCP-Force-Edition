@@ -1,6 +1,14 @@
-<div style="text-align: center">
-	<h2>Under Construction</h2>
-	<p>This site is hosted on an EHCP server, <a href=http://www.ehcp.net>www.ehcp.net</a>, ehcp is a hosting control panel for ubuntu, <br>
-	To change this, Upload your files inside httpdocs folder using ftp.<br>
-	(ip:{webserverip})</p>
+<?php
+	$request = parse_url($_SERVER['REQUEST_URI']);
+	$path = $request["path"];
+	$result = rtrim(str_replace(basename($_SERVER['SCRIPT_NAME']), '', $path), '/');
+	if(!empty($result) && $result != "/" && !file_exists(__DIR__ . $result)){
+		header("HTTP/1.0 404 Not Found");
+		include 'error_page.html';
+		exit();
+	}
+?>
+<div style="text-align: center; font-family: 'arial';">
+	<h2>Website Under Construction</h2>
+	<h4><a href="http://ehcpforce.tk" target="_blank">EHCP Force Edition</a></h4>
 </div>
