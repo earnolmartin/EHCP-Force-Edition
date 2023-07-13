@@ -1607,7 +1607,7 @@ function editApacheTemplate(){
 			array('clearTemplate','submit','default'=>'Revert to Default'),
 			array('op','hidden','default'=>__FUNCTION__)
 		);
-		$this->output.= '<p>' . $this->selecteddomain . ' Using Default Template: ' . ($usingDefault ? '<span class="success">YES</span>' : '<span class="error">NO</span>') . '</p>' . inputform5($inputparams);
+		$this->output.= '<p>' . $this->selecteddomain . ' Using Default Template: ' . ($usingDefault ? '<span class="success">YES</span>' : '<span class="error">NO</span>') . '</p><div class="editTemplateArea"><div class="editTemplateArea">' . inputform5($inputparams) . '</div>';
 	}else {
 		if($clearTemplate){
 			$success=$success && $this->executeQuery("update ".$this->conf['domainstable']['tablename']." set $templatefield='' where domainname='" . $domainname . "'");
@@ -1787,7 +1787,9 @@ function editDnsTemplate(){
 			array('op','hidden','default'=>__FUNCTION__)
 		);
 
+		$this->output.= '<div class="editTemplateArea">';
 		$this->output.=inputform5($inputparams);
+		$this->output.= '</div>';
 
 	} else {
 		if($dnstemplate==$this->escape($templateinfile)) {
