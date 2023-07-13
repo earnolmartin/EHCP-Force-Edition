@@ -45,8 +45,7 @@ class LuminousBNFScanner extends LuminousStatefulScanner {
     // table, but here we are anyway
     $all = array('COMMENT', 'OPTION', 'REPETITION', 'GROUP', 'SPECIAL', 
       'STRING', 'IDENT', 'OPERATOR');
-    $almost_all = array_filter($all, create_function('$x', 
-      'return $x !== "SPECIAL";'));
+    $almost_all = array_filter($all, function($x){ return $x !== "SPECIAL";});
     $this->transitions = array(
       'initial' => array_merge(array('RULE'), $all),
       'OPTION' => $all,

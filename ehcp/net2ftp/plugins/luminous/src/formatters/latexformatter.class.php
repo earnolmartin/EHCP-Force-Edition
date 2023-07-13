@@ -125,23 +125,34 @@ EOF;
     $str_ = preg_split('/(<[^>]+>)/', $str, -1, 
       PREG_SPLIT_DELIM_CAPTURE|PREG_SPLIT_NO_EMPTY);
     
+    // orig code that no longer works in php 8+...
+    // Not sure if I converted it properly to anonymous functions or not...
+    /*
     $f1 = create_function('$matches', '
       return "\\\lms" . str_replace("_", "", $matches[1]) . "{"; ');
     $f2 =  create_function('$matches', '
       if ($matches[0][0] == "\\\")
         return "{\\\textbackslash}";
       return "\\\" . $matches[0];');
+    */
     
     foreach($str_ as $s_) {
       if ($s_[0] === '<') {
         $s_ = preg_replace('%</[^>]+>%', '}', $s_);
-        $s_ = preg_replace_callback('%<([^>]+)>%', $f1
-        ,$s_);
+        $s_ = preg_replace_callback('%<([^>]+)>%', function($matches){
+			return '\\\lms' . str_replace("_", "", $matches[1]) . "{";
+		}, $s_);
+		
       } else {
         $s_ = str_replace('&gt;', '>', $s_);
         $s_ = str_replace('&lt;', '<', $s_);
         $s_ = str_replace('&amp;', '&', $s_);
-        $s_ = preg_replace_callback('/[#{}_$\\\&]|&(?=amp;)/', $f2, $s_);
+        $s_ = preg_replace_callback('/[#{}_$\\\&]|&(?=amp;)/', function($matches){
+			if ($matches[0][0] == "\\\\"){
+				return '{\\\textbackslash}';
+			}
+			return "\\\\" . $matches[0];
+		}, $s_);
       }
 
       $s .= $s_;

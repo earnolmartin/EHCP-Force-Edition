@@ -13693,7 +13693,7 @@ function syncDomains($file='',$domainname='') {
 			if(isset($sslInfo["lets_enc_additional_hosts"]) && !empty($sslInfo["lets_enc_additional_hosts"])){
 				$subdoms=$this->getSubDomains("domainname = '" . $dom['domainname'] . "'");
 				if(is_array($subdoms) && count($subdoms) > 0){
-					$subdomsDomain = array_map(create_function('$ar', 'return $ar["subdomain"];'), $subdoms);
+					$subdomsDomain = array_map(function($ar){ return $ar["subdomain"]; }, $subdoms);
 				}else{
 					$subdomsDomain = array();
 				}

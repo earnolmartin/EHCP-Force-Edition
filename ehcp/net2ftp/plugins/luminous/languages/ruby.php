@@ -134,8 +134,7 @@ class LuminousRubyScanner extends LuminousScanner {
     // don't want this.
     $this->remove_filter('comment-to-doc');
 
-    $this->add_filter('REGEX', create_function('$tok',
-      'return LuminousFilters::pcre($tok, (isset($tok[1][0]) && $tok[1][0] === "/"));'));
+    $this->add_filter('REGEX', function($tok){return LuminousFilters::pcre($tok, (isset($tok[1][0]) && $tok[1][0] === "/"));});
   }
 
   

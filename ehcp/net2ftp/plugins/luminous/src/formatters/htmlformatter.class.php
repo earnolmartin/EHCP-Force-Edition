@@ -179,11 +179,10 @@ class LuminousFormatterHTML extends LuminousFormatter {
     $code_block = preg_replace('/(?<=<\/)[A-Z_0-9]+(?=>)/S', 'span',
       $code_block);
     // convert <ABC> to <span class=ABC>
-    $cb = create_function('$matches', 
-                          '$m1 = strtolower($matches[1]);
-                          return "<span class=\'" . $m1 . "\'>";
-                          ');
-    $code_block = preg_replace_callback('/<([A-Z_0-9]+)>/', $cb, $code_block);
+    $code_block = preg_replace_callback('/<([A-Z_0-9]+)>/', function($matches){
+		$m1 = strtolower($matches[1]);
+        return "<span class=\'" . $m1 . "\'>";
+	}, $code_block);
     
     $format_data = array(
       'language' => ($this->language === null)? '' : htmlentities($this->language),

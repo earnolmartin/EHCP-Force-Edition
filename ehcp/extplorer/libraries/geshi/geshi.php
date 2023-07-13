@@ -4568,18 +4568,12 @@ class GeSHi {
         if (!$recursed) {
             // do some optimizations
             // common trailing strings
-            // BUGGY!
-            //$list = preg_replace_callback('#(?<=^|\:|\|)\w+?(\w+)(?:\|.+\1)+(?=\|)#', create_function(
-            //    '$matches', 'return "(?:" . preg_replace("#" . preg_quote($matches[1], "#") . "(?=\||$)#", "", $matches[0]) . ")" . $matches[1];'), $list);
-            // (?:p)? => p?
             $list = preg_replace('#\(\?\:(.)\)\?#', '\1?', $list);
             // (?:a|b|c|d|...)? => [abcd...]?
             // TODO: a|bb|c => [ac]|bb
-            static $callback_2;
-            if (!isset($callback_2)) {
-                $callback_2 = create_function('$matches', 'return "[" . str_replace("|", "", $matches[1]) . "]";');
-            }
-            $list = preg_replace_callback('#\(\?\:((?:.\|)+.)\)#', $callback_2, $list);
+            $list = preg_replace_callback('#\(\?\:((?:.\|)+.)\)#', function($matches){
+				return "[" . str_replace("|", "", $matches[1]) . "]";
+			}, $list);
         }
         // return $list without trailing pipe
         return substr($list, 0, -1);
