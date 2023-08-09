@@ -3398,6 +3398,8 @@ function installPipManuallyIfNeeded(){
 		aptgetInstall "python3-mysqldb"
 		aptgetInstall "python3-chardet"
 		aptgetInstall "python3-requests"
+		
+		ln -s "/usr/bin/python3" "/usr/bin/python"
 	else
 		aptgetInstall "python-pip"
 		
