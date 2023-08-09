@@ -2014,6 +2014,7 @@ function installNeededDependencies(){
 	aptgetInstall php-gd
 	aptgetInstall php5-zip
 	aptgetInstall bc
+	aptgetInstall rsyslog
 	
 	# Required for Certbot
 	aptgetInstall python

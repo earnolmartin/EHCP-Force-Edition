@@ -2242,6 +2242,7 @@ function installNewPackages(){
 	aptgetInstall bc
 	aptgetInstall libmariadbclient-dev
 	aptgetInstall libmariadb-dev
+	aptgetInstall rsyslog
 	
 	# Required for Certbot
 	aptgetInstall python
