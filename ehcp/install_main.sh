@@ -3050,55 +3050,67 @@ function fixSQMailPerms(){
 }
 
 function installPipManuallyIfNeeded(){
-	aptgetInstall "python-pip"
 	curDir=$(pwd)
 	
-	if [ ! -e "/usr/bin/python2" ]; then
-		# We need python2 still
-		cd "$patchDir"
-		wget -N "https://www.python.org/ftp/python/2.7.18/Python-2.7.18.tgz"
-		tar zxvf "Python-2.7.18.tgz"
-		cd "Python-2.7.18"
-		./configure --prefix=/usr --with-ensurepip=install
-		make
-		make install
-	fi
-	
-	# Create a symlink for python if one doesn't exist
-	if [ ! -e "/usr/bin/python" ]; then
-		if [ -e "/usr/bin/python2" ]; then
-			ln -s "/usr/bin/python2" "/usr/bin/python"
-		fi
+	if [[ "$distro" == "ubuntu" && "$yrelease" -ge "23" ]] || [[ "$distro" == "debian" && "$yrelease" -ge "12" ]]; then
+		aptgetInstall "python3"
+		aptgetInstall "python3-pip"
+		aptgetInstall "python3-configargparse"
+		aptgetInstall "python3-passlib"
+		aptgetInstall "python3-mysqldb"
+		aptgetInstall "python3-chardet"
+		aptgetInstall "python3-requests"
 	else
-		currentPythonVersion=$(python --version 2>&1 | grep -o "Python 3")
-		if [ ! -z "$currentPythonVersion" ]; then
+		aptgetInstall "python-pip"
+		
+		if [ ! -e "/usr/bin/python2" ]; then
+			# We need python2 still
+			cd "$patchDir"
+			wget -N "https://www.python.org/ftp/python/2.7.18/Python-2.7.18.tgz"
+			tar zxvf "Python-2.7.18.tgz"
+			cd "Python-2.7.18"
+			./configure --prefix=/usr --with-ensurepip=install
+			make
+			make install
+		fi
+		
+		# Create a symlink for python if one doesn't exist
+		if [ ! -e "/usr/bin/python" ]; then
 			if [ -e "/usr/bin/python2" ]; then
-				ln -f -s "/usr/bin/python2" "/usr/bin/python"
+				ln -s "/usr/bin/python2" "/usr/bin/python"
+			fi
+		else
+			currentPythonVersion=$(python --version 2>&1 | grep -o "Python 3")
+			if [ ! -z "$currentPythonVersion" ]; then
+				if [ -e "/usr/bin/python2" ]; then
+					ln -f -s "/usr/bin/python2" "/usr/bin/python"
+				fi
 			fi
 		fi
-	fi
-	
-	# Create a symlink for python pip 2 if one doesn't exist
-	if [ ! -e "/usr/bin/pip" ] && [ -e "/usr/bin/pip2" ]; then
-		ln -s "/usr/bin/pip2" "/usr/bin/pip"
-	fi
-	
-	# Install pip if it's not found on the system manually
-	currentPip=$(which pip)
-	insPip2=0
-	if [ ! -z "$currentPip" ]; then
-		currentPipVersion=$(pip --version 2>&1 | grep -o "python3")
-		if [ ! -z "$currentPipVersion" ]; then
+		
+		# Create a symlink for python pip 2 if one doesn't exist
+		if [ ! -e "/usr/bin/pip" ] && [ -e "/usr/bin/pip2" ]; then
+			ln -s "/usr/bin/pip2" "/usr/bin/pip"
+		fi
+		
+		# Install pip if it's not found on the system manually
+		currentPip=$(which pip)
+		insPip2=0
+		if [ ! -z "$currentPip" ]; then
+			currentPipVersion=$(pip --version 2>&1 | grep -o "python3")
+			if [ ! -z "$currentPipVersion" ]; then
+				insPip2=1
+			fi
+		else
 			insPip2=1
 		fi
-	else
-		insPip2=1
-	fi
 
-	if [ "$insPip2" == 1 ]; then
-		cd "$patchDir"
-		curl https://bootstrap.pypa.io/pip/2.7/get-pip.py -o get-pip.py
-		python get-pip.py
+		if [ "$insPip2" == 1 ]; then
+			cd "$patchDir"
+			curl https://bootstrap.pypa.io/pip/2.7/get-pip.py -o get-pip.py
+			python get-pip.py
+		fi
+	
 	fi
 	
 	cd "$curDir"

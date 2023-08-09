@@ -1226,7 +1226,12 @@ function installPythonPamMysql(){
 	
 	// Copy our libpam-python scripts to /etc/security
 	passthru2("cp -vf $ehcpinstalldir/etc/pam/pam_dbauth_smtp.conf /etc/security/pam_dbauth_smtp.conf");
-	passthru2("cp -vf $ehcpinstalldir/etc/pam/pam_dbauth_smtp_ubuntu_20_plus.py /etc/security/pam_dbauth_smtp.py");
+	
+	if((getIsUbuntu() && getUbuntuReleaseYear() >= "23") || (getIsDebian() && getUbuntuReleaseYear() >= "12")){
+		passthru2("cp -vf $ehcpinstalldir/etc/pam/pam_dbauth_smtp_python3.py /etc/security/pam_dbauth_smtp.py");
+	}else{
+		passthru2("cp -vf $ehcpinstalldir/etc/pam/pam_dbauth_smtp_ubuntu_20_plus.py /etc/security/pam_dbauth_smtp.py");
+	}
 	
 	if((getIsUbuntu() && getUbuntuReleaseYear() >= "16") || (getIsDebian() && getUbuntuReleaseYear() >= "9")){
 		if(file_exists("/usr/lib/python2.7/lib-dynload/_hashlib.x86_64-linux-gnu.so")){
@@ -1235,7 +1240,11 @@ function installPythonPamMysql(){
 	}
 
 	passthru2("cp -vf $ehcpinstalldir/etc/pam/pam_dbauth_vsftpd.conf /etc/security/pam_dbauth_vsftpd.conf");
-	passthru2("cp -vf $ehcpinstalldir/etc/pam/pam_dbauth_vsftpd_ubuntu_20_plus.py /etc/security/pam_dbauth_vsftpd.py");
+	if((getIsUbuntu() && getUbuntuReleaseYear() >= "23") || (getIsDebian() && getUbuntuReleaseYear() >= "12")){
+		passthru2("cp -vf $ehcpinstalldir/etc/pam/pam_dbauth_vsftpd_python3.py /etc/security/pam_dbauth_vsftpd.py");
+	}else{
+		passthru2("cp -vf $ehcpinstalldir/etc/pam/pam_dbauth_vsftpd_ubuntu_20_plus.py /etc/security/pam_dbauth_vsftpd.py");
+	}
 	
 	// Replace EHCP mysql password with the correct one
 	replacelineinfile("password=","password=" . $ehcpmysqlpass,"/etc/security/pam_dbauth_smtp.conf", true);
