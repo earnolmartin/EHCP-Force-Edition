@@ -207,6 +207,51 @@ function installInitialPrereqs(){
 	aptgetInstall zip
 }
 
+function setTimezoneManually(){
+	output="1"
+	while [ "$output" != "0" ]
+	do
+		echo -n "Please specify a valid timezone from this list https://raw.githubusercontent.com/leon-do/Timezones/main/timezone.json without trailing and leading quotes: "
+		read tzRight
+		if [ ! -z "$tzRight" ]; then
+			timedatectl set-timezone "$tzRight"
+			output="$?"
+		fi
+	done
+	echo -e "Your server's date/time is now currently set to $(date)"
+}
+
+function checkServerTime(){
+	timezoneFile="/etc/timezone"
+	if [ -e "$timezoneFile" ]; then
+		currentTimezone=$(cat "$timezoneFile")
+	else
+		currentTimezone=$(timedatectl show | head -n 1 | cut -d= -f2)
+	fi
+	if [ ! -z "$currentTimezone" ]; then
+		echo -n "Your server's date/time is currently $(date) and its timezone is currently set to ${currentTimezone} - Is this correct? [y/n]: "
+		read tzRight
+		tzRight=$(echo "$tzRight" | awk '{print tolower($0)}')
+		if [ "$tzRight" == "n" ]; then
+			# Detect it from IP first...
+			autoTZ=$(wget -qO- "https://ehcpforce.tk/timezone.php" | xargs)
+			if [ ! -z "$autoTZ" ] && [ "$autoTZ" != "-1" ]; then
+				echo -n "Based on your IP address, should your timezone be set to ${autoTZ}? [y/n]: "
+				read tzRight
+				tzRight=$(echo "$tzRight" | awk '{print tolower($0)}')
+				if [ "$tzRight" == "y" ]; then
+					timedatectl set-timezone "$autoTZ"
+					echo -e "Your server's date/time is now currently set to $(date)"
+				else
+					setTimezoneManually
+				fi
+			else
+				setTimezoneManually
+			fi
+		fi
+	fi
+}
+
 ###################
 #### Main Code ####
 ###################
@@ -254,6 +299,13 @@ if [ ! -z "$preUnattended" ]; then
 			FQDNCFG="fqdn_amavis.cfg"
 			FQDNName="ehcpforce.tk"
 			echo -e "FQDNName=\"$FQDNName\"" > "$FQDNCFG"
+		fi
+		
+		# Handle preset timezone
+		serverTZ="server_tz.cfg"
+		if [ -e "$serverTZ" ]; then
+			serverTZ=$(cat "$serverTZ")
+			timedatectl set-timezone "$serverTZ"
 		fi
 		
 	fi
@@ -322,6 +374,15 @@ else
 	else
 		extra="normal"
 	fi
+	
+	echo -e ""
+	echo -e "Performing server date/timezone check..."
+	echo -e ""
+	checkServerTime
+	echo -e ""
+	echo -e ""
+	
+	echo -e "Running the main installer now..."
 	
 	# Run the main installer
 	echo "bash install_main.sh $unattendedMode $extra $debug"
