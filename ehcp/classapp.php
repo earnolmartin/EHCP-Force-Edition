@@ -2331,7 +2331,7 @@ organizationalUnitName	= $unit_name";
 				$dnstemplate = ''; # if same as in default template file, do not store it in db.
 				$this->output .= "<br>Template same as in template file, so, not stored in db<br>";
 			}
-			$success = $success && $this->executeQuery("update " . $this->conf['domainstable']['tablename'] . " set dnstemplate='" . $dnstemplate . "' where domainname='$domainname'");
+			$success = $success && $this->executeQuery("update " . $this->conf['domainstable']['tablename'] . " set dnstemplate='" . $dnstemplate . "', dns_serial = dns_serial + 1 where domainname='$domainname'");
 			$success = $success && $this->addDaemonOp("syncdns", '', '', '', 'sync dns');
 			$this->ok_err_text($success, "Custom DNS entries were successfully saved and stored in the database.", "Failed to save custom DNS entries.");
 		}
@@ -3777,6 +3777,7 @@ $gateway="206.51.230.1";
 		$success = $success && $this->executeQuery("delete from " . $this->conf['customstable']['tablename'] . " where id=$id limit 1");
 
 		if ($info['name'] == 'customdns')
+			$success = $success && $this->executeQuery("update " . $this->conf['domainstable']['tablename'] . " SET dns_serial = dns_serial + 1 where domainname='$domainname'");
 			$success = $success && $this->addDaemonOp("syncdns", '', '');
 		if ($info['name'] == 'customhttp' or $info['name'] == 'fileowner')
 			$success = $success && $this->addDaemonOp("syncdomains", 'xx', $domainname);
@@ -4023,6 +4024,7 @@ $gateway="206.51.230.1";
 		} else {
 			$this->output .= "Adding customdns :";
 			$success = $success && $this->executeQuery("insert into " . $this->conf['customstable']['tablename'] . " (domainname,name,value,comment) values ('$domainname','customdns','$customdns','$comment')", 'add custom dns');
+			$success = $success && $this->executeQuery("update " . $this->conf['domainstable']['tablename'] . " SET dns_serial = dns_serial + 1 where domainname='$domainname'");
 			$success = $success && $this->addDaemonOp("syncdns", '', '', '', 'sync dns');
 			$this->ok_err_text($success, "Successfully added custom DNS entries!", 'Failed to add custom DNS entries.');
 		}
@@ -12035,6 +12037,7 @@ email2@domain2.com:password2<br>
 			// $publicKeyDKIMStr = 'mail._domainkey IN TXT "v=DKIM1; k=rsa; p=' . $out . '"' . "\n";
 			$publicKeyDKIMStr = 'mail._domainkey.' . $domain . '. IN TXT "v=DKIM1; k=rsa; p=' . $out . '"';
 			$this->executeQuery("insert into " . $this->conf['customstable']['tablename'] . " (domainname,name,value,comment) values ('" . $domain . "','customdns','" . $this->escape($publicKeyDKIMStr) . "','A DKIM public key record')", 'manage_dkim');
+			$this->executeQuery("update " . $this->conf['domainstable']['tablename'] . " SET dns_serial = dns_serial + 1 where domainname='$domain'");
 		}
 
 		if ($action == "remove") {
@@ -12045,6 +12048,7 @@ email2@domain2.com:password2<br>
 				$id = $rs[0]["id"];
 				if (isset($id) && !empty($id)) {
 					$sql = "delete from " . $this->conf['customstable']['tablename'] . " where id='" . $id . "' limit 1";
+					$this->executeQuery("update " . $this->conf['domainstable']['tablename'] . " SET dns_serial = dns_serial + 1 where domainname='$domain'");
 					echo "Running SQL command of: " . $sql . "\n";
 					$this->executeQuery($sql);
 				}
@@ -12823,12 +12827,7 @@ sudo service ehcp start <br>
 				// Will force it to pull updates because the master will have a larger serial number.
 				$serialNum = 1;
 			} else {
-				// Always add 1 to the serial
-				$newSerial = $ar1['dns_serial'] + 1;
-				$serialNum = $newSerial;
-				
-				// Update the serial number in the db
-				$this->executeQuery("update domains set dns_serial='" . $newSerial . "' where id='" . $ar1["id"] . "';");
+				$serialNum = $ar1['dns_serial'];
 			}
 			# end earnolmartin
 
