@@ -184,7 +184,7 @@ class Application
 				'ssl_use_letsenc' => 'bit(1) default b\'0\'',
 				'ssl_redirect_https' => 'bit(1) default b\'0\'',
 				'ssl_lets_enc_additional_hosts' => 'text',
-				'dns_serial' => 'int default 1',
+				'dns_serial' => 'int(11) default 1',
 			)
 		),
 		'domainstable2' => array(
