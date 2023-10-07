@@ -183,7 +183,8 @@ class Application
 				'ssl_wild_card' => 'bit(1) default b\'0\'',
 				'ssl_use_letsenc' => 'bit(1) default b\'0\'',
 				'ssl_redirect_https' => 'bit(1) default b\'0\'',
-				'ssl_lets_enc_additional_hosts' => 'text'
+				'ssl_lets_enc_additional_hosts' => 'text',
+				'dns_serial' => 'int default 1',
 			)
 		),
 		'domainstable2' => array(
@@ -12819,7 +12820,12 @@ sudo service ehcp start <br>
 				// Will force it to pull updates because the master will have a larger serial number.
 				$serialNum = 1;
 			} else {
-				$serialNum = rand(2, 1000);
+				// Always add 1 to the serial
+				$newSerial = $ar1['dns_serial'] + 1;
+				$serialNum = $newSerial;
+				
+				// Update the serial number in the db
+				$this->executeQuery("update domains set dns_serial='" . $newSerial . "' where id='" . $ar1["id"] . "';");
 			}
 			# end earnolmartin
 
