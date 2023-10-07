@@ -28,7 +28,6 @@ if($argv and $argc and (is_array($argv))and (!$user)) {
         $op=$argv[1];
         print_r($argv);
         echo "Commandline active, argc: $argc \n op:$op:\n argv:".print_r($argv);
-
 } else {
         session_start();
 }
@@ -39,8 +38,9 @@ $app->cerceve="standartcerceve";
 $app->usertable="domainusers";
 $app->userfields=array("id","domainname","username","email","quota");
 $app->op=strtolower($op);
+if($commandline) {
+	$app->checkTables(); // Check tables on daemon start
+}
 $app->run();
-
-
 
 ?>
