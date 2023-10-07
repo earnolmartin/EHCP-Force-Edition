@@ -38,9 +38,6 @@ $app->cerceve="standartcerceve";
 $app->usertable="domainusers";
 $app->userfields=array("id","domainname","username","email","quota");
 $app->op=strtolower($op);
-if($commandline) {
-	$app->checkTables(); // Check tables on daemon start
-}
 $app->run();
 
 ?>

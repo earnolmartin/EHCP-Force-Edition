@@ -12468,6 +12468,9 @@ email2@domain2.com:password2<br>
 		@mkdir($this->ehcpdir . '/upload');
 		$this->executeProg3("chmod a+w " . $this->ehcpdir . '/upload');
 		$this->executeProg3("chmod a+w " . $this->ehcpdir . '/LocalServer.cnf');
+		
+		// Check tables on daemon init
+		$this->checkTables();
 
 		while (True) { // run forever
 			// Set up the array to prevent duplicate operations from running
