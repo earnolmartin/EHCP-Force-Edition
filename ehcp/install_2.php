@@ -102,7 +102,7 @@ if($webServerToInstall == "nginx" || ((isset($version) && $version != "12.10" &&
 }
 
 # scandb();  no more need to scan db since ver. 0.29.15
-installfinish();
+installfinish($webServerToInstall);
 
 $message='';
 exec('ifconfig',$msg);

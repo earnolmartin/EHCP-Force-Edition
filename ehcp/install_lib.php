@@ -1275,6 +1275,8 @@ function rebuild_nginx_config2($mydir){
 		$phpFPMVersion = "php5-fpm";
 	}
 	manageService($phpFPMVersion, "restart");
+	
+	manageService("nginx", "restart");
 }
 
 function install_nginx_webserver(){
@@ -1318,6 +1320,7 @@ function install_nginx_webserver(){
 	manageService("nginx", "restart");	
 	
 	// Stop and disable services
+	manageService("apache2", "stop");
 	$app->disableService("apache2");
 	$app->enableService("nginx");
 	$app->enableService($phpFPMVersion);
@@ -1947,7 +1950,7 @@ function install_with_mode($params){ # complete later.
 	}
 }
 
-function installfinish() {
+function installfinish($webServerToInstall) {
 	global $ehcpinstalldir,$ehcpmysqlpass,$app,$user_email,$user_name,$header,$installextrasoftware,$lightinstall,$installmode;
 	
 	switch($installmode) {
@@ -1994,7 +1997,11 @@ function installfinish() {
 	writeoutput("/var/www/index.html",$filecontent);*/
 
 	echo "\nPlease wait while services restarting...\n\n";
-	manageService("apache2", "restart");
+	if($webServerToInstall == "nginx"){
+		manageService("nginx", "restart");
+	}else{
+		manageService("apache2", "restart");
+	}
 	manageService("bind9", "restart");
 	manageService("postfix", "restart");
 	passthru("cp /etc/apt/sources.list.bck.ehcp /etc/apt/sources.list");
@@ -2009,8 +2016,20 @@ function installfinish() {
 	sleep(2);
 	manageService("mysql", "restart");
 	sleep(1);
-	passthru2("update-rc.d -f nginx remove");
-	passthru2("update-rc.d apache2 defaults");
+	
+	$phpFPMVersion = $app->getPHPFPMName();
+	if($phpFPMVersion === false){
+		$phpFPMVersion = "php5-fpm";
+	}
+	
+	if($webServerToInstall == "nginx"){
+		$app->disableService("apache2");
+		$app->enableService("nginx");
+	}else{
+		$app->disableService("nginx");
+		$app->enableService("apache2");
+	}
+	
 	manageService("apparmor", "stop");
 
 	// passthru("cd /var/www/ehcp");
