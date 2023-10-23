@@ -1281,7 +1281,7 @@ function rebuild_nginx_config2($mydir){
 
 function install_nginx_webserver(){
 	$mydir=getcwd();
-	global $app;
+	global $app, $ehcpinstalldir;
 	
 	# thanks to webmaster@securitywonks.net for encourage of nginx integration
 	echo "\nStarting nginx webserver install (not default)\n";
@@ -1314,7 +1314,7 @@ function install_nginx_webserver(){
 	rebuild_apache2_config2();
 	
 	// Ok, now go ahead and rebuild the nginx config
-	rebuild_nginx_config2();
+	rebuild_nginx_config2($ehcpinstalldir);
 	
 	manageService($phpFPMVersion, "restart");
 	manageService("nginx", "restart");	
@@ -1338,7 +1338,7 @@ function installapacheserver($apacheconf=''){
 	aptget(array('apache2'));
 	
 	// We're configuring the apache server, but if the user switches to nginx later, we need to be partially setup for it...
-	rebuild_nginx_config2();
+	rebuild_nginx_config2($ehcpinstalldir);
 	
 	// Ok, now go ahead and rebuild the apache config
 	rebuild_apache2_config2();
