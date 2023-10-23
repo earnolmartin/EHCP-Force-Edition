@@ -89,7 +89,7 @@ newrootpass:$newrootpass
 ehcpadminpass:$ehcpadminpass
 */
 
-installsql();
+installsql($webServerToInstall);
 
 install_vsftpd_server();
 

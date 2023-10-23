@@ -1520,7 +1520,7 @@ function buildconfigphp(){
 
 }
 
-function installsql() {
+function installsql($webServerToInstall) {
 	global $app,$ehcpinstalldir,$ip,$lang,$user_email,$user_name,$ehcpmysqlpass,$rootpass,$newrootpass,$ehcpadminpass,$debugMode,$mysql_root_pass,$adminEmail;
 	bosluk2();
 
@@ -1609,6 +1609,9 @@ function installsql() {
 	passthru("cp $ehcpinstalldir/config.php ./config.php");
 	passthru("rm $ehcpinstalldir/ehcp1.sql"); # removed for security, root pass was there..
 
+	if($webServerToInstall == "nginx"){
+		exec("mysql -D ehcp -u root --password=$tmprootpass -e \"update misc SET value = 'nginx' WHERE name = 'webservertype';\" 2>&1", $outputLines);
+	}
 	
 	$app = new Application();
 	$dbConEstablished = $app->connectTodb();
