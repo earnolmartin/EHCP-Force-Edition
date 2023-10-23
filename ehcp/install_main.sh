@@ -3131,6 +3131,26 @@ function createSymlinks(){
 	if [ ! -e "/var/www/new/phpmyadmin" ] && [ -e "/usr/share/phpmyadmin" ]; then
 		ln -s /usr/share/phpmyadmin "/var/www/new/phpmyadmin"
 	fi
+	
+	# Remove some symlinks that can break things depending on certain situations
+	
+	# Nginx
+	# Remove /etc/nginx/sites-enabled/default symlink if exists
+	if [ -L "/etc/nginx/sites-enabled/default" ]; then
+		rm -f "/etc/nginx/sites-enabled/default"
+		if [ -e "/etc/nginx/sites-available/default" ]; then
+			cp "/etc/nginx/sites-available/default" "/etc/nginx/sites-enabled/default"
+		fi
+	fi
+	
+	#Apache2
+	# Remove /etc/apache2/sites-enabled/default symlink if exists
+	if [ -L "/etc/apache2/sites-enabled/default" ]; then
+		rm -f "/etc/apache2/sites-enabled/default"
+		if [ -e "/etc/apache2/sites-available/default" ]; then
+			cp "/etc/apache2/sites-available/default" "/etc/apache2/sites-enabled/default"
+		fi
+	fi
 }
 
 function preventUserCronFromWebUser(){
