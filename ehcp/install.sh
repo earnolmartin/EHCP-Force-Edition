@@ -382,10 +382,18 @@ else
 	echo -e ""
 	echo -e ""
 	
+	echo ""
+	echo -n "Default web server software to install (default apache)? [apache/nginx]: "
+	read insMode
+	insMode=$(echo "$insMode" | awk '{print tolower($0)}')
+	if [ ! -z "$insMode" ] && [ "$insMode" == "nginx" ]; then
+		webserver="nginx"
+	fi
+	
 	echo -e "Running the main installer now..."
 	
 	# Run the main installer
-	echo "bash install_main.sh $unattendedMode $extra $debug"
-	bash install_main.sh $unattendedMode $extra $debug
+	echo "bash install_main.sh $unattendedMode $extra $debug $webserver"
+	bash install_main.sh $unattendedMode $extra $debug $webserver
 	
 fi
