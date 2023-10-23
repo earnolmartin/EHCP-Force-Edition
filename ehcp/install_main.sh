@@ -3145,10 +3145,10 @@ function createSymlinks(){
 	
 	#Apache2
 	# Remove /etc/apache2/sites-enabled/default symlink if exists
-	if [ -L "/etc/apache2/sites-enabled/default" ]; then
-		rm -f "/etc/apache2/sites-enabled/default"
-		if [ -e "/etc/apache2/sites-available/default" ]; then
-			cp "/etc/apache2/sites-available/default" "/etc/apache2/sites-enabled/default"
+	if [ -L "/etc/apache2/sites-enabled/000-default.conf" ]; then
+		rm -f "/etc/apache2/sites-enabled/000-default.conf"
+		if [ -e "/etc/apache2/sites-available/000-default.conf" ]; then
+			cp "/etc/apache2/sites-available/000-default.conf" "/etc/apache2/sites-enabled/default"
 		fi
 	fi
 }
