@@ -1003,6 +1003,7 @@ function restartDaemons(){ # by earnolmartin@gmail.com
 	# Restart apache2 daemon
 	manageService "apache2" "restart"
 	if [ "$syncDomainsPostInstall" = true ]; then
+		manageService "apache2" "stop"
 		manageService "nginx" "restart"
 		managePHPFPMService "stop"
 		managePHPFPMService "start"
@@ -3429,8 +3430,10 @@ writeOutVersionInfo
 # Use systemd services if systemd is present
 daemonUseSystemd
 
-# Syncdomains if needed
-syncDomainsEHCP
+if [ "$webserver" == "nginx" ]; then
+	setWebServerModeToNginx
+	syncDomainsPostInstall=true
+fi
 
 # Enable postfix submission port by default
 postfixEnableSubmissionPortByDefault
@@ -3453,6 +3456,9 @@ installPipPackages
 
 # Inform installation is complete
 postInstallInformation
+
+# Syncdomains if needed
+syncDomainsEHCP
 
 # Run final cleanup
 finalCleanup
