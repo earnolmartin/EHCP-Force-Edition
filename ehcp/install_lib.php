@@ -1279,16 +1279,13 @@ function rebuild_nginx_config2($mydir){
 	manageService("nginx", "restart");
 }
 
-function install_nginx_webserver(){
+function install_webserver_common(){
 	$mydir=getcwd();
 	global $app, $ehcpinstalldir;
 	
-	# thanks to webmaster@securitywonks.net for encourage of nginx integration
-	echo "\nStarting nginx webserver install (not default)\n";
-	#bekle();
-	
-	// Stop apache if it is running so nginx will install... thanks Ubuntu
-	manageService("apache2", "stop");
+	// Install apache2 stuff
+	aptget(array('libapache2-mod-php5','libapache2-mod-php','php5','php'));
+	aptget(array('apache2'));
 	
 	// Install nginx stuff
 	aptget(array('nginx','php5-fpm','php-fpm','php5-cgi','php-cgi'));  # apt-get install nginx php5-fpm php5-cgi
@@ -1302,6 +1299,18 @@ function install_nginx_webserver(){
 			aptget($arrayOfPHPFPM);
 		}
 	}
+}
+
+function install_nginx_webserver(){
+	$mydir=getcwd();
+	global $app, $ehcpinstalldir;
+	
+	# thanks to webmaster@securitywonks.net for encourage of nginx integration
+	echo "\nStarting nginx webserver install (not default)\n";
+	#bekle();
+	
+	// Stop apache if it is running so nginx will install... thanks Ubuntu
+	manageService("apache2", "stop");
 	
 	copy("$mydir/etc/nginx/mime.types","/etc/nginx/mime.types");
 	
@@ -1333,9 +1342,6 @@ function installapacheserver($apacheconf=''){
 	global $app,$ehcpinstalldir;
 	echo "\nStarting apache2 webserver install (default webserver)\n";
 	#bekle(__FUNCTION__." basliyor..");
-	
-	aptget(array('libapache2-mod-php5','libapache2-mod-php','php5','php'));
-	aptget(array('apache2'));
 	
 	// We're configuring the apache server, but if the user switches to nginx later, we need to be partially setup for it...
 	rebuild_nginx_config2($ehcpinstalldir);

@@ -449,6 +449,8 @@ function launchPanel(){
 		if [ ! -z "$SUDO_USER" ] && [ "$SUDO_USER" != "root" ]; then
 			echo 
 			echo "The EHCP panel is now accessible!"
+			echo "Sleeping for 15 seconds to make sure any remaining ehcp daemon operations are completed..."
+			sleep 15s
 			echo "Your panel administrative login is: admin"
 			echo "Attempting to load the control panel via web browser from the local machine."
 			sudo -u "$SUDO_USER" xdg-open http://localhost/

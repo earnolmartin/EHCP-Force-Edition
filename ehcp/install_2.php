@@ -95,10 +95,13 @@ install_vsftpd_server();
 
 fail2ban_install();
 
-if($webServerToInstall == "nginx" || ((isset($version) && $version != "12.10" && $distro == "ubuntu") || $distro == "debian")){
-  install_nginx_webserver();
+// Install both webserver packages
+install_webserver_common();
+
+if($webServerToInstall == "nginx"){
+	install_nginx_webserver();
 }else{
-  installapacheserver();
+	installapacheserver();
 }
 
 # scandb();  no more need to scan db since ver. 0.29.15
