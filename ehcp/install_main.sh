@@ -43,6 +43,8 @@ do
 		skip_updates="yes"
 	elif [ "$varCheck" == "debug" ]; then
 		debug="debug"
+    elif [ "$varCheck" == "nginx" ]; then
+		webserver="nginx"
     fi
 done
 
@@ -3308,7 +3310,7 @@ echo
 echo "STAGE 2"
 echo "====================================================================="
 echo "now running install_1.php "
-php install_1.php $version $distro $noapt $unattended $installmode $debug
+php install_1.php $version $distro $noapt $unattended $installmode $debug $webserver
 
 echo 
 echo 
@@ -3318,7 +3320,7 @@ echo "now running install_2.php "
 
 #Send version to avoid installing nginx on Ubuntu 12.10 --- there is a bug and it's not supported
 #php install_2.php $noapt || php /etc/ehcp/install_2.php $noapt  # start install_2.php if first install is successfull at php level. to prevent many errors.
-php install_2.php $version $distro $noapt $unattended $installmode $debug
+php install_2.php $version $distro $noapt $unattended $installmode $debug $webserver
 
 ###############################################
 # Post Install Functions by Eric Arnol-Martin #

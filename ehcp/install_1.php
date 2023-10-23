@@ -3,6 +3,7 @@ error_reporting (E_ALL ^ E_NOTICE);
 //  first part of install.
 //  this installs mailserver, then, install2 begins, 
 //  i separated these installs because php email function does not work if i re-start php after email install... 
+$webServerToInstall = "apache2";
 
 if($argc>1){
 
@@ -18,7 +19,7 @@ if($argc>1){
   $distro = strtolower(trim($argv[2]));
 }
 
-for($i=3;$i<=6;$i++){ # accept following arguments in any of position.
+for($i=3;$i<=7;$i++){ # accept following arguments in any of position.
 	if($argc>$i) {
 		print "argc:$argc\n\n";
 		switch($argv[$i]) {
@@ -37,6 +38,9 @@ for($i=3;$i<=6;$i++){ # accept following arguments in any of position.
 				break;
 			case 'debug':
 				$debugMode = true;
+				break;
+			case 'nginx':
+				$webServerToInstall = "nginx";
 				break;
 			default:
 				echo __FILE__." dosyasinda bilinmeyen arguman degeri:".$argv[$i];

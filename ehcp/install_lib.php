@@ -1269,7 +1269,12 @@ function rebuild_nginx_config2($mydir){
 	passthru2("cp $mydir/etc/nginx/apachetemplate.nginx $mydir/apachetemplate_passivedomains");
 	passthru2("cp $mydir/etc/nginx/apache_subdomain_template.nginx $mydir/apache_subdomain_template");
 	replacelineinfile("listen =","listen = 9000","$phpConfDir/fpm/pool.d/www.conf", true);
-	manageService("php5-fpm", "restart");
+	
+	$phpFPMVersion = $app->getPHPFPMName();
+	if($phpFPMVersion === false){
+		$phpFPMVersion = "php5-fpm";
+	}
+	manageService($phpFPMVersion, "restart");
 }
 
 function install_nginx_webserver(){
@@ -1298,14 +1303,24 @@ function install_nginx_webserver(){
 	
 	copy("$mydir/etc/nginx/mime.types","/etc/nginx/mime.types");
 	
-	// Stop and disable services
-	manageService("php5-fpm", "stop");
-	manageService("nginx", "stop");
-	$app->disableService("php5-fpm");
-	$app->disableService("nginx");
+	$phpFPMVersion = $app->getPHPFPMName();
+	if($phpFPMVersion === false){
+		$phpFPMVersion = "php5-fpm";
+	}
 	
-	// Start apache2 
-	manageService("apache2", "start");
+	// We're configuring the nginx server, but if the user switches to apache2 later, we need to be partially setup for it...
+	rebuild_apache2_config2();
+	
+	// Ok, now go ahead and rebuild the nginx config
+	rebuild_nginx_config2();
+	
+	manageService($phpFPMVersion, "restart");
+	manageService("nginx", "restart");	
+	
+	// Stop and disable services
+	$app->disableService("apache2");
+	$app->enableService("nginx");
+	$app->enableService($phpFPMVersion);
 	
 	echo "\nEnd nginx install\n";
 	#bekle();
@@ -1317,6 +1332,12 @@ function installapacheserver($apacheconf=''){
 	#bekle(__FUNCTION__." basliyor..");
 	
 	aptget(array('libapache2-mod-php5','libapache2-mod-php','php5','php'));
+	aptget(array('apache2'));
+	
+	// We're configuring the apache server, but if the user switches to nginx later, we need to be partially setup for it...
+	rebuild_nginx_config2();
+	
+	// Ok, now go ahead and rebuild the apache config
 	rebuild_apache2_config2();
 }
 

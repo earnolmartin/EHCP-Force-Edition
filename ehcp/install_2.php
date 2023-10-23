@@ -4,6 +4,7 @@ error_reporting (E_ALL ^ E_NOTICE);
 //  first part installs mailserver, then, install2 begins, 
 //  i separated these installs because php email function does not work if i re-start php after email install... 
 // install functions in install_lib.php
+$webServerToInstall = "apache2";
 
 if($argc>1){
 
@@ -19,7 +20,7 @@ if($argc>1){
   $distro = strtolower(trim($argv[2]));
 }
 
-for($i=3;$i<=6;$i++){ # accept following arguments in any of position.
+for($i=3;$i<=7;$i++){ # accept following arguments in any of position.
 	if($argc>$i) {
 		print "argc:$argc\n\n";
 		switch($argv[$i]) {
@@ -38,6 +39,9 @@ for($i=3;$i<=6;$i++){ # accept following arguments in any of position.
 				break;
 			case 'debug':
 				$debugMode = true;
+				break;
+			case 'nginx':
+				$webServerToInstall = "nginx";
 				break;
 			default:
 				echo __FILE__." dosyasinda bilinmeyen arguman degeri:".$argv[$i];
@@ -91,12 +95,11 @@ install_vsftpd_server();
 
 fail2ban_install();
 
-if((isset($version) && $version != "12.10" && $distro == "ubuntu") || $distro == "debian"){
+if($webServerToInstall == "nginx" || ((isset($version) && $version != "12.10" && $distro == "ubuntu") || $distro == "debian")){
   install_nginx_webserver();
 }else{
-  echo "Ubuntu 12.10 is not compatible with nginx due to bugs. Installing apache2 only. Upgrade to Ubuntu 13.04 for this functionality.\n";
+  installapacheserver();
 }
-installapacheserver();
 
 # scandb();  no more need to scan db since ver. 0.29.15
 installfinish();
