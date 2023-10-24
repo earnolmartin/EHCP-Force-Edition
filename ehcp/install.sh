@@ -272,17 +272,17 @@ installInitialPrereqs
 # Get parameters
 for varCheck in "$@"
 do
-    if [ "$varCheck" == "unattended" ]; then
+	if [ "$varCheck" == "unattended" ]; then
 		preUnattended=1
-    elif [ "$varCheck" == "debug" ]; then
+	elif [ "$varCheck" == "debug" ]; then
 		debug="debug"
-    elif [ "$varCheck" == "extra" ]; then
+	elif [ "$varCheck" == "extra" ]; then
 		installmode="extra"
-    elif [ "$varCheck" == "normal" ]; then
+	elif [ "$varCheck" == "normal" ]; then
 		installmode="normal"
 	elif [ "$varCheck" == "nginx" ]; then
 		webserver="nginx"
-    fi
+	fi
 done
 
 if [ ! -z "$preUnattended" ]; then
