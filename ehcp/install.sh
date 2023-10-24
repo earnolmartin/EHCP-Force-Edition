@@ -205,6 +205,11 @@ function installInitialPrereqs(){
 	aptgetInstall subversion
 	aptgetInstall curl
 	aptgetInstall zip
+	
+	# Keep kernel update notifications from interrupting...
+	if [ -e "/etc/needrestart/needrestart.conf" ]; then
+		sed -i "s/#\$nrconf{kernelhints} = -1;/\$nrconf{kernelhints} = -1;/g" /etc/needrestart/needrestart.conf
+	fi
 }
 
 function setTimezoneManually(){
