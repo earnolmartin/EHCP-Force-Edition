@@ -280,6 +280,8 @@ do
 		installmode="extra"
     elif [ "$varCheck" == "normal" ]; then
 		installmode="normal"
+	elif [ "$varCheck" == "nginx" ]; then
+		webserver="nginx"
     fi
 done
 
@@ -379,9 +381,7 @@ else
 	echo -e "Performing server date/timezone check..."
 	echo -e ""
 	checkServerTime
-	echo -e ""
-	echo -e ""
-	
+		
 	echo ""
 	echo -n "Default web server software to install (default apache)? [apache/nginx]: "
 	read insMode
