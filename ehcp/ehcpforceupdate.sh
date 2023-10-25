@@ -2271,6 +2271,12 @@ function installNewPackages(){
 	
 	# Needed for PolicyD
 	aptgetInstall libdbd-mysql-perl
+	
+	# Keep kernel update notifications from interrupting...
+	if [ -e "/etc/needrestart/needrestart.conf" ]; then
+		sed -i "s/#\$nrconf{kernelhints} = -1;/\$nrconf{kernelhints} = -1;/g" /etc/needrestart/needrestart.conf
+		sed -i "/#\$nrconf{restart} = 'i';/s/.*/\$nrconf{restart} = 'a';/" /etc/needrestart/needrestart.conf
+	fi
 }
 
 function getRidOfExtraPHPMyAdminAlias(){
