@@ -2134,7 +2134,7 @@ organizationalUnitName	= $unit_name";
 				array('clearTemplate', 'submit', 'default' => 'Revert to Default'),
 				array('op', 'hidden', 'default' => __FUNCTION__)
 			);
-			$this->output .= '<p>' . $this->selecteddomain . ' Using Default Template: ' . ($usingDefault ? '<span class="success">YES</span>' : '<span class="error">NO</span>') . '</p><div class="editTemplateArea"><div class="editTemplateArea">' . inputform5($inputparams) . '</div>';
+			$this->output .= '<p>' . $this->selecteddomain . ' Using Default Template: ' . ($usingDefault ? '<span class="success">YES</span>' : '<span class="error">NO</span>') . '</p><div class="editTemplateArea">' . inputform5($inputparams) . '</div>';
 		} else {
 			if ($clearTemplate) {
 				$success = $success && $this->executeQuery("update " . $this->conf['domainstable']['tablename'] . " set $templatefield='' where domainname='" . $domainname . "'");
@@ -7118,7 +7118,7 @@ email2@domain2.com:password2<br>
 				array('op', 'hidden', 'default' => __FUNCTION__)
 			);
 
-			$this->output .= "<br>Edit Global Website Templates<br>Currently Using Default Template: <span class='success usingDefaultTemplateYes' style='display: none; font-weight: bold;'>Yes</span><span class='error usingDefaultTemplateNo' style='display: none; font-weight: bold;'>No</span><br>" . inputform5($inputparams);
+			$this->output .= "<br>Edit Global Website Templates<br>Currently Using Default Template: <span class='success usingDefaultTemplateYes' style='display: none; font-weight: bold;'>Yes</span><span class='error usingDefaultTemplateNo' style='display: none; font-weight: bold;'>No</span><br><div class='editTemplateArea'>" . inputform5($inputparams) . "</div>";
 		} else {
 			if ($clearTemplate) {
 				$success = $this->revertTemplateBackToEHCPDefault($template_file, $webserver_type, $webserver_mode);
