@@ -3859,6 +3859,13 @@ $gateway="206.51.230.1";
 
 	function addEmailForwardingDirect($panelusername, $domainname, $fromemail, $forwardto)
 	{
+		// Check to see if email address being added has already been setup as a forwarder (if so, return an error)
+		$SQL = "SELECT * FROM " . $this->conf['emailuserstable']['tablename'] . " WHERE email='$fromemail';";
+		$rs = $this->query($SQL);
+		if (count($rs) > 0) {
+			return $this->ok_err_text(false, "", 'Email address ' . $email . ' is already configured as normal inbox.  Use a different source address or delete the existing email account first.');
+		}
+		
 		return $this->executeQuery("insert into forwardings (panelusername,domainname,source,destination)values('$panelusername','$domainname','$fromemail','$forwardto')", $opname);
 	}
 
@@ -9091,6 +9098,13 @@ email2@domain2.com:password2<br>
 		$this->output .= "Adding email user:";
 		$mailusername = getFirstPart($mailusername, '@'); # make sure does not include @ sign
 		$email = "$mailusername@$domainname";
+		
+		// Check to see if email address being added has already been setup as a forwarder (if so, return an error)
+		$SQL = "SELECT * FROM " . $this->conf['emailforwardingstable']['tablename'] . " WHERE source='$email';";
+		$rs = $this->query($SQL);
+		if (count($rs) > 0) {
+			return $this->ok_err_text(false, "", 'Email address ' . $email . ' is already configured as a forwarded email setup.  Use a different address or delete the existing forwarder first.');
+		}
 
 		$success = $success && $this->executeQuery("insert into " . $this->conf['emailuserstable']['tablename'] . " (panelusername,domainname,mailusername,email,password,quota,status,autoreplysubject,autoreplymessage) values ('$this->activeuser','$domainname','$mailusername','$email',encrypt('$password','ehcp'),$quota,'" . $this->status_active . "','$autoreplysubject','$autoreplymessage')", 'add mail user');
 		#$success=$success && $this->executeQuery("insert into ".$this->conf['emailuserstable']['tablename']." (panelusername,domainname,mailusername,email,password,quota,status,autoreplysubject,autoreplymessage) values ('$this->activeuser','$domainname','$mailusername','$email',encrypt('$password','ehcp'),'".($quota*1000000)."','".$this->status_active."','$autoreplysubject','$autoreplymessage')",'add mail user');
