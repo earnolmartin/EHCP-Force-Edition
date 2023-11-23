@@ -3863,7 +3863,7 @@ $gateway="206.51.230.1";
 		$SQL = "SELECT * FROM " . $this->conf['emailuserstable']['tablename'] . " WHERE email='$fromemail';";
 		$rs = $this->query($SQL);
 		if (count($rs) > 0) {
-			return $this->ok_err_text(false, "", 'Email address ' . $email . ' is already configured as a normal inbox.  Use a different source address or delete the existing email account first.');
+			return $this->ok_err_text(false, "", 'Email address ' . $fromemail . ' is already configured as a normal inbox.  Use a different source address or delete the existing email account first.');
 		}
 		
 		return $this->executeQuery("insert into forwardings (panelusername,domainname,source,destination)values('$panelusername','$domainname','$fromemail','$forwardto')", $opname);
