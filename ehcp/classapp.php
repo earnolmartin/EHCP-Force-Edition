@@ -7973,6 +7973,7 @@ email2@domain2.com:password2<br>
 
 				$currentHome = $domainInfo["homedir"];
 				$newHome = "/var/www/vhosts/" . $newAccountFTPLogin;
+				$newHomeFullPath = $newHome . "/" . $domainInfo["domainname"];
 
 				// Update associations in the database.
 				$success = $success && $this->executeQuery("update " . $this->conf['domainstable']['tablename'] . " set homedir= '" . $newHome . "/" . $domainInfo["domainname"] . "', panelusername = '" . $movetopaneluser . "', reseller = '" . $resellerOfAccount . "' where domainname = '" . $domainInfo["domainname"] . "';");
@@ -7989,6 +7990,9 @@ email2@domain2.com:password2<br>
 
 				// Move files to the new home directory
 				$success = $success && $this->runCommandInDaemon("mkdir -p " . $newHome . "/" . $domainInfo["domainname"] . " && cp -R " . $currentHome . "/* " . $newHome . "/" . $domainInfo["domainname"] . " && rm -rf " . $currentHome . " && chown -R " . $this->ftpuser . ":www-data " . $newHome . "/" . $domainInfo["domainname"]);
+
+				// Update any let's encrypt configuration paths
+				$success = $success && $this->runCommandInDaemon('sed -i "s#' . $currentHome . '#' . $newHomeFullPath . '#g" /etc/letsencrypt/renewal/' . $domainInfo["domainname"] . '.conf');
 
 				// Sync FTP accounts
 				$success = $success && $this->addDaemonOp('syncftp', '', '', '', 'sync ftp for nonstandard homes');
