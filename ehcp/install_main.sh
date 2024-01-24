@@ -14,7 +14,7 @@
 # You should run this fork on Ubuntu.  It will work perfectly on all supported Ubuntu versions (The ones Ubuntu officially supports such as the LTS release and latested versions).
 # Debian should work as well, but if it doesn't, please let me know. 
 # Based on Yeni EHCP Release
-# Source code available via SVN so that multiple people can develop and track changes!
+# Source code available via git so that multiple people can develop and track changes!
 # Does not add a EHCP reseller account by default without your knowledge ensuring security
 # Main Web Panel GUI theme is Ep-Ic V2 (theme I custom developed which links to all of the new functionality)
 # Other themes may not have the latest and greatest operations available

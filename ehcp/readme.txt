@@ -31,7 +31,7 @@ This version differs from the original version slightly.  In fact, both the lead
 
 In my version, custom FTP accounts to a custom file path can be created.  Also, php chmod and FTP chmod should both work since the apache user has been changed.  
 
-The code is managed and maintained within SVN (it is not in the original EHCP).
+The code is managed and maintained within GitHub (it is not in the original EHCP).
 
 As new versions of Ubuntu are released, this version is updated more quickly.  
 
@@ -40,10 +40,14 @@ As new versions of Ubuntu are released, this version is updated more quickly.
 #################################
 Run the following commands to install the latest version of EHCP [FoRcE Edition] from a terminal:
 
-sudo apt-get install subversion
+mkdir -p ~/Downloads
+sudo apt-get -y install git
 cd ~/Downloads
-svn checkout https://github.com/earnolmartin/EHCP-Force-Edition/trunk/ehcp ./ehcp
-rm -Rf .svn
+if [ -e "ehcp" ]; then
+    rm -rf "ehcp"
+fi
+git clone "https://github.com/earnolmartin/EHCP-Force-Edition.git" "ehcp"
+cd ehcp
 cd ehcp
 sudo bash install.sh
 

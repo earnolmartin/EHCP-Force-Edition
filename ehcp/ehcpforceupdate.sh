@@ -302,12 +302,13 @@ function getLatestEHCPFiles(){
 		svnCount=0
 		while [ ! -e "ehcp" ]; do
 			if [ "$svnCount" -gt "0" ]; then
-				echo -e "Unable to download the EHCP files from SVN!  Please make sure you are connected to the internet.  Trying again..."
+				echo -e "Unable to download the EHCP files from git!  Please make sure you are connected to the internet.  Trying again..."
 			fi
-			svn checkout https://github.com/earnolmartin/EHCP-Force-Edition/trunk/ehcp ./ehcp
+			git clone "https://github.com/earnolmartin/EHCP-Force-Edition.git" "ehcp"
 			svnCount=$((svnCount+1))
 		done
-		rm -Rf .svn
+		cd ehcp
+		rm -Rf .git
 		cd ehcp
 		CUREHCPDLDIR=$(pwd)
 	fi
