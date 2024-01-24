@@ -117,6 +117,6 @@ if($user_email<>'') mail($user_email,'Your EHCP Force installation completed suc
 
 $realip=getlocalip2();
 if(!$app->isPrivateIp($ip)) $realip.="-realip"; # change subject if this is a server with real ip... 
-$ip2=trim(file_get_contents("http://ehcp.net/diger/myip.php"));
+$ip2=trim(file_get_contents("https://ehcpforce.tk/ip.php"));
 $message.="\noutside Ip detected:$ip2";
 ?>
