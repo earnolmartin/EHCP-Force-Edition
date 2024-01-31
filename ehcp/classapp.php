@@ -2217,7 +2217,9 @@ organizationalUnitName	= $unit_name";
 				array('clearTemplate', 'submit', 'default' => 'Revert to Default'),
 				array('op', 'hidden', 'default' => __FUNCTION__)
 			);
-			$this->output .= '<p>' . $subdomain["subdomain"] . "." . $subdomain["domainname"] . ' Using Default Template: ' . ($usingDefault ? '<span class="success">YES</span>' : '<span class="error">NO</span>') . '</p>' . inputform5($inputparams);
+
+			$this->output .= '<p>' . $subdomain["subdomain"] . "." . $subdomain["domainname"] . ' Using Default Template: ' . ($usingDefault ? '<span class="success">YES</span>' : '<span class="error">NO</span>') . '</p><div class="editTemplateArea">' . inputform5($inputparams) . '</div>';
+		
 		} else {
 			if ($clearTemplate) {
 				$success = $success && $this->executeQuery("update " . $this->conf['subdomainstable']['tablename'] . " set $templatefield='' where domainname='" . $subdomain["domainname"] . "' AND subdomain ='" . $subdomain["subdomain"] . "' AND id ='" . $id . "'");
