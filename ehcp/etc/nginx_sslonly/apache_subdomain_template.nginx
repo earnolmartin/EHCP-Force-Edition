@@ -35,13 +35,6 @@ server {
 		include fastcgi_params;
 		limit_req zone=one burst=5;
 	}
-
-	## Images and static content is treated different
-	location ~* ^.+.(jpg|jpeg|gif|css|png|js|ico|xml|swf)$ {
-		access_log off;
-		expires 30d;
-		root {homedir};
-	}
 	
 	location /.well-known {
 		auth_basic off;

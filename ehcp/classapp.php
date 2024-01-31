@@ -2245,7 +2245,8 @@ organizationalUnitName	= $unit_name";
 				if ($continue) {
 					$success = $success && $this->executeQuery("update " . $this->conf['subdomainstable']['tablename'] . " set $templatefield='" . $$templatefield . "' where domainname='" . $subdomain["domainname"] . "' AND subdomain ='" . $subdomain["subdomain"] . "' AND id ='" . $id . "'");
 					$success = $success && $this->addDaemonOp("syncdomains", 'xx', $subdomain["domainname"]); # sync only domain that is changed. not all domains... 
-					$this->ok_err_text($success, "Subdomain template modifications were successfully saved and stored in the database.", "Failed to save subdomain template modifications.");
+					$editAgainLink = '<a href="?op=editapachetemplatesubdomain&id=' . $id . '">Edit Subdomain Template Again</a>';
+					$this->ok_err_text($success, "Subdomain template modifications were successfully saved and stored in the database." . '<br>' . $editAgainLink, "Failed to save subdomain template modifications.");
 				}
 			}
 		}
