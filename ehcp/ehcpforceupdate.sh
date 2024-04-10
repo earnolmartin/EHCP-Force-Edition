@@ -2189,8 +2189,8 @@ function ModifyPHPIniConfigForFile(){
 			# And for gods sake, please set error reporting so that it doesn't annoy anyone!
 			sed -i "s#^error_reporting.*#error_reporting = E_ALL \& \~E_DEPRECATED \& \~E_NOTICE \& \~E_STRICT#g" "$PHPINIFILE"
 			
-			# Set max execution time higher to 100 seconds
-			sed -i "s#^max_execution_time.*#max_execution_time = 100#g" "$PHPINIFILE"
+			# Set max execution time higher to 180 seconds
+			sed -i "s#^max_execution_time.*#max_execution_time = 180#g" "$PHPINIFILE"
 			
 			# Configure opcache "properly" for PHP 5.5.x and up 
 			hasOpCache=$(cat "$PHPINIFILE" | grep -o "^\[opcache\]")
