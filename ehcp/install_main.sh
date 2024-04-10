@@ -1866,6 +1866,11 @@ function configurePHPIni(){
 	# Create /var/www/php_sessions directory to store PHP session files for the default configuration file only
 	# All defined vhosts have their own php_sessions directory for permissions sake...
 	setupPHPSessionsDir
+	
+	# Bump limit in nginx for max client size
+	if [ -e "/etc/nginx/nginx.conf" ]; then
+		sed -i "s#client_max_body_size.*#client_max_body_size 1024m;#g" "/etc/nginx/nginx.conf"
+	fi
 }
 
 function ModifyPHPIniConfigForFile(){
@@ -1877,17 +1882,17 @@ function ModifyPHPIniConfigForFile(){
 			# Turn error displaying on
 			sed -i "s#^display_errors.*#display_errors = On#g" "$PHPINIFILE"
 					
-			# Set upload limit higher to 50MB (We don't live in the 90s anymore...)
-			sed -i "s#^upload_max_filesize.*#upload_max_filesize = 50M#g" "$PHPINIFILE"
+			# Set upload limit higher to 1024MB (We don't live in the 90s anymore...)
+			sed -i "s#^upload_max_filesize.*#upload_max_filesize = 1024M#g" "$PHPINIFILE"
 			
-			# Set max post size to 50MB (We don't live in the 90s anymore...)
-			sed -i "s#^post_max_size.*#post_max_size = 50M#g" "$PHPINIFILE"
+			# Set max post size to 1024MB (We don't live in the 90s anymore...)
+			sed -i "s#^post_max_size.*#post_max_size = 1024M#g" "$PHPINIFILE"
 			
 			# And for gods sake, please set error reporting so that it doesn't annoy anyone!
 			sed -i "s#^error_reporting.*#error_reporting = E_ALL \& \~E_DEPRECATED \& \~E_NOTICE \& \~E_STRICT#g" "$PHPINIFILE"
 			
-			# Set max execution time higher to 100 seconds
-			sed -i "s#^max_execution_time.*#max_execution_time = 100#g" "$PHPINIFILE"
+			# Set max execution time higher to 180 seconds
+			sed -i "s#^max_execution_time.*#max_execution_time = 180#g" "$PHPINIFILE"
 			
 			# Configure opcache "properly" for PHP 5.5.x and up 
 			hasOpCache=$(cat "$PHPINIFILE" | grep -o "^\[opcache\]")
