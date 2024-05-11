@@ -5045,7 +5045,8 @@ $pageinfo
 		$this->apachePortFile = "/etc/apache2/ports.conf";
 
 		if ($this->commandline) {
-			print "\n\nlatest miscconfig:";
+			print "\nEHCP config reloaded...";
+			print "\n\nLatest miscconfig:";
 			print_r($this->miscconfig);
 		}
 
@@ -12507,12 +12508,23 @@ email2@domain2.com:password2<br>
 			}
 			$opArray = array();
 			$daemonOpArray = array();
+			$confReloaded = false;
 
 
 			// Get daemon operations and execute them
 			print_r($rs = $this->query("select * from operations where ((status is null)or(status<>'ok' and status<>'duplicate'))and(try<2)and(info<>'')"));
 			if ($rs) {
+				$daemonOpIndex = 0;
 				foreach ($rs as $op) {
+					
+					// Make sure config is loaded before executing daemon operations since it's critical the latest information is loaded and present.
+					if($daemonOpIndex == 0){
+						if(!$confReloaded){
+							$this->loadConfig();
+							$confReloaded = true;
+						}
+					}
+					
 					$operationName = trim($op['op']);
 					if ($this->isOpThatOnlyNeedsToRunOnce($operationName)) {
 						if (!in_array($operationName, $daemonOpArray)) {
@@ -12528,6 +12540,7 @@ email2@domain2.com:password2<br>
 					} else {
 						$this->runOp2Wrapper($op);
 					}
+					$daemonOpIndex++;
 				}
 				echo $this->output;
 			} else {
@@ -12542,7 +12555,17 @@ email2@domain2.com:password2<br>
 
 			// Read list of operations and execture them. 
 			if ($rs) {
+				$daemonOpIndex = 0;
 				foreach ($rs as $op) {
+					
+					// Make sure config is loaded before executing daemon operations since it's critical the latest information is loaded and present.
+					if($daemonOpIndex == 0){
+						if(!$confReloaded){
+							$this->loadConfig();
+							$confReloaded = true;
+						}
+					}
+					
 					$operationName = trim($op['op']);
 					if ($this->isOpThatOnlyNeedsToRunOnce($operationName)) {
 						#$this->executeQuery("update operations set try=try+1 where id=".$op['id']." limit 1",' updating operations, increasing try count ');
@@ -12560,6 +12583,7 @@ email2@domain2.com:password2<br>
 					} else {
 						$this->runOpWrapper($op);
 					}
+					$daemonOpIndex++;
 				}
 			} else {
 				//$this->error_occured("daemon main loop2");
@@ -12691,9 +12715,10 @@ email2@domain2.com:password2<br>
 	function tryReconnect()
 	{
 		$this->conn->close();
-		print "trying re-connecting to mysql db..\n";
+		print "Trying to re-connect to the MySQL EHCP database...\n";
 		if ($this->connectTodb2()) {
-			print "\n\nreconnect to mysql successfull.\n";
+			print "\n\nReconnected to the MySQL EHCP database successfully!  Reloading config from the database now as well.\n";
+			$this->loadConfig();
 		} else {
 			echo "\n\nehcp->cannot re-connect to mysql db...\n";
 			exit();
@@ -12964,6 +12989,8 @@ sudo service ehcp start <br>
 		# dnsde serial ayari yapilmasi lazim. yoksa nanay... ***
 
 		$this->requireCommandLine(__FUNCTION__);
+		
+		$this->loadConfig();
 
 		$arr = $this->getDomains();
 		$exampledomain = $arr[0];
