@@ -12989,8 +12989,6 @@ sudo service ehcp start <br>
 		# dnsde serial ayari yapilmasi lazim. yoksa nanay... ***
 
 		$this->requireCommandLine(__FUNCTION__);
-		
-		$this->loadConfig();
 
 		$arr = $this->getDomains();
 		$exampledomain = $arr[0];
