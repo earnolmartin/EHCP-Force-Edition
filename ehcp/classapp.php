@@ -12443,7 +12443,7 @@ email2@domain2.com:password2<br>
 	{
 		$op = strtolower($op);
 		$runOnce = false;
-		$manualListOfOpsThatRunOnce = array('updatehostsfile', 'rebuild_crontab', 'process_pwd_dirs', 'process_ssl_certs', 'fixapacheconfigssl', 'fixapacheconfigsslonly', 'fixapacheconfignonssl', 'update_ez_install');
+		$manualListOfOpsThatRunOnce = array('updatehostsfile', 'rebuild_crontab', 'process_pwd_dirs', 'process_ssl_certs', 'fixapacheconfigssl', 'fixapacheconfigsslonly', 'fixapacheconfignonssl', 'update_ez_install', 'loadconfig');
 
 		// Allow ops that start with daemon to run more than once
 		if (startsWith($op, "sync") || startsWith($op, "new_sync") || in_array($op, $manualListOfOpsThatRunOnce)) {
