@@ -12522,6 +12522,9 @@ email2@domain2.com:password2<br>
 						if(!$confReloaded){
 							$this->loadConfig();
 							$confReloaded = true;
+							if (!in_array('loadconfig', $opArray)) {
+								$opArray[] = 'loadconfig';
+							}
 						}
 					}
 					
@@ -12563,6 +12566,9 @@ email2@domain2.com:password2<br>
 						if(!$confReloaded){
 							$this->loadConfig();
 							$confReloaded = true;
+							if (!in_array('loadconfig', $opArray)) {
+								$opArray[] = 'loadconfig';
+							}
 						}
 					}
 					
