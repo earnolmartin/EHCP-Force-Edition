@@ -15455,6 +15455,11 @@ sudo service ehcp start <br>
 		}
 
 		$this->putArrayToFile($passivedomains, "apachehcp_passivedomains.conf", "apachetemplate_passivedomains");
+		
+		if(!is_array($passivedomains) || count($passivedomains) == 0){
+			// Clear the contents to avoid webserver issues
+			$success = writeoutput2("apachehcp_passivedomains.conf", "", 'w', false);
+		}
 
 		$passiveindex = $this->miscconfig['passiveindexfile'];
 		if ($passiveindex == '')
@@ -15464,6 +15469,11 @@ sudo service ehcp start <br>
 
 		# Add a second of wait time between functions. by eric.
 		# I've seen some strange issues regarding the exit status of apache2ctl
+
+		if(!is_array($arr) || count($arr) == 0){
+			// Clear the contents to avoid webserver issues
+			$success = writeoutput2($file, "", 'w', false);
+		}
 
 		sleep(1);
 		$success = $success && $this->syncSubdomains('', $domainname);
@@ -16223,7 +16233,7 @@ sudo service ehcp start <br>
 		$webserver_template_filename = "$this->ehcpdir/apache_subdomain_template";
 		$globalSubdomainTemplate = $this->getGlobalSubDomainTemplate();
 
-		if ($arr)
+		if ($arr){
 			foreach ($arr as $dom) { // setup necessry dirs/files if doesnt exist..
 				$subdir = $dom['homedir'];
 				print "\nProcessing subdir: $subdir \n";
@@ -16323,6 +16333,7 @@ sudo service ehcp start <br>
 				}
 
 			}
+		}
 
 		# you may see daemon mode output at logfile, typically tail -f /var/log/ehcp.log from command line
 		echo __FUNCTION__ . ": syncing subdomains:";
@@ -16376,6 +16387,11 @@ sudo service ehcp start <br>
 				} else
 					$success = false;
 			}
+		}
+		
+		if(!is_array($arr) || count($arr) == 0){
+			// Clear the contents to avoid webserver issues
+			$success = writeoutput2($file, "", 'w', false);
 		}
 
 		return $success;
