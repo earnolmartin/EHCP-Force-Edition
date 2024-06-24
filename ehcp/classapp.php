@@ -3349,7 +3349,14 @@ $gateway="206.51.230.1";
 				} else {
 					$skipLink = true;
 				}
-				$res .= ($pr == "panelusername" ? "owned by user " . $item[$pr] : $item[$pr]);
+				
+				if ($pr == "panelusername"){
+					$res .= "owned by user " . $item[$pr];
+				}else{
+					if($pr != "nginxtemplate" && $pr != "apache2template"){
+						$res .=	$item[$pr];
+					}
+				}
 				
 				if($pr == "nginxtemplate" && !empty($item[$pr])){
 					$res .= " (using custom nginx template)"; 
