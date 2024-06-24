@@ -17166,10 +17166,24 @@ sudo service ehcp start <br>
 			if (is_array($al)){
 				if(!in_array($al[0], $ignoredColumns)){
 					$selectalan[] = $al[0];
+				}else{
+					if(!in_array('nginxtemplate', $selectalan)){
+						$selectalan[] = 'nginxtemplate';
+					}
+					if(!in_array('apache2template', $selectalan)){
+						$selectalan[] = 'apache2template';
+					}
 				}
 			} else {
 				if(!in_array($al, $ignoredColumns)){
 					$selectalan[] = $al;
+				}else{
+					if(!in_array('nginxtemplate', $selectalan)){
+						$selectalan[] = 'nginxtemplate';
+					}
+					if(!in_array('apache2template', $selectalan)){
+						$selectalan[] = 'apache2template';
+					}
 				}
 			}
 		}
