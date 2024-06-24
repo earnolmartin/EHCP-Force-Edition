@@ -193,8 +193,8 @@ class Application
 		),
 		'subdomainstable' => array(
 			'tablename' => 'subdomains',
-			'listfields' => array('reseller', 'panelusername', 'subdomain', 'domainname', 'homedir', 'ftpusername', 'comment'),
-			'listlabels' => array('Reseller', 'Username', 'Subdomain', 'Domain', 'Home Directory', 'FTP Username', 'Comment', 'Delete', 'Edit Template'),
+			'listfields' => array('reseller', 'panelusername', 'subdomain', 'domainname', 'homedir', 'ftpusername', 'comment', 'is_using_custom_template'),
+			'listlabels' => array('Reseller', 'Username', 'Subdomain', 'Domain', 'Home Directory', 'FTP Username', 'Comment', 'Using Custom Template', 'Delete', 'Edit Template'),
 			'linkimages' => array('images/delete1.jpg', 'images/editapachetemplate.png'),
 			'linkfiles' => array('?op=delsubdomain', '?op=editapachetemplatesubdomain'),
 			'linkfield' => 'id',
@@ -3349,7 +3349,18 @@ $gateway="206.51.230.1";
 				} else {
 					$skipLink = true;
 				}
-				$res .= ($pr == "panelusername" ? "owned by user " . $item[$pr] : $item[$pr]) . (!$skipLink ? "</a>" : "") . "</td>";
+				$res .= ($pr == "panelusername" ? "owned by user " . $item[$pr] : $item[$pr]);
+				
+				if($pr == "nginxtemplate" && !empty($item[$pr])){
+					$res .= " (using custom nginx template)"; 
+				}
+				
+				if($pr == "apache2template" && !empty($item[$pr])){
+					$res .= " (using custom apache template)"; 
+				}
+				
+				$res .= (!$skipLink ? "</a>" : "");
+				$res .= "</td>";
 			}
 			$res .= "</tr>";
 		}
@@ -8860,13 +8871,18 @@ email2@domain2.com:password2<br>
 		$printColumns = array('domainname');
 		if ($this->isadmin() || $this->isreseller) {
 			$printColumns[] = 'panelusername';
+			if ($this->miscconfig['webservertype'] == "nginx") {
+				$printColumns[] = 'nginxtemplate';
+			}else{
+				$printColumns[] = 'apache2template';
+			}
 		}
 
 		// Output
 		if (!$mydomains)
 			$this->output .= "<br>You have no domains yet. Add domain first, then use this function.";
 		else
-			$this->output .= "<br><br>Select A Domain:" . $this->listSelector($arr = $mydomains, $print = $printColumns, $link = "?op=choosedomaingonextop&nextop=$opname&domainname=", $linfield = 'domainname', 'selectDomainNameLink', array('panelusername'));
+			$this->output .= "<br><br>Select A Domain:" . $this->listSelector($arr = $mydomains, $print = $printColumns, $link = "?op=choosedomaingonextop&nextop=$opname&domainname=", $linfield = 'domainname', 'selectDomainNameLink', array('panelusername', 'nginxtemplate', 'apache2template'));
 		return True;
 	}
 
@@ -17182,7 +17198,23 @@ sudo service ehcp start <br>
 						$al = $alan[$i][0];
 					else
 						$al = $alan[$i];
+						
 					$yaz = htmlspecialchars($r[$al]);
+					
+					if($al == 'is_using_custom_template'){
+						if ($this->miscconfig['webservertype'] == "nginx") {
+							$al = 'nginxtemplate';
+						}else{
+							$al = 'apache2template';
+						}
+						
+						if(!empty($r[$al])){
+							$yaz = "Yes";
+						}else{
+							$yaz = "No";
+						}
+					}
+					
 					if ($yaz == '') {
 						$result2 .= "$td&nbsp</td>";
 					} else {
