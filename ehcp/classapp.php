@@ -8538,6 +8538,8 @@ email2@domain2.com:password2<br>
 	{
 		global $domainname, $confirm, $confirm2; # gets domainname from _GET
 		$this->getVariable(array("domainname", "confirm", 'confirm2'));
+		
+		$listrowcount = 1000;
 
 		$domainname = $this->chooseDomain(__FUNCTION__, $domainname);
 
@@ -17098,7 +17100,7 @@ sudo service ehcp start <br>
 
 		if (!isset($baslangic1))
 			$baslangic1 = 0;
-		if (!isset($satirsayisi1) or $satirsayisi1 == 0 or empty($satirsayisi1y))
+		if (!isset($satirsayisi1) or $satirsayisi1 == 0)
 			$satirsayisi1 = 10;
 
 

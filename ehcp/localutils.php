@@ -653,6 +653,8 @@ if (!function_exists("tablobaslikyaz")) {
 		$tr = "<tr class='list'>";
 		$td = "<td class='list'>";
 		$th = "<th class='list'>";
+		
+		$skipExtra = false;
 
 		if ($baslik === null || !is_array($baslik)) {
 			$baslik = array();
@@ -663,6 +665,7 @@ if (!function_exists("tablobaslikyaz")) {
 		$result2 = " \n $tr";
 		if (count($baslik) > 0) {
 			$alansayisi = count($baslik);
+			$skipExtra = true;
 			for ($i = 0; $i < $alansayisi; $i++) {
 				if ($baslik[$i] <> "") {
 					$yaz = $baslik[$i];
@@ -684,13 +687,15 @@ if (!function_exists("tablobaslikyaz")) {
 		}
 
 		// Handle extra
-		if (is_array($extra)) {
-			for ($i = 0; $i < count($extra); $i++) {
-				$indexToStart = count($baslik) - count($extra) + $i;
-				if ($alansayisi + count($extra) == count($baslik)) {
-					$result2 .= "$th" . (isset($baslik) && is_array($baslik) && array_key_exists($indexToStart, $baslik) && !empty($baslik[$indexToStart]) ? $baslik[$indexToStart] : "") . "</th>";
-				} else {
-					$result2 .= $th . "</th>";
+		if(!$skipExtra){
+			if (is_array($extra)) {
+				for ($i = 0; $i < count($extra); $i++) {
+					$indexToStart = count($baslik) - count($extra) + $i;
+					if ($alansayisi + count($extra) == count($baslik)) {
+						$result2 .= "$th" . (isset($baslik) && is_array($baslik) && array_key_exists($indexToStart, $baslik) && !empty($baslik[$indexToStart]) ? $baslik[$indexToStart] : "") . "</th>";
+					} else {
+						$result2 .= $th . "</th>";
+					}
 				}
 			}
 		}
