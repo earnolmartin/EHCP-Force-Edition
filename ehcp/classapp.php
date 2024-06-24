@@ -17159,11 +17159,17 @@ sudo service ehcp start <br>
 		}
 
 		$selectalan = array();
+		$ignoredColumns = array('is_using_custom_template');
 		foreach ($alan as $al) {
-			if (is_array($al))
-				$selectalan[] = $al[0];
-			else
-				$selectalan[] = $al;
+			if (is_array($al)){
+				if(!in_array($al[0], $ignoredColumns)){
+					$selectalan[] = $al[0];
+				}
+			} else {
+				if(!in_array($al, $ignoredColumns)){
+					$selectalan[] = $al;
+				}
+			}
 		}
 
 		$baslikalan = $selectalan;
