@@ -662,11 +662,16 @@ if (!function_exists("tablobaslikyaz")) {
 
 		$result2 = " \n $tr";
 		if (count($baslik) > 0) {
+			$alansayisi = count($baslik);
 			for ($i = 0; $i < $alansayisi; $i++) {
 				if ($baslik[$i] <> "") {
 					$yaz = $baslik[$i];
 				} else {
-					$yaz = $alan[$i];
+					if(array_key_exists($i, $alan)){
+						$yaz = $alan[$i];
+					}else{
+						$yaz = '';
+					}
 				}
 				$result2 .= "$th$yaz</th>";
 			}
