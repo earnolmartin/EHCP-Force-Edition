@@ -264,8 +264,8 @@ function disableRecursiveBIND(){ # by earnolmartin@gmail.com
 			fi
 			
 			# Add additional-from-cache no
-			# No longer needed for Ubuntu 22.04+
-			if [[ "$distro" == "ubuntu" && "$yrelease" -le "20" ]] || [[ "$distro" == "debian" && "$yrelease" -le "11" ]]; then
+			# No longer needed for Ubuntu 20.04+
+			if [[ "$distro" == "ubuntu" && "$yrelease" -le "18" ]] || [[ "$distro" == "debian" && "$yrelease" -le "11" ]]; then
 				RecursiveCacheCheck=$( cat "$bindOptionsFile" | grep -o "^additional-from-cache .*" | grep -o " .*$" | grep -o "[^ ].*" )
 				if [ -z "$RecursiveCacheCheck" ]; then
 					sed -i '$i \additional-from-cache no;' "$bindOptionsFile"
