@@ -17093,17 +17093,18 @@ sudo service ehcp start <br>
 		if (!isset($baslangic) || empty($baslangic)) {
 			$baslangic = 0;
 		}
+		
 		if (!isset($baslangic1))
 			$baslangic1 = $baslangic;
+			
 		if (!isset($satirsayisi1) or $satirsayisi1 == 0)
 			$satirsayisi1 = $satirsayisi;
 
-		if (!isset($baslangic1))
+		if (!isset($baslangic1) || empty($baslangic1) || !is_numeric($baslangic1))
 			$baslangic1 = 0;
-		if (!isset($satirsayisi1) or $satirsayisi1 == 0)
+			
+		if (!isset($satirsayisi1) || $satirsayisi1 == 0 || empty($satirsayisi1) || !is_numeric($satirsayisi1))
 			$satirsayisi1 = 10;
-
-
 
 		$result2 = '';
 		$alansayisi = count($alan);
