@@ -1011,7 +1011,7 @@ class Deliver {
                     //
                     if (strlen($header) > $pos + 1) {
                         $header = substr($header, $pos + 1);
-                        if (!in_array($header{0}, $whitespace))
+                        if (!in_array($header[0], $whitespace))
                             $header = ' ' . $indent . $header;
                     } else {
                         $header = '';
@@ -1034,7 +1034,7 @@ class Deliver {
             //
             if (strlen($header) > strlen($hard_wrapped_line)) {
                 $header = substr($header, strlen($hard_wrapped_line));
-                if (!in_array($header{0}, $whitespace))
+                if (!in_array($header[0], $whitespace))
                     $header = ' ' . $indent . $header;
             } else {
                 $header = '';

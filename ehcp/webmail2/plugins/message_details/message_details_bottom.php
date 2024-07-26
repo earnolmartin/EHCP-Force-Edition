@@ -165,7 +165,7 @@ for ($i=1; $i < $count; $i++) {
         }
     }
     
-    if (($line != '' && $line{0} == '-' || $header)  && isset($boundaries[0])) {
+    if (($line != '' && $line[0] == '-' || $header)  && isset($boundaries[0])) {
         $cnt=count($boundaries)-1;
 	$bnd = $boundaries[$cnt]['bnd'];
 	$bndreg = $boundaries[$cnt]['bndreg'];
@@ -175,7 +175,7 @@ for ($i=1; $i < $count; $i++) {
 	    $bndlen = strlen($reg[1]);
 	    $bndend = false;	    
             if (strlen($line) > ($bndlen + 3)) {
-		if ($line{$bndlen+2} == '-' && $line{$bndlen+3} == '-') 
+		if ($line[$bndlen+2] == '-' && $line[$bndlen+3] == '-') 
 		    $bndend = true;
 	    }
 	    if ($bndend) {

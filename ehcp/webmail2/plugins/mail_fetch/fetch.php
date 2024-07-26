@@ -238,7 +238,7 @@ for ($i_loop=$i_start;$i_loop<$i_stop;$i_loop++) {
 
         } // end while
 
-        while (list($lineNum, $line) = each ($MessArray)) {
+		foreach($MessArray as $lineNum => $line){
             $Message .= $line;
         }
 

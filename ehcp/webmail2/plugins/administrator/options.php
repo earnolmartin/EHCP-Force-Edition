@@ -37,65 +37,65 @@ function parseConfig( $cfg_file ) {
         for ($j=0;$j<$s;$j++) {
             switch ( $mode ) {
             case '=':
-                if ( $line{$j} == '=' ) {
+                if ( $line[$j] == '=' ) {
                     // Ok, we've got a right value, lets detect what type
                     $mode = 'D';
-                } else if ( $line{$j} == ';' ) {
+                } else if ( $line[$j] == ';' ) {
                     // hu! end of command
                     $key = $mode = '';
                 }
                 break;
             case 'K':
                 // Key detect
-                if ( $line{$j} == ' ' ) {
+                if ( $line[$j] == ' ' ) {
                     $mode = '=';
                 } else {
-                    $key .= $line{$j};
+                    $key .= $line[$j];
                 }
                 break;
             case ';':
                 // Skip until next ;
-                if ( $line{$j} == ';' ) {
+                if ( $line[$j] == ';' ) {
                     $mode = '';
                 }
                 break;
             case 'S':
-                if ( $line{$j} == '\\' ) {
-                    $value .= $line{$j};
+                if ( $line[$j] == '\\' ) {
+                    $value .= $line[$j];
                     $modifier = TRUE;
-                } else if ( $line{$j} == $delimiter && $modifier === FALSE ) {
+                } else if ( $line[$j] == $delimiter && $modifier === FALSE ) {
                     // End of string;
                     $newcfg[$key] = $value . $delimiter;
                     $key = $value = '';
                     $mode = ';';
                 } else {
-                    $value .= $line{$j};
+                    $value .= $line[$j];
                     $modifier = FALSE;
                 }
                 break;
             case 'N':
-                if ( $line{$j} == ';' ) {
+                if ( $line[$j] == ';' ) {
                     $newcfg{$key} = $value;
                     $key = $mode = '';
                 } else {
-                    $value .= $line{$j};
+                    $value .= $line[$j];
                 }
                 break;
             case 'C':
                 // Comments
                 if ( $s > $j + 1  &&
-                     $line{$j}.$line{$j+1} == '*/' ) {
+                     $line[$j].$line[$j+1] == '*/' ) {
                     $mode = '';
                     $j++;
                 }
                 break;
             case 'D':
                 // Delimiter detect
-                switch ( $line{$j} ) {
+                switch ( $line[$j] ) {
                 case '"':
                 case "'":
                     // Double quote string
-                    $delimiter = $value = $line{$j};
+                    $delimiter = $value = $line[$j];
                     $mode = 'S';
                     break;
                 case ' ':
@@ -114,12 +114,12 @@ function parseConfig( $cfg_file ) {
                     } else {
                         // Number or function call
                         $mode = 'N';
-                        $value = $line{$j};
+                        $value = $line[$j];
                     }
                 }
                 break;
             default:
-                if ( $line{$j} == '$' ) {
+                if ( $line[$j] == '$' ) {
                     // We must detect $key name
                     $mode = 'K';
                     $key = '$';
@@ -128,10 +128,10 @@ function parseConfig( $cfg_file ) {
                     // Skip untill next ;
                     $mode = ';';
                     $j += 6;
-                } else if ( $line{$j}.$line{$j+1} == '/*' ) {
+                } else if ( $line[$j].$line[$j+1] == '/*' ) {
                     $mode = 'C';
                     $j++;
-                } else if ( $line{$j} == '#' || $line{$j}.$line{$j+1} == '//' ) {
+                } else if ( $line[$j] == '#' || $line[$j].$line[$j+1] == '//' ) {
                     // Delete till the end of the line
                     $j = $s;
                 }
@@ -304,9 +304,9 @@ foreach ( $newcfg as $k => $v ) {
     } else if ( $l == 'false' ) {
         $v = 'FALSE';
         $type = SMOPT_TYPE_BOOLEAN;
-    } else if ( $v{0} == "'" ) {
+    } else if ( $v[0] == "'" ) {
         $type = SMOPT_TYPE_STRING;
-    } else if ( $v{0} == '"' ) {
+    } else if ( $v[0] == '"' ) {
         $type = SMOPT_TYPE_STRING;
     }
 
@@ -616,7 +616,7 @@ if ( $fp = @fopen( $cfgfile, 'w' ) ) {
     "global \$version;\n" );
 
     foreach ( $newcfg as $k => $v ) {
-        if ( $k{0} == '$' && $v <> '' || is_int($v)) {
+        if ( $k[0] == '$' && $v <> '' || is_int($v)) {
             if ( substr( $k, 1, 11 ) == 'ldap_server' ) {
                 $v = substr( $v, 0, strlen( $v ) - 1 ) . "\n)";
                 $v = str_replace( 'array(', "array(\n\t", $v );

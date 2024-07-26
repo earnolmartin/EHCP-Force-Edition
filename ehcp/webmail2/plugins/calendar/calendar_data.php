@@ -104,9 +104,9 @@ function writecalendardata() {
     $filename = getHashedFile($username, $data_dir, "$username.$year.cal");
     $fp = fopen ($filetmp,"w");
     if ($fp) {
-        while ( $calfoo = each ($calendardata)) {
-            while ( $calbar = each ($calfoo['value'])) {
-                $calfoobar = $calendardata[$calfoo['key']][$calbar['key']];
+		foreach($calendardata as $key => $value){
+            foreach($value as $calKey => $calValue) {
+                $calfoobar = $calendardata[$key][$calKey];
                 array_walk($calfoobar,'calendar_encodedata');
                 /**
                  * Make sure that reminder field is set. Calendar forms don't implement it, 
@@ -114,7 +114,7 @@ function writecalendardata() {
                  */ 
                 if (!isset($calfoobar['reminder'])) $calfoobar['reminder']='';
 
-                $calstr = "$calfoo[key]|$calbar[key]|$calfoobar[length]|$calfoobar[priority]|$calfoobar[title]|$calfoobar[message]|$calfoobar[reminder]\n";
+                $calstr = "$key|$calKey|$calfoobar[length]|$calfoobar[priority]|$calfoobar[title]|$calfoobar[message]|$calfoobar[reminder]\n";
                 if(sq_fwrite($fp, $calstr, 4096) === FALSE) {
                     error_box(_("Could not write calendar file %s", "$username.$year.cal.tmp"), $color);
                 }

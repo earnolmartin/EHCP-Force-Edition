@@ -465,14 +465,14 @@ function elapsedTime($start) {
  * @return string $s parsed string without the double quotes or literal count
  */
 function parseString($read,&$i) {
-    $char = $read{$i};
+    $char = $read[$i];
     $s = '';
     if ($char == '"') {
         $iPos = ++$i;
         while (true) {
             $iPos = strpos($read,'"',$iPos);
             if (!$iPos) break;
-            if ($iPos && $read{$iPos -1} != '\\') {
+            if ($iPos && $read[$iPos -1] != '\\') {
                 $s = substr($read,$i,($iPos-$i));
                 $i = $iPos;
                 break;
@@ -634,7 +634,7 @@ function parseFetch(&$aResponse, $aMessageList = array()) {
                                 case 'date':
                                     $aMsg['date'] = trim(str_replace('  ', ' ', $value));
                                     break;
-                                case 'x-priority': $aMsg['x-priority'] = ($value) ? (int) $value{0} : 3; break;
+                                case 'x-priority': $aMsg['x-priority'] = ($value) ? (int) $value[0] : 3; break;
                                 case 'priority':
                                 case 'importance':
                                     // duplicate code with Rfc822Header.cls:parsePriority()

@@ -631,7 +631,7 @@ function GenerateRandomString($size, $chars, $flags = 0) {
     $String = '';
     $j = strlen( $chars ) - 1;
     while (strlen($String) < $size) {
-        $String .= $chars{mt_rand(0, $j)};
+        $String .= $chars[mt_rand(0, $j)];
     }
 
     return $String;

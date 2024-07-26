@@ -2853,7 +2853,7 @@ function addToPostFixRecipientRestrictions(){
 
 function changeSquirrelMailConfigurationUseSendmail(){
 	# If newer than Ubuntu 18.04, use newer version of sendmail
-	if [[ "$distro" == "ubuntu" && "$yrelease" -ge "18" ]] || [[ "$distro" == "debian" && "$yrelease" -ge "10" ]]; then
+	if [[ "$distro" == "ubuntu" && "$yrelease" -le "20" ]] || [[ "$distro" == "debian" && "$yrelease" -le "11" ]]; then
 		if [ -e "/var/www/new/ehcp/webmail2" ] && [ -e "/var/www/new/ehcp/webmail2/config/config.php" ]; then
 			sqVersion=$(cat /var/www/new/ehcp/webmail2/config/config.php | grep -o "config_version =.*" | awk '{print $3}' | grep -o "[^';].*" | grep -o ".*[^';]")
 			if [ "$sqVersion" == "1.4.0" ]; then
@@ -2862,6 +2862,17 @@ function changeSquirrelMailConfigurationUseSendmail(){
 				unzip "$FIXDIR/squirrel_mail/squirrel_mail_1.5.x.zip" -d "/var/www/new/ehcp/"
 				fixSQMailPerms
 			fi
+		fi
+	fi
+	
+	# If newer than Ubuntu 18.04, use newer version of sendmail
+	if [[ "$distro" == "ubuntu" && "$yrelease" -ge "22" ]] || [[ "$distro" == "debian" && "$yrelease" -ge "12" ]]; then
+		if [ -e "/var/www/new/ehcp/webmail2" ] && [ -e "/var/www/new/ehcp/webmail2/config/config.php" ]; then
+			sqVersion=$(cat /var/www/new/ehcp/webmail2/config/config.php | grep -o "config_version =.*" | awk '{print $3}' | grep -o "[^';].*" | grep -o ".*[^';]")
+			bkDateSQMail=$(date +%Y_%m_%d_%s)
+			mv "/var/www/new/ehcp/webmail2" "/var/www/webmail_old_squirrel_mail_bk_${bkDateSQMail}"
+			unzip "$FIXDIR/squirrel_mail/squirrel_mail_1.5.2.zip" -d "/var/www/new/ehcp/"
+			fixSQMailPerms
 		fi
 	fi
 	

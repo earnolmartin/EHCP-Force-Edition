@@ -1412,7 +1412,7 @@ function inputValid($string, $mode)
 			$valid = filter_var($string, FILTER_VALIDATE_EMAIL);
 			break;
 		case "url":
-			$valid = filter_var($string, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED);
+			$valid = filter_var($string, FILTER_VALIDATE_URL);
 			break;
 	}
 	return $valid;

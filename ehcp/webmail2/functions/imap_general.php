@@ -211,7 +211,7 @@ function sqimap_read_data_list ($imap_stream, $tag_uid, $handle_errors,
     
     $i = 0;
     while ($read) {
-        $char = $read{0};
+        $char = $read[0];
         switch ($char)
         {
           case '+':
@@ -223,7 +223,7 @@ function sqimap_read_data_list ($imap_stream, $tag_uid, $handle_errors,
             $read = sqimap_fgets($imap_stream);
             break;
 
-          case $tag{0}:
+          case $tag[0]:
           {
             /* get the command */
             $arg = '';
@@ -308,11 +308,11 @@ function sqimap_read_data_list ($imap_stream, $tag_uid, $handle_errors,
                             break 4; /* while while switch while */
                         }
                         /* check for next untagged reponse and break */
-                        if ($read{0} == '*') break 2;
+                        if ($read[0] == '*') break 2;
                         $s = substr($read,-3);
                     } while ($s === "}\r\n" || $read_literal);
                     $s = substr($read,-3);
-                } while ($read{0} !== '*' &&
+                } while ($read[0] !== '*' &&
                          substr($read,0,strlen($tag)) !== $tag);
                 $resultlist[] = $fetch_data;
                 /* release not neaded data */
@@ -344,7 +344,7 @@ function sqimap_read_data_list ($imap_stream, $tag_uid, $handle_errors,
                     $read = sqimap_fgets($imap_stream);
                     if ($read === false) {
                         break 3; /* while switch while */
-                    } else if ($read{0} == '*') {
+                    } else if ($read[0] == '*') {
                         break;
                     }
                     $s = substr($read,-3);
@@ -762,7 +762,7 @@ function parseAddress($address, $max=0) {
     $address = str_replace($aSpecials,$aReplace,$address);
     $i = 0;
     while ($i < $iCnt) {
-        $cChar = $address{$i};
+        $cChar = $address[$i];
         switch($cChar)
         {
         case '<':
@@ -781,11 +781,11 @@ function parseAddress($address, $max=0) {
             $iEnd = strpos($address,$cChar,$i+1);
             if ($iEnd) {
                 // skip escaped quotes
-                $prev_char = $address{$iEnd-1};
+                $prev_char = $address[$iEnd-1];
                 while ($prev_char === '\\' && substr($address,$iEnd-2,2) !== '\\\\') {
                     $iEnd = strpos($address,$cChar,$iEnd+1);
                     if ($iEnd) {
-                        $prev_char = $address{$iEnd-1};
+                        $prev_char = $address[$iEnd-1];
                     } else {
                         $prev_char = false;
                     }
@@ -839,7 +839,7 @@ function parseAddress($address, $max=0) {
         if ($max && $max == count($aAddress)) {
             return $aAddress;
         }
-        $cChar = $sToken{0};
+        $cChar = $sToken[0];
         switch ($cChar)
         {
           case '=':

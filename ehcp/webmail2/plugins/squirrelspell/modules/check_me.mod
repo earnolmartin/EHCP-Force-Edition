@@ -115,7 +115,7 @@ if( check_php_version ( 4, 3 ) ) {
     $sqspell_output = array();
     for($i=1; $i<=2; $i++) {
         while(!feof($pipes[$i])) {
-           array_push($sqspell_output, rtrim(fgetss($pipes[$i],999),"\r\n"));
+           array_push($sqspell_output, rtrim(strip_tags(fgets($pipes[$i],999)),"\r\n"));
         }
         fclose($pipes[$i]);
     }

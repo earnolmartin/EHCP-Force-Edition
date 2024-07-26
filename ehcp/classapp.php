@@ -16966,7 +16966,7 @@ sudo service ehcp start <br>
 		if ($bilgi['filetype'] == 'remoteurlconfig') { # fileinfo contains, remote url config file of format url=http.....
 			$config = file_get_contents($bilgi['fileinfo']);
 			print "configfile:" . $config;
-			$lines = split("\n", $config);
+			$lines = explode("\n", $config);
 			print_r($lines);
 			print " this part is not completed.. use directurl";
 		} elseif ($bilgi['filetype'] == 'directurl') {

@@ -69,7 +69,7 @@ function initGzip() {
 				if ( $zlib_check ) {
 					$do_gzip_compress = TRUE;
 					ob_start();
-					ob_implicit_flush(0);
+					ob_implicit_flush(false);
 
 					header( 'Content-Encoding: gzip' );
 					return;

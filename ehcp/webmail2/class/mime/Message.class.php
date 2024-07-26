@@ -352,7 +352,7 @@ class Message {
         }
 
         for ($cnt = strlen($read); $i < $cnt; ++$i) {
-            $char = strtoupper($read{$i});
+            $char = strtoupper($read[$i]);
             switch ($char) {
                 case '(':
                     switch($arg_no) {
@@ -366,7 +366,7 @@ class Message {
                             } else {
                                 $msg->header->type0 = 'multipart';
                                 $msg->type0 = 'multipart';
-                                while ($read{$i} == '(') {
+                                while ($read[$i] == '(') {
                                     $msg->addEntity($msg->parseBodyStructure($read, $i, $msg));
                                 }
                             }
@@ -399,7 +399,7 @@ class Message {
                                 $msg->type1 = $arg_a[1];
                                 $rfc822_hdr = new Rfc822Header();
                                 $msg->rfc822_header = $msg->parseEnvelope($read, $i, $rfc822_hdr);
-                                while (($i < $cnt) && ($read{$i} != '(')) {
+                                while (($i < $cnt) && ($read[$i] != '(')) {
                                     ++$i;
                                 }
                                 $msg->addEntity($msg->parseBodyStructure($read, $i,$msg));
@@ -462,9 +462,9 @@ class Message {
                     ++$arg_no;
                     break;
         case '0':
-                case is_numeric($read{$i}):
+                case is_numeric($read[$i]):
                     /* process integers */
-                    if ($read{$i} == ' ') { break; }
+                    if ($read[$i] == ' ') { break; }
             ++$arg_no;
             if (preg_match('/^([0-9]+).*/',substr($read,$i), $regs)) {
                 $i += strlen($regs[1])-1;
@@ -526,11 +526,11 @@ class Message {
         $properties = array();
         $prop_name = '';
 
-        for (; $read{$i} != ')'; ++$i) {
+        for (; $read[$i] != ')'; ++$i) {
             $arg_s = '';
-            if ($read{$i} == '"') {
+            if ($read[$i] == '"') {
                 $arg_s = $this->parseQuote($read, $i);
-            } else if ($read{$i} == '{') {
+            } else if ($read[$i] == '{') {
                 $arg_s = $this->parseLiteral($read, $i);
             }
 
@@ -557,8 +557,8 @@ class Message {
         $arg_no = 0;
         $arg_a = array();
         ++$i;
-        for ($cnt = strlen($read); ($i < $cnt) && ($read{$i} != ')'); ++$i) {
-            $char = strtoupper($read{$i});
+        for ($cnt = strlen($read); ($i < $cnt) && ($read[$i] != ')'); ++$i) {
+            $char = strtoupper($read[$i]);
             switch ($char) {
                 case '"':
                     $arg_a[] = $this->parseQuote($read, $i);
@@ -587,8 +587,8 @@ class Message {
                     $addr_a = array();
                     $group = '';
                     $a=0;
-                    for (; $i < $cnt && $read{$i} != ')'; ++$i) {
-                        if ($read{$i} == '(') {
+                    for (; $i < $cnt && $read[$i] != ')'; ++$i) {
+                        if ($read[$i] == '(') {
                             $addr = $this->parseAddress($read, $i);
                             if (($addr->host == '') && ($addr->mailbox != '')) {
                                 /* start of group */
@@ -686,11 +686,11 @@ class Message {
         while (true) {
             $iPos = strpos($read,'"',$iPos);
             if (!$iPos) break;
-            if ($iPos && $read{$iPos -1} != '\\') {
+            if ($iPos && $read[$iPos -1] != '\\') {
                 $s = substr($read,$i,($iPos-$i));
                 $i = $iPos;
                 break;
-            } else if ($iPos > 1 && $read{$iPos -1} == '\\' && $read{$iPos-2} == '\\') {
+            } else if ($iPos > 1 && $read[$iPos -1] == '\\' && $read[$iPos-2] == '\\') {
                 // This is an unique situation where the fast detection of the string
                 // fails. If the quote string ends with \\ then we need to iterate
                 // through the entire string to make sure we detect the unexcaped
@@ -738,8 +738,8 @@ class Message {
      */
     function parseAddress($read, &$i) {
         $arg_a = array();
-        for (; $read{$i} != ')'; ++$i) {
-            $char = strtoupper($read{$i});
+        for (; $read[$i] != ')'; ++$i) {
+            $char = strtoupper($read[$i]);
             switch ($char) {
                 case '"': $arg_a[] = $this->parseQuote($read, $i); break;
                 case '{': $arg_a[] = $this->parseLiteral($read, $i); break;
@@ -773,8 +773,8 @@ class Message {
      */
     function parseDisposition($read, &$i) {
         $arg_a = array();
-        for (; $read{$i} != ')'; ++$i) {
-            switch ($read{$i}) {
+        for (; $read[$i] != ')'; ++$i) {
+            switch ($read[$i]) {
                 case '"': $arg_a[] = $this->parseQuote($read, $i); break;
                 case '{': $arg_a[] = $this->parseLiteral($read, $i); break;
                 case '(': $arg_a[] = $this->parseProperties($read, $i); break;
@@ -800,8 +800,8 @@ class Message {
         /* no idea how to process this one without examples */
         $arg_a = array();
 
-        for (; $read{$i} != ')'; ++$i) {
-            switch ($read{$i}) {
+        for (; $read[$i] != ')'; ++$i) {
+            switch ($read[$i]) {
                 case '"': $arg_a[] = $this->parseQuote($read, $i); break;
                 case '{': $arg_a[] = $this->parseLiteral($read, $i); break;
                 case '(': $arg_a[] = $this->parseProperties($read, $i); break;
@@ -825,8 +825,8 @@ class Message {
      * @return integer
      */
     function parseParenthesis($read, $i) {
-        for ($i++; $read{$i} != ')'; ++$i) {
-            switch ($read{$i}) {
+        for ($i++; $read[$i] != ')'; ++$i) {
+            switch ($read[$i]) {
                 case '"': $this->parseQuote($read, $i); break;
                 case '{': $this->parseLiteral($read, $i); break;
                 case '(': $this->parseProperties($read, $i); break;
@@ -879,7 +879,7 @@ class Message {
                 }
             }
 
-            if ((($line{0} == '-') || $rfc822_header)  && isset($boundaries[0])) {
+            if ((($line[0] == '-') || $rfc822_header)  && isset($boundaries[0])) {
                 $cnt = count($boundaries)-1;
                 $bnd = $boundaries[$cnt]['bnd'];
                 $bndreg = $boundaries[$cnt]['bndreg'];
@@ -889,7 +889,7 @@ class Message {
                     $bndlen = strlen($reg[1]);
                     $bndend = false;
                     if (strlen($line) > ($bndlen + 3)) {
-                        if (($line{$bndlen+2} == '-') && ($line{$bndlen+3} == '-')) {
+                        if (($line[$bndlen+2] == '-') && ($line[$bndlen+3] == '-')) {
                             $bndend = true;
                         }
                     }

@@ -171,22 +171,22 @@ class Rfc822Header {
         $result = '';
         $cnt = strlen($value);
         for ($i = 0; $i < $cnt; ++$i) {
-            switch ($value{$i}) {
+            switch ($value[$i]) {
                 case '"':
                     $result .= '"';
-                    while ((++$i < $cnt) && ($value{$i} != '"')) {
-                        if ($value{$i} == '\\') {
+                    while ((++$i < $cnt) && ($value[$i] != '"')) {
+                        if ($value[$i] == '\\') {
                             $result .= '\\';
                             ++$i;
                         }
-                        $result .= $value{$i};
+                        $result .= $value[$i];
                     }
-                    $result .= $value{$i};
+                    $result .= $value[$i];
                     break;
                 case '(':
                     $depth = 1;
                     while (($depth > 0) && (++$i < $cnt)) {
-                        switch($value{$i}) {
+                        switch($value[$i]) {
                             case '\\':
                                 ++$i;
                                 break;
@@ -202,7 +202,7 @@ class Rfc822Header {
                     }
                     break;
                 default:
-                    $result .= $value{$i};
+                    $result .= $value[$i];
                     break;
             }
         }
@@ -340,7 +340,7 @@ class Rfc822Header {
         $iCnt = strlen($address);
         $i = 0;
         while ($i < $iCnt) {
-            $cChar = $address{$i};
+            $cChar = $address[$i];
             switch($cChar)
             {
             case '<':
@@ -359,11 +359,11 @@ class Rfc822Header {
                 $iEnd = strpos($address,$cChar,$i+1);
                 if ($iEnd) {
                    // skip escaped quotes
-                   $prev_char = $address{$iEnd-1};
+                   $prev_char = $address[$iEnd-1];
                    while ($prev_char === '\\' && substr($address,$iEnd-2,2) !== '\\\\') {
                        $iEnd = strpos($address,$cChar,$iEnd+1);
                        if ($iEnd) {
-                          $prev_char = $address{$iEnd-1};
+                          $prev_char = $address[$iEnd-1];
                        } else {
                           $prev_char = false;
                        }
@@ -390,7 +390,7 @@ class Rfc822Header {
                     $iDepth = 1;
                     $iComment = $i;
                     while (($iDepth > 0) && (++$iComment < $iCnt)) {
-                        $cCharComment = $address{$iComment};
+                        $cCharComment = $address[$iComment];
                         switch($cCharComment) {
                             case '\\':
                                 ++$iComment;
@@ -416,7 +416,7 @@ class Rfc822Header {
                 // check the next token in case comments appear in the middle of email addresses
                 $prevToken = end($aTokens);
                 if (!in_array($prevToken,$aSpecials,true)) {
-                    if ($i+1<strlen($address) && !in_array($address{$i+1},$aSpecials,true)) {
+                    if ($i+1<strlen($address) && !in_array($address[$i+1],$aSpecials,true)) {
                         $iEnd = strpos($address,' ',$i+1);
                         if ($iEnd) {
                             $sNextToken = trim(substr($address,$i+1,$iEnd - $i -1));
@@ -522,7 +522,7 @@ class Rfc822Header {
         $sPersonal = $sEmail = $sComment = $sGroup = '';
         $aStack = $aComment = array();
         foreach ($aTokens as $sToken) {
-            $cChar = $sToken{0};
+            $cChar = $sToken[0];
             switch ($cChar)
             {
             case '=':
@@ -728,7 +728,7 @@ class Rfc822Header {
             if ($pos > 0)  {
                 $key = trim(substr($prop, 0, $pos));
                 $val = trim(substr($prop, $pos+1));
-                if (strlen($val) > 0 && $val{0} == '"') {
+                if (strlen($val) > 0 && $val[0] == '"') {
                     $val = substr($val, 1, -1);
                 }
                 $propResultArray[$key] = $val;
@@ -766,7 +766,7 @@ class Rfc822Header {
         $value_a = explode(',', $value);
         foreach ($value_a as $val) {
             $val = trim($val);
-            if ($val{0} == '<') {
+            if ($val[0] == '<') {
                 $val = substr($val, 1, -1);
             }
             if (substr($val, 0, 7) == 'mailto:') {

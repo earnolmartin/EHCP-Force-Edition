@@ -391,7 +391,7 @@ if($useSendmail) {
 
     // check for SMTP code; should be 2xx to allow us access
     $smtpline = fgets($stream, 1024);
-    if(((int) $smtpline{0}) > 3) {
+    if(((int) $smtpline[0]) > 3) {
         do_err("Error connecting to SMTP server. Server error: ".
                 htmlspecialchars($smtpline));
     }

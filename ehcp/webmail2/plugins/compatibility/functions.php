@@ -650,12 +650,13 @@ function load_config($plugin_name, $config_files,
    // now check to see if we got at least one successful inclusion
    //
    $success = FALSE;
-   for ($i = 1; $i < $file_count; $i++)
+   for ($i = 1; $i < $file_count; $i++){
       if (${'config' . $i})
       {
          $success = TRUE;
          break;
       }
+   }
 
 
    // error...

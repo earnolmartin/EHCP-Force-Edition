@@ -167,8 +167,8 @@ class ext_Chmod extends ext_Action {
 				for($j=0;$j<3;++$j) {
 					?>
 					"xtype": "checkbox",
-					"boxLabel":"<?php echo $pos{$j}  ?>",
-					<?php if($mode{(3*$i)+$j} != "-") echo '"checked":true,' ?>
+					"boxLabel":"<?php echo $pos[$j]  ?>",
+					<?php if($mode[(3*$i)+$j] != "-") echo '"checked":true,' ?>
 						"name":"<?php echo "r_". $i.$j ?>"
 					}	<?php
 					if( $j<2 ) echo ',{';
