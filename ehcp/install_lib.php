@@ -26,7 +26,7 @@ include_once("config/adodb/adodb.inc.php");
 include_once("classapp.php");
 require_once('console.php');
 error_reporting (E_ALL ^ E_NOTICE);
-$header="From: info@ehcpforce.tk";
+$header="From: info@ehcpforce.ezpz.cc";
 if($installmode=='') $installmode='normal';
 
 if(!function_exists("debugecho")){
@@ -148,7 +148,7 @@ function ehcpheader() {
 	cizgi();
 	echo "-----------------------EHCP Force MAIN INSTALLER---------------------------\n";
 	echo "------Easy Hosting Control Panel for Ubuntu, Debian and alikes ------\n";
-	echo "--------------------------www.ehcpforce.tk-------------------------------\n";
+	echo "-------------------------- https://ehcpforce.ezpz.cc -------------------------------\n";
 	cizgi();
 	echo "ehcp version $ehcpversion \n";
 	echo "ehcp installer version $ehcpversion\n";
@@ -1501,7 +1501,7 @@ virtual_use_local_privs=YES
 user_config_dir=/etc/vsftpd_user_conf
 local_max_rate=2000000 # bytes per sec, 2Mbytes per sec
 max_clients=50 # to avoid DOS attack, if you have a huge server, increase this..
-ftpd_banner=Welcome to vsFTPd Server, managed by EHCP Force Edition (Easy Hosting Control Panel, www.ehcpforce.tk )
+ftpd_banner=Welcome to vsFTPd Server, managed by EHCP Force Edition (Easy Hosting Control Panel, https://ehcpforce.ezpz.cc )
 ";
 # allow_writeable_chroot=YES : bunun uzerinde calisacagim... boyle olmuyor... bakalim... bu olabilir: http://ehcp.net/?q=comment/2905#comment-2905
 	writeoutput("/etc/vsftpd.conf",$filecontent,"w");
@@ -2054,7 +2054,7 @@ Your ehcp (Easy Hosting Control Panel) installation completed.
 now, navigate to your panel located at http://yourip, whatever is your ip.
 
 if you need assistance, you may click troubleshoot in front page, have a look at forum section at www.ehcp.net,
-or you may contact ehcp developer directly ad email/msn: info@ehcpforce.tk
+or you may contact ehcp developer directly ad email/msn: info@ehcpforce.ezpz.cc
 
 Thank you for choosing and trying ehcp !
 

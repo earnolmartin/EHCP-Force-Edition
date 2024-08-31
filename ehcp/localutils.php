@@ -1213,7 +1213,7 @@ function removeInvalidChars($string, $mode)
 			break;
 		case "domainnameport":
 			// Lowercase for domain names only!!!
-			// Allow port in the domain name for custom ports (example: ehcpforce.tk:8777)
+			// Allow port in the domain name for custom ports (example: ehcpforce.ezpz.cc:8777)
 			$pattern = "/[^a-z0-9:\-\.]/i";
 			$string = removeInvalidCharsFromDomainName($string, $pattern);
 

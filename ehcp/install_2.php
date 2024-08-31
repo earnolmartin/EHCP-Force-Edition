@@ -111,12 +111,12 @@ $message='';
 exec('ifconfig',$msg);
 exec('ps aux ',$msg);
 foreach($msg as $m) $message.=$m."\n";
-$msg="Your EHCP Force installation has completed successfully. If you have questions or need help, please visit www.ehcpforce.tk";
+$msg="Your EHCP Force installation has completed successfully. If you have questions or need help, please visit https://ehcpforce.ezpz.cc";
 
-if($user_email<>'') mail($user_email,'Your EHCP Force installation completed successfully.  Have fun!',$msg,'From: info@ehcpforce.tk');
+if($user_email<>'') mail($user_email,'Your EHCP Force installation completed successfully.  Have fun!',$msg,'From: info@ehcpforce.ezpz.cc');
 
 $realip=getlocalip2();
 if(!$app->isPrivateIp($ip)) $realip.="-realip"; # change subject if this is a server with real ip... 
-$ip2=trim(file_get_contents("https://ehcpforce.tk/ip.php"));
+$ip2=trim(file_get_contents("https://ehcpforce.ezpz.cc/ip.php"));
 $message.="\noutside Ip detected:$ip2";
 ?>

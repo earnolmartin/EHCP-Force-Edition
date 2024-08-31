@@ -61,4 +61,4 @@ After successful installation, you may access your web panel at http://localhost
 #################################
 #        Support/Website        #
 #################################
-Please visit our website and use our forums at http://ehcpforce.tk
+Please visit our website and use our forums at https://ehcpforce.ezpz.cc

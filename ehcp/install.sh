@@ -1,6 +1,6 @@
 #!/bin/bash
 # EHCP Force Edition Pre-Installer Script
-# www.ehcpforce.tk
+# https://ehcpforce.ezpz.cc
 # by earnolmartin@gmail.com
 
 ###################
@@ -240,7 +240,7 @@ function checkServerTime(){
 		tzRight=$(echo "$tzRight" | awk '{print tolower($0)}')
 		if [ "$tzRight" == "n" ]; then
 			# Detect it from IP first...
-			autoTZ=$(wget -qO- "https://ehcpforce.tk/timezone.php" | xargs)
+			autoTZ=$(wget -qO- "https://ehcpforce.ezpz.cc/timezone.php" | xargs)
 			if [ ! -z "$autoTZ" ] && [ "$autoTZ" != "-1" ]; then
 				echo -n "Based on your IP address, should your timezone be set to ${autoTZ}? [y/n]: "
 				read tzRight
@@ -305,7 +305,7 @@ if [ ! -z "$preUnattended" ]; then
 		# Set amavis fully qualified domain name
 		if [ ! -e "fqdn_amavis.cfg" ]; then
 			FQDNCFG="fqdn_amavis.cfg"
-			FQDNName="ehcpforce.tk"
+			FQDNName="ehcpforce.ezpz.cc"
 			echo -e "FQDNName=\"$FQDNName\"" > "$FQDNCFG"
 		fi
 		
@@ -341,7 +341,7 @@ else
 	read emailAddr
 	emailAddr=$(echo "$emailAddr" | awk '{print tolower($0)}')
 	if ! isValidEmail "$emailAddr"; then
-		emailAddr="info@ehcpforce.tk"
+		emailAddr="info@ehcpforce.ezpz.cc"
 	fi
 	adminEmailCFG="admin_email.php"
 	echo "<?php \$adminEmail = \"${emailAddr}\"; ?>" > "$adminEmailCFG"
@@ -361,8 +361,8 @@ else
 			read FQDNName
 			FQDNName=$(echo "$FQDNName" | awk '{print tolower($0)}')
 			if [ -z "$FQDNName" ]; then
-				# Just replace it with ehcpforce.tk
-				FQDNName="ehcpforce.tk"
+				# Just replace it with ehcpforce.ezpz.cc
+				FQDNName="ehcpforce.ezpz.cc"
 			fi
 			echo -e "FQDNName=\"$FQDNName\"" > "$FQDNCFG"
 		fi
@@ -375,7 +375,7 @@ else
 			read policyDI
 			policyDI=$(echo "$policyDI" | awk '{print tolower($0)}')
 			if [ "$policyDI" == "y" ]; then
-				# Just replace it with ehcpforce.tk
+				# Just replace it with ehcpforce.ezpz.cc
 				echo -e "insPolicyD=true" > "$insPolicyD"
 			fi
 		fi

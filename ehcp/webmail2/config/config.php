@@ -17,7 +17,7 @@ $org_title     = "Easy Hosting Control Panel - Webmail - squirrelmail";
 $signout_page  = '';
 $frame_top     = '_top';
 
-$provider_uri     = 'http://www.ehcpforce.tk';
+$provider_uri     = 'https://ehcpforce.ezpz.cc';
 
 $provider_name     = 'Easy Hosting Control Panel';
 

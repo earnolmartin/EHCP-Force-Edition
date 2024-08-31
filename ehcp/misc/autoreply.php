@@ -4,7 +4,7 @@
 
 
 by I.Bahattin Vidinli, 
-mail: info@ehcpforce.tk
+mail: info@ehcpforce.ezpz.cc
 
 see classapp.php for real application.
 */

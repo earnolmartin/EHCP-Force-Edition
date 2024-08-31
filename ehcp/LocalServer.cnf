@@ -6,6 +6,6 @@ distinguished_name	= server_distinguished_name
 commonName		= {webserverip}
 stateOrProvinceName	= Some State
 countryName		= US
-emailAddress		= noreply@ehcpforce.tk
+emailAddress		= noreply@ehcpforce.ezpz.cc
 organizationName	= EHCP Force Edition
 organizationalUnitName	= Dedicated Web Server

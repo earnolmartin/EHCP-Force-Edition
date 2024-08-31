@@ -1,5 +1,5 @@
 #!/bin/bash
-# mysql root pass reset utility. by info@ehcpforce.tk
+# mysql root pass reset utility. by info@ehcpforce.ezpz.cc
 
 function rootCheck(){
 	# Check to make sure the script is running as root

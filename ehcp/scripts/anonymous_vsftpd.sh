@@ -1,6 +1,6 @@
 #!/bin/bash
 #@author:  Eric Arnol-Martin (earnolmartin@gmail.com) http://eamster.tk
-#Desc:  Bash script that configures anonymous ftp access or removes anonymous ftp access (http://ehcpforce.tk)
+#Desc:  Bash script that configures anonymous ftp access or removes anonymous ftp access (https://ehcpforce.ezpz.cc)
 
 ####################
 #    FUNCTIONS     #

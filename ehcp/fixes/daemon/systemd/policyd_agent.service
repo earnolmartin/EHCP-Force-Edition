@@ -1,7 +1,7 @@
 # PolicyD Agent systemd Script
 # By Eric Arnol-Martin <earnolmartin@gmail.com>
 [Unit]
-Description=PolicyD Agent (works with EHCP Force www.ehcpforce.tk)
+Description=PolicyD Agent (works with EHCP Force https://ehcpforce.ezpz.cc)
 After=network.target
 
 [Service]

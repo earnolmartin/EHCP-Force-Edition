@@ -1,9 +1,9 @@
 #!/bin/bash
-# ehcp - Easy Hosting Control Panel install/remove by info@ehcpforce.tk (actually, no remove yet)
+# ehcp - Easy Hosting Control Panel install/remove by info@ehcpforce.ezpz.cc (actually, no remove yet)
 # this is a very basic shell installer, real installation in install_lib.php, which is called by install_1.php, install_2.php
 #
 # please contact me if you made any modifications.. or you need help
-# msn/email: info@ehcpforce.tk
+# msn/email: info@ehcpforce.ezpz.cc
 # skype/yahoo/gtalk: bvidinli
 
 # Marcel <marcelbutucea@gmail.com>
@@ -55,7 +55,7 @@ function ehcpHeader() {
 	echo
 	echo 
 	echo "Now, ehcp pre-installer begins, a series of operations will be performed and main installer will be invoked. "
-	echo "if any problem occurs, refer to www.ehcpforce.tk forum section, or contact me, mail/msn: info@ehcpforce.tk"
+	echo "if any problem occurs, refer to https://ehcpforce.ezpz.cc forum section, or contact me, mail/msn: info@ehcpforce.ezpz.cc"
 	
 	echo "Please be patient, press enter to continue"
 	read

@@ -1,13 +1,13 @@
 #!/bin/bash
 # EHCP Force Edition - Easy Hosting Control Panel Installation Script
-# http://ehcpforce.tk
+# https://ehcpforce.ezpz.cc
 # by earnolmartin@gmail.com 
 
 ########################
 # FORK INFORMATION     #
 ########################
 # Fork created by earnolmartin@gmail.com
-# http://ehcpforce.tk
+# https://ehcpforce.ezpz.cc
 # This forked version of EHCP offers new functionality and features (custom FTP accounts, proper web user permissions so that PHP scripts work as intended, and more) 
 # that were not previously available in the main EHCP release.
 # Also, this forked version is updated on a regular basis when a new version of Ubuntu comes out.
@@ -122,13 +122,13 @@ function ehcpHeader() {
 	echo "--------------------EHCP PRE-INSTALLER $ehcpversion -------------------------"
 	echo "-----Easy Hosting Control Panel for Ubuntu, Debian, and Alikes-------"
 	echo "---------------------- FoRcE Edition (a fork) -----------------------"
-	echo "---------------------- http://www.ehcpforce.tk ----------------------"
+	echo "---------------------- https://ehcpforce.ezpz.cc ----------------------"
 	echo "-------------------------Non-Fork Version:  www.ehcp.net-------------"
 	echo "---------------------------------------------------------------------"
 	echo
 	echo 
 	echo "Now, ehcp pre-installer begins, a series of operations will be performed and main installer will be invoked. "
-	echo "if any problem occurs, refer to www.ehcpforce.tk forum section, or contact me, mail/msn: info@ehcpforce.tk"
+	echo "if any problem occurs, refer to https://ehcpforce.ezpz.cc forum section, or contact me, mail/msn: info@ehcpforce.ezpz.cc"
 	
 	echo "Please be patient, press enter to continue"
 	if [ "$unattended" == "" ] ; then
@@ -1455,9 +1455,9 @@ function installAntiSpam(){
 		
 		# Use FQDN for mail server (used by Amavis) as entered by user earlier
 		if [ -z "$FQDNName" ]; then
-			# Just replace it with ehcpforce.tk
-			sed -i "s/^#\$myhostname.*/\$myhostname = \"ehcpforce.tk\";/g" "$AMAVISHOST"
-			sed -i "s#^\$myhostname.*#\$myhostname = \"ehcpforce.tk\";#g" "$AMAVISHOST"
+			# Just replace it with https://ehcpforce.ezpz.cc
+			sed -i "s/^#\$myhostname.*/\$myhostname = \"ehcpforce.ezpz.cc\";/g" "$AMAVISHOST"
+			sed -i "s#^\$myhostname.*#\$myhostname = \"ehcpforce.ezpz.cc\";#g" "$AMAVISHOST"
 		else
 			sed -i "s/^#\$myhostname.*/\$myhostname = \"$FQDNName\";/g" "$AMAVISHOST"
 			sed -i "s#^\$myhostname.*#\$myhostname = \"$FQDNName\";#g" "$AMAVISHOST"
@@ -1980,7 +1980,7 @@ The following ports are used by EHCP and must be open:
 20,21,22,25,53,80,110,143 (tcp+udp)
 
 Please visit our website for updates, support, and community additions.
-http://ehcpforce.tk
+https://ehcpforce.ezpz.cc
 
 Your web hosting control panel can be accessed via http://yourip/
 
@@ -2556,7 +2556,7 @@ function installCertBotLetsEncrypt(){
 		
 		# Go download it
 		if [ ! -e "/usr/local/bin/certbot" ] || [ ! -s "/usr/local/bin/certbot" ]; then
-			wget -O "certbot-auto.zip" -N https://ehcpforce.tk/files/certbot.zip --no-check-certificate
+			wget -O "certbot-auto.zip" -N https://ehcpforce.ezpz.cc/files/certbot.zip --no-check-certificate
 			unzip "certbot-auto.zip"
 			chmod a+x certbot-auto
 			mv certbot-auto /usr/local/bin/certbot

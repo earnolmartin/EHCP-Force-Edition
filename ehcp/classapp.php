@@ -3,9 +3,9 @@ $ehcpversion = "1.1.1";
 
 /*
 * 
-   EASY HOSTING CONTROL PANEL FORCE EDITION MAIN CLASS FILE - www.ehcpforce.tk
-		http://ehcpforce.tk
-		* Information about latest updates can be seen here:  http://ehcpforce.tk/forums/index.php?topic=15.msg44
+   EASY HOSTING CONTROL PANEL FORCE EDITION MAIN CLASS FILE - https://ehcpforce.ezpz.cc
+		https://ehcpforce.ezpz.cc
+		* Information about latest updates can be seen here:  https://ehcpforce.ezpz.cc/forums/index.php?topic=15.msg44
 */
 
 error_reporting(E_ALL ^ E_DEPRECATED ^ E_WARNING ^ E_NOTICE);
@@ -21,7 +21,7 @@ include_once(dirname(__FILE__) . '/config/randomstring.php');
 
 class Application
 {
-	var $appname = '', $sitename = 'ehcp', $headers = "From: info@ehcpforce.tk";
+	var $appname = '', $sitename = 'ehcp', $headers = "From: info@ehcpforce.ezpz.cc";
 	var $output = '', $requirePassword = True, $checkinstall = True, $miscconfig = null;
 	var $queries = array(), $selecteddomain = '', $isreseller = false;
 
@@ -56,7 +56,7 @@ class Application
 	var $currentlanguage = 'en';
 
 	var $status_active = "active", $status_passive = "passive", $statusActivePassive, $passivefilt, $activefilt, $isDemo = false;
-	var $emailfrom = 'info@ehcpforce.tk';
+	var $emailfrom = 'info@ehcpforce.ezpz.cc';
 	# language strings will be defined in $lang['en']['error1']   in language/en.php or so on...
 
 	var $usertable, $dnsemail, $template, $templatefile, $op, $userinfo;
@@ -1452,9 +1452,9 @@ CREATE TABLE IF NOT EXISTS `cronjobs` (
 		if (!$this->counter_reached('versionwarningcounter', 20))
 			return False; # check 20 login later again.
 
-		$this->latest_version = trim(@file_get_contents("http://www.ehcpforce.tk/latest_version.txt"));
+		$this->latest_version = trim(@file_get_contents("https://ehcpforce.ezpz.cc/latest_version.txt"));
 		if ($this->latest_version <> '' and $this->latest_version <> $ehcpversion) {
-			$str = "Your EHCP Force Edition version ($ehcpversion) is different than the latest version ($this->latest_version). Either your EHCP Force Edition installation is old, or you are using a new beta/test version. <a target=_blank href='http://ehcpforce.tk/'>Check here for updates</a>!";
+			$str = "Your EHCP Force Edition version ($ehcpversion) is different than the latest version ($this->latest_version). Either your EHCP Force Edition installation is old, or you are using a new beta/test version. <a target=_blank href='https://ehcpforce.ezpz.cc'>Check here for updates</a>!";
 			$this->warnings .= $str;
 			$this->infotoadminemail($str, "Version Warning for " . $this->dnsip, false);
 		}
@@ -2928,7 +2928,7 @@ organizationalUnitName	= $unit_name";
 		// Require's admin priv
 		$this->requireAdmin();
 		$this->addDaemonOp("update_ez_install", '', 'xx', '', 'Update EZ Script Install SQL');
-		$this->output .= "<p class='success'>Easy installation script SQL has successfully been updated from the ehcpforce.tk master.</p>";
+		$this->output .= "<p class='success'>Easy installation script SQL has successfully been updated from the https://ehcpforce.ezpz.cc master.</p>";
 
 		return True;
 	}
@@ -10444,7 +10444,7 @@ email2@domain2.com:password2<br>
 
 	function test()
 	{
-		$host = "ehcpforce.tk";
+		$host = "ehcpforce.ezpz.cc";
 		$this->testHostIPs($host);
 
 		$host = "1.1.1.1";
@@ -10465,7 +10465,7 @@ email2@domain2.com:password2<br>
 		$csv = array_map('str_getcsv', file($this->ehcpInstallPath . '/misc/SLDs.csv'));
 		$this->testCCTLD("mohaaaa.co.uk", $csv);
 		$this->testCCTLD("fasdfadsf.mohaaaa.co.uk", $csv);
-		$this->testCCTLD("ehcpforce.tk", $csv);
+		$this->testCCTLD("ehcpforce.ezpz.cc", $csv);
 		$this->testCCTLD("right.ehcpforce.fr", $csv);
 		$this->testCCTLD("lol.google.com", $csv);
 	}
@@ -11054,7 +11054,7 @@ email2@domain2.com:password2<br>
 			",Domains:" . $this->recordcount($this->conf['domainstable']['tablename'], '') .
 			",Ftpusers:" . $this->recordcount($this->conf['ftpuserstable']['tablename'], '') .
 			",Emails:" . $this->recordcount($this->conf['emailuserstable']['tablename'], '') .
-			"<br><a target=_blank href='http://www.ehcpforce.tk'>Version: $ehcpversion</a><br></font>";
+			"<br><a target=_blank href='https://ehcpforce.ezpz.cc'>Version: $ehcpversion</a><br></font>";
 
 		return $ret;
 	}
@@ -11852,7 +11852,7 @@ email2@domain2.com:password2<br>
 			$warn = "";
 			$warn2 = "Please solve this";
 		}
-		$footer = "\nSent from your panel, Easy Hosting Control Panel (ehcpforce.tk), url:http://" . $this->dnsip . "\n";
+		$footer = "\nSent from your panel, Easy Hosting Control Panel (https://ehcpforce.ezpz.cc), url:http://" . $this->dnsip . "\n";
 
 		# warn people with high quota, and who were notified before..
 		$res = $this->query("select * from domains  where DATEDIFF(curdate(),diskquotaoversince)>graceperiod and diskquotaovernotified=1");
@@ -12438,7 +12438,7 @@ email2@domain2.com:password2<br>
 ?>
 						<div style="text-align: center; font-family: \'arial\';">
 							<h2>Subdomain Under Construction</h2>
-							<h4><a href="http://ehcpforce.tk" target="_blank">EHCP Force Edition</a></h4>
+							<h4><a href="https://ehcpforce.ezpz.cc" target="_blank">EHCP Force Edition</a></h4>
 						</div>';
 				}
 
@@ -16886,7 +16886,7 @@ sudo service ehcp start <br>
 			mkdir($this->ehcpDownloadPath, 0775);
 		}
 
-		$downloadScript = 'wget -N -O ' . $this->ehcpDownloadPath . '/easy_install.sql "http://ehcpforce.tk/files/easy_install.sql"';
+		$downloadScript = 'wget -N -O ' . $this->ehcpDownloadPath . '/easy_install.sql "https://ehcpforce.ezpz.cc/files/easy_install.sql"';
 		passthru2($downloadScript, true, true);
 
 		$mysql_host = $this->dbhost;

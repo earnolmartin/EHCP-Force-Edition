@@ -8,7 +8,7 @@ IF YOU SEE THIS INSTEAD OF A WEB PAGE, THEN YOU PROBABLY DIDN'T INSTALL PHP EXTE
 
 * 
 by I.Bahattin Vidinli, 
-mail: info@ehcpforce.tk
+mail: info@ehcpforce.ezpz.cc
 
 see classapp.php for real application.
 */

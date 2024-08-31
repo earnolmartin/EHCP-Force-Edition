@@ -1,6 +1,6 @@
 #!/bin/bash
-#@author:  Eric Arnol-Martin (earnolmartin@gmail.com) http://eamster.tk
-#Desc:  Rewrites error_page.html used by nginx to EHCP Force Default due to bugs in ehcp found around 2012 that caused this file to become corrupt with nonsense data (http://ehcpforce.tk)
+#@author:  Eric Arnol-Martin (earnolmartin@gmail.com) https://ehcpforce.ezpz.cc
+#Desc:  Rewrites error_page.html used by nginx to EHCP Force Default due to bugs in ehcp found around 2012 that caused this file to become corrupt with nonsense data (https://ehcpforce.ezpz.cc)
 #This script should only be run if you discover 404 error pages with garbage data from when the file was first created for the domain since this file is only added once when the domain is created... 
 #if you've been using EHCP that long.
 
@@ -28,10 +28,10 @@ if [ -e "/var/www/vhosts" ]; then
 	for findFolder in $folderPaths; do
 		if [ -e "$findFolder/error_page.html" ]; then
 			echo -e "$findFolder/error_page.html exists!"
-			hasEHCPForce=$(cat "$findFolder/error_page.html" | grep "ehcpforce.tk")
+			hasEHCPForce=$(cat "$findFolder/error_page.html" | grep "ehcpforce.ezpz.cc")
 			if [ -z "$hasEHCPForce" ]; then
 				if [ -e "/var/www/new/ehcp/error_page.html" ]; then
-					echo -e "Did not detect ehcpforce.tk in $findFolder/error_page.html! Replacing with updated copy...\n"
+					echo -e "Did not detect ehcpforce.ezpz.cc in $findFolder/error_page.html! Replacing with updated copy...\n"
 					cp "/var/www/new/ehcp/error_page.html" "$findFolder/error_page.html"
 				fi
 			fi

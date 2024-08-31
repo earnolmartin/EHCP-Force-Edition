@@ -1,7 +1,7 @@
 #!/bin/bash
 # EHCP Non-Force Edition to EHCP Force Edition Upgrade Script
 # By earnolmartin@gmail.com
-# http://www.ehcpforce.tk
+# https://ehcpforce.ezpz.cc
 
 ###########
 #FUNCTIONS#
@@ -1703,9 +1703,9 @@ function installAntiSpam(){
 		read FQDNName
 		FQDNName=$(echo "$FQDNName" | awk '{print tolower($0)}')
 		if [ -z "$FQDNName" ]; then
-			# Just replace it with ehcpforce.tk
-			sed -i "s/^#\$myhostname.*/\$myhostname = \"ehcpforce.tk\";/g" "$AMAVISHOST"
-			sed -i "s#^\$myhostname.*#\$myhostname = \"ehcpforce.tk\";#g" "$AMAVISHOST"
+			# Just replace it with ehcpforce.ezpz.cc
+			sed -i "s/^#\$myhostname.*/\$myhostname = \"ehcpforce.ezpz.cc\";/g" "$AMAVISHOST"
+			sed -i "s#^\$myhostname.*#\$myhostname = \"ehcpforce.ezpz.cc\";#g" "$AMAVISHOST"
 		else
 			sed -i "s/^#\$myhostname.*/\$myhostname = \"$FQDNName\";/g" "$AMAVISHOST"
 			sed -i "s#^\$myhostname.*#\$myhostname = \"$FQDNName\";#g" "$AMAVISHOST"
@@ -2956,7 +2956,7 @@ function installCertBotLetsEncrypt(){
 		
 		# Go download it
 		if [ ! -e "/usr/local/bin/certbot" ] || [ ! -s "/usr/local/bin/certbot" ]; then
-			wget -O "certbot-auto.zip" -N https://ehcpforce.tk/files/certbot.zip --no-check-certificate
+			wget -O "certbot-auto.zip" -N https://ehcpforce.ezpz.cc/files/certbot.zip --no-check-certificate
 			unzip "certbot-auto.zip"
 			chmod a+x certbot-auto
 			mv certbot-auto /usr/local/bin/certbot
