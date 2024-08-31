@@ -1,5 +1,5 @@
 # EHCP Force Edition
-## http://ehcpforce.tk
+## https://ehcpforce.ezpz.cc
 ### Easy Hosting Control Panel
 #### Forked from http://ehcp.net
 
@@ -15,12 +15,12 @@ Use custom SSL certificates, free Let's Encrypt certificates, wildcard SSL certi
 
 ### Screenshot of Picante Theme:
 
-<a href="http://ehcpforce.tk/images/ehcp_picante.png" target="_blank"><img alt="EHCP Force Edition Easy Hosting Control Panel Main Theme Screenshot" src="http://ehcpforce.tk/images/ehcp_picante_s.jpg" class="greenBorder"></a>
+<a href="https://ehcpforce.ezpz.cc/images/ehcp_picante.png" target="_blank"><img alt="EHCP Force Edition Easy Hosting Control Panel Main Theme Screenshot" src="https://ehcpforce.ezpz.cc/images/ehcp_picante_s.jpg" class="greenBorder"></a>
 
 ### Home Page
 
-http://ehcpforce.tk
+https://ehcpforce.ezpz.cc
 
 ### Forums for Support
 
-http://ehcpforce.tk/forums
+https://ehcpforce.ezpz.cc/forums
