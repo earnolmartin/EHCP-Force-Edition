@@ -4,5 +4,6 @@
 	ServerAlias  www.{domainname} *.{domainname} 
 	RewriteEngine On
 	RewriteCond %{HTTPS} off
+	RewriteCond %{REQUEST_URI} !^/.well-known/acme-challenge
 	RewriteRule (.*) {domainname_redirect}%{REQUEST_URI}
 </VirtualHost>

@@ -1,5 +1,14 @@
 server {
 	listen 80;
 	server_name  {domainname} www.{domainname} {wildcarddomain}; # this is changed to *.{domainname} within classapp.php
-	return 301 {domainname_redirect}$request_uri;
+	
+	location /.well-known {
+		auth_basic off;
+		allow all; # Allow all to see content
+        try_files $uri $uri/ =404;
+    }
+
+    location / {
+        return 301 {domainname_redirect}$request_uri;
+    }
 }
