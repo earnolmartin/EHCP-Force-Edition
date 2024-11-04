@@ -3,6 +3,7 @@
 <VirtualHost *:443>
 	ServerName   {domainname}
 	ServerAlias  www.{domainname} *.{domainname} 
+	DocumentRoot {homedir}/httpdocs
 	SSLEngine on
 	SSLCertificateFile {ssl_cert_path}
 	SSLCertificateKeyFile {ssl_cert_key_path}

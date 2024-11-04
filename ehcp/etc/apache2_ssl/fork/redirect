@@ -2,6 +2,7 @@
 <VirtualHost *:80>
 	ServerName   {domainname}
 	ServerAlias  www.{domainname} *.{domainname} 
+	DocumentRoot {homedir}/httpdocs
 	RewriteEngine On
 	RewriteCond %{HTTPS} off
 	RewriteCond %{REQUEST_URI} !^/.well-known/acme-challenge
@@ -13,6 +14,7 @@
 <VirtualHost *:443>
 	ServerName   {domainname}
 	ServerAlias  www.{domainname} *.{domainname} 
+	DocumentRoot {homedir}/httpdocs
 	SSLEngine on
 	SSLCertificateFile {ssl_cert_path}
 	SSLCertificateKeyFile {ssl_cert_key_path}

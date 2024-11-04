@@ -2,6 +2,7 @@
 <VirtualHost *>
 	ServerName   {domainname}
 	ServerAlias  www.{domainname} *.{domainname} 
+	DocumentRoot {homedir}/httpdocs
 	RewriteEngine On
 	RewriteCond %{HTTPS} off
 	RewriteCond %{REQUEST_URI} !^/.well-known/acme-challenge
