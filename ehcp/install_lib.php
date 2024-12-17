@@ -868,7 +868,12 @@ allow_plaintext: true";
 
 	echo "Configuring Courier\n";
 	echo "Now configuring to tell Courier that it should authenticate against our MySQL database.";
-	addifnotexists("authmodulelist=\"authmysql\"","/etc/courier/authdaemonrc");
+	
+	if((getIsUbuntu() && getUbuntuReleaseYear() >= "24") || (getIsDebian() && getUbuntuReleaseYear() >= "13")){
+		addifnotexists("authmodulelist=\"authmysql\"","/etc/authlib/authdaemonrc");
+	}else{
+		addifnotexists("authmodulelist=\"authmysql\"","/etc/courier/authdaemonrc");
+	}	
 
 	//** tablo ismi degisirse, asagidaki emailusers da degismeli
 
@@ -952,7 +957,11 @@ function configureauthmysql($params){
 			# must be present at the end of this file.";
 	}
 	
-	writeoutput("/etc/courier/authmysqlrc",$filecontent,"w");
+	if((getIsUbuntu() && getUbuntuReleaseYear() >= "24") || (getIsDebian() && getUbuntuReleaseYear() >= "13")){
+		writeoutput("/etc/authlib/authmysqlrc",$filecontent,"w");
+	}else{
+		writeoutput("/etc/courier/authmysqlrc",$filecontent,"w");
+	}
 }
 
 # Returns just the release year of an Ubuntu distro

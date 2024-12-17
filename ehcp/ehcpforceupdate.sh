@@ -2995,7 +2995,12 @@ function adjustOperationMode(){
 }
 
 function fixCourierMYSQLAuthFile(){
-	authmysqlrc="/etc/courier/authmysqlrc"
+	if [[ "$distro" == "ubuntu" && "$yrelease" -ge "24" ]] || [[ "$distro" == "debian" && "$yrelease" -ge "13" ]]; then  # Only applies to Ubuntu 24.04+ / applies to Debian 13+
+		authmysqlrc="/etc/authlib/authmysqlrc"
+	else
+		authmysqlrc="/etc/courier/authmysqlrc"
+	fi
+	
 	if [ -e "$authmysqlrc" ]; then
 		hasMYSQLOPT=$(cat "$authmysqlrc" | grep -o "MYSQL_OPT.*")
 		hasMYSQLEndMarker=$(cat "$authmysqlrc" | grep -o "##NAME: MARKER:0")

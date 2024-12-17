@@ -3312,6 +3312,11 @@ aptget_Update
 # Install prereqs
 installNeededDependencies
 
+# Build deb packages for Courier if Ubuntu 24.04+ or Debian 13+
+if [[ "$distro" == "ubuntu" && "$yrelease" -ge "24" ]] || [[ "$distro" == "debian" && "$yrelease" -ge "13" ]]; then
+	bash "${installerDir}/scripts/build_and_install_courier_deb_packages.sh"
+fi
+
 # Get PHP Config Path
 getPHPConfigPath
 
