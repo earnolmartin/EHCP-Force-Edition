@@ -1188,7 +1188,11 @@ function installmailserver(){
 	switch($installmode) {
 		case 'extra': 
 		case 'normal': installRoundCube();installPHPMYAdmin();
-		case 'light': aptget(array('postfix','postfix-mysql','courier-authdaemon','courier-authmysql','courier-authlib-mysql','courier-pop','courier-pop-ssl','courier-imap','courier-imap-ssl','libsasl2-2','libsasl2','libsasl2-modules','libsasl2-modules-sql','sasl2-bin','libpam-mysql','openssl','pop-before-smtp')); # changed libsasl2-2 to libsasl2 **
+		case 'light': 
+			aptget(array('postfix','postfix-mysql','libsasl2-2','libsasl2','libsasl2-modules','libsasl2-modules-sql','sasl2-bin','libpam-mysql','openssl','pop-before-smtp')); # changed libsasl2-2 to libsasl2 **
+			if((getIsUbuntu() && getUbuntuReleaseYear() < "24") || (getIsDebian() && getUbuntuReleaseYear() < "13")){
+				aptget(array('courier-authdaemon','courier-authmysql','courier-authlib-mysql','courier-pop','courier-pop-ssl','courier-imap','courier-imap-ssl'));
+			}
 			break;
 		default: echo "Unknown installmode parameter at ".__LINE__;
 	}
