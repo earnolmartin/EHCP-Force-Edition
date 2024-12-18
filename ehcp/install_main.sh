@@ -3314,7 +3314,9 @@ installNeededDependencies
 
 # Build deb packages for Courier if Ubuntu 24.04+ or Debian 13+
 if [[ "$distro" == "ubuntu" && "$yrelease" -ge "24" ]] || [[ "$distro" == "debian" && "$yrelease" -ge "13" ]]; then
-	bash "${installerDir}/scripts/build_and_install_courier_deb_packages.sh"
+	CURDIR=$(pwd)
+	bash "${installerDir}/scripts/build_and_install_courier_imap_deb_packages.sh"
+	cd "$CURDIR"
 fi
 
 # Get PHP Config Path
