@@ -438,6 +438,8 @@ if (!defined('_ADODB_LAYER')) {
 	var $emptyDate = '&nbsp;';
 	var $emptyTimeStamp = '&nbsp;';
 	var $lastInsID = false;
+	var $adodbFetchMode;
+	
 	//--
 	var $hasInsertID = false;		/// supports autoincrement ID?
 	var $hasAffectedRows = false;	/// supports affected rows for update/delete?
