@@ -1947,7 +1947,8 @@ OPTIONS=\"-n 0 -m /var/spool/postfix/var/run/saslauthd -r\"
 	
 	# Fixes for Ubuntu 24.04+ and Debian 13+
 	if [[ "$distro" == "ubuntu" && "$yrelease" -ge "24" ]] || [[ "$distro" == "debian" && "$yrelease" -ge "13" ]]; then
-		sed -i 's#^ExecStart=.*#ExecStart=/usr/sbin/saslauthd -a $MECHANISMS $MECH_OPTIONS $OPTIONS#g' "/lib/systemd/system/saslauthd.service" 
+		sed -i 's#^ExecStart=.*#ExecStart=/usr/sbin/saslauthd -a $MECHANISMS $MECH_OPTIONS $OPTIONS#g' "/lib/systemd/system/saslauthd.service"
+		sed -i 's;^PIDFile=.*;#PIDFile=/var/run/saslauthd/saslauthd.pid;g' "/lib/systemd/system/saslauthd.service"
 		systemctl daemon-reload
 		manageService "saslauthd" "restart"
 	fi
