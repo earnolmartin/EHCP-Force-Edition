@@ -10701,43 +10701,51 @@ email2@domain2.com:password2<br>
 
 	function executeQuery($qu, $opname = '', $caller = '', $mysqlconn = false, $adoConn = false, $quiet = false, $returnAffected = false)
 	{ # only executes conn->execute
-		$this->logquery($qu . ($caller ? ' Caller:' . $caller : ''));
+		try
+		{
+			$this->logquery($qu . ($caller ? ' Caller:' . $caller : ''));
 
-		if ($mysqlconn) { # mysqlconn is for queries that needs to be executed on another mysql link.
-			$rs = mysqli_query($mysqlconn, $qu);
-			$err = $this->getDBError($mysqlconn);
-			$this->debugecho("query executed on another mysql link:($qu)", 1, false);
-			$affectedRows = mysqli_affected_rows($mysqlconn);
-		} elseif ($adoConn) {
-			$rs = $adoConn->Execute($qu);
-			$err = $adoConn->ErrorMsg();
-			$this->debugecho("query executed on another ado-mysql link.($qu)", 1, false);
-			$affectedRows = $adoConn->Affected_Rows();
-		} else {
-			$rs = $this->conn->Execute($qu);
-			$err = $this->conn->ErrorMsg();
-			$affectedRows = $this->conn->Affected_Rows();
-		}
-
-		if ($rs === false) {
-			if (!$quiet) {
-				return $this->error_occured("Error $opname (executequery: $qu) ($err)");
+			if ($mysqlconn) { # mysqlconn is for queries that needs to be executed on another mysql link.
+				$rs = mysqli_query($mysqlconn, $qu);
+				$err = $this->getDBError($mysqlconn);
+				$this->debugecho("query executed on another mysql link:($qu)", 1, false);
+				$affectedRows = mysqli_affected_rows($mysqlconn);
+			} elseif ($adoConn) {
+				$rs = $adoConn->Execute($qu);
+				$err = $adoConn->ErrorMsg();
+				$this->debugecho("query executed on another ado-mysql link.($qu)", 1, false);
+				$affectedRows = $adoConn->Affected_Rows();
 			} else {
-				return false;
+				$rs = $this->conn->Execute($qu);
+				$err = $this->conn->ErrorMsg();
+				$affectedRows = $this->conn->Affected_Rows();
+			}
+
+			if ($rs === false) {
+				if (!$quiet) {
+					return $this->error_occured("Error $opname (executequery: $qu) ($err)");
+				} else {
+					return false;
+				}
+			}
+
+			if ($opname <> '') {
+				$this->echoln("Success " . $opname . "\n");
+			}
+
+			if (is_numeric($affectedRows)) {
+				if ($affectedRows > 0 || $returnAffected) {
+					return $affectedRows;
+				}
+			}
+			return True;
+		} catch (Exception $e) {
+			if (!$quiet) {
+				return $this->error_occured("Error $opname (executequery: $qu) ($e)");
 			}
 		}
 
-		if ($opname <> '') {
-			$this->echoln("Success " . $opname . "\n");
-		}
-
-		if (is_numeric($affectedRows)) {
-			if ($affectedRows > 0 || $returnAffected) {
-				return $affectedRows;
-			}
-		}
-
-		return True;
+		return false;
 	}
 
 	function query3($qu, $opname = '', $caller = '', $mysqlconn = false, $adoConn = false)
