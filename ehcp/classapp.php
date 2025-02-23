@@ -10741,7 +10741,7 @@ email2@domain2.com:password2<br>
 			return True;
 		} catch (Exception $e) {
 			if (!$quiet) {
-				return $this->error_occured("Error $opname (executequery: $qu) ($e)");
+				return $this->error_occured("Error $opname (executequery: $qu) (" . $e->getMessage() . ")");
 			}
 		}
 
