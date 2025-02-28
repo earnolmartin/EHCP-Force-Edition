@@ -3454,7 +3454,7 @@ $gateway="206.51.230.1";
 		return $this->executeQuery($query, $opname); # this in turn calls adodb liberary for execute..
 	}
 
-	function adjustEmailAutoreply($email, $autoreplysubject, $autoreplymessage)
+	function adjustEmailAutoreply($email, $autoreplysubject, $autoreplymessage, $skipForwarding = false)
 	{
 		# set db fields
 		$where = "email='$email'";
@@ -3470,10 +3470,12 @@ $gateway="206.51.230.1";
 		$forwarddestination = "$email,$beforeat@autoreply.$domainpart";
 		$forwardcount = $this->recordcount("forwardings", "destination='$forwarddestination'");
 
-		if ($autoreplyenabled and $forwardcount == 0) {
-			$success = $this->addEmailForwardingDirect($this->activeuser, $domainpart, $email, $forwarddestination);
-		} elseif (!$autoreplyenabled and $forwardcount > 0) {
-			$success = $this->executeQuery("delete from forwardings where destination='$forwarddestination'");
+		if(!$skipForwarding){
+			if ($autoreplyenabled and $forwardcount == 0) {
+				$success = $this->addEmailForwardingDirect($this->activeuser, $domainpart, $email, $forwarddestination);
+			} elseif (!$autoreplyenabled and $forwardcount > 0) {
+				$success = $this->executeQuery("delete from forwardings where destination='$forwarddestination'");
+			}
 		}
 
 		if ($autoreplyenabled)
@@ -3589,34 +3591,52 @@ $gateway="206.51.230.1";
 	{
 		global $id, $newpass, $newpass2, $_insert, $autoreplysubject, $autoreplymessage;
 		$this->getVariable(array('id', 'newpass', 'newpass2', '_insert', 'autoreplysubject', 'autoreplymessage'));
+		
+		if(!empty($id)){
 
-		if ($this->isEmailUser()) { # email users edits itself
-			$email = $this->activeuser;
-		} else {
-			$dom = $this->getDomain('emailuserstable', $id);
-			$this->requireMyDomain($dom);
-			$email = $this->query("select email from emailusers where id=$id");
-			$email = $email[0]['email'];
+			if ($this->isEmailUser()) { # email users edits itself
+				$email = $this->activeuser;
+			} else {
+				$dom = $this->getDomain('emailuserstable', $id);
+				$this->requireMyDomain($dom);
+				$email = $this->query("select email from emailusers where id=$id");
+				$email = $email[0]['email'];
+			}
+			$where = "email='$email'";
+
+			if ($_insert) {
+				$this->adjustEmailAutoreply($email, $autoreplysubject, $autoreplymessage, true);
+			} else {
+				$info = $this->query("select autoreplysubject,autoreplymessage from emailusers where $where");
+				$autoreplysubject = $info[0]['autoreplysubject'];
+				$autoreplymessage = $info[0]['autoreplymessage'];
+
+				$inputparams = array(
+					array('autoreplysubject', 'default' => $autoreplysubject, 'righttext' => 'Leave emtpy to disable autoreply', 'lefttext' => 'Auto Reply Subject:'),
+					array('autoreplymessage', 'textarea', 'default' => $autoreplymessage, 'lefttext' => 'Auto Reply Message:'),
+					array('id', 'hidden', 'default' => $id),
+					array('op', 'hidden', 'default' => __FUNCTION__)
+				);
+				$this->output .= inputform5($inputparams);
+			}
+
+			$this->showSimilarFunctions('email');
+		}else{
+			$domainname = $this->chooseDomain(__FUNCTION__, $domainname);
+
+			$filter = "domainname REGEXP '" . $domainname . "(,|$)'"; #  modified upon suggestion of sextasy@discardmail.com
+
+			$emailAddresses = $this->query("select * from " . $this->conf['emailuserstable']['tablename'] . " where " . $filter);
+			if (count($emailAddresses) > 0) {
+				$optionHtml = '';
+				for($i = 0 ; $i < count($emailAddresses); $i++){
+					$optionHtml .= '<option value="' . $emailAddresses[$i]["id"] . '">' . $emailAddresses[$i]["email"] . '</option>';
+				}
+				$this->output .= '<p>Which email address do you want to set the autoreply for?</p><form method="get"><select name="id">' . $optionHtml . '</select><input type="submit" value="Go" /><input type="hidden" name="op" value="' . $_GET["op"] . '" /></form>';
+			}else{
+				return $this->errorText("No email addresses currently exist for the selected domain.");
+			}
 		}
-		$where = "email='$email'";
-
-		if ($_insert) {
-			$this->adjustEmailAutoreply($email, $autoreplysubject, $autoreplymessage);
-		} else {
-			$info = $this->query("select autoreplysubject,autoreplymessage from emailusers where $where");
-			$autoreplysubject = $info[0]['autoreplysubject'];
-			$autoreplymessage = $info[0]['autoreplymessage'];
-
-			$inputparams = array(
-				array('autoreplysubject', 'default' => $autoreplysubject, 'righttext' => 'Leave emtpy to disable autoreply', 'lefttext' => 'Auto Reply Subject:'),
-				array('autoreplymessage', 'textarea', 'default' => $autoreplymessage, 'lefttext' => 'Auto Reply Message:'),
-				array('id', 'hidden', 'default' => $id),
-				array('op', 'hidden', 'default' => __FUNCTION__)
-			);
-			$this->output .= inputform5($inputparams);
-		}
-
-		$this->showSimilarFunctions('email');
 	}
 
 	function mysqlDBInfoValid($dbname, $dbusername, $dbuserpass)
