@@ -5,7 +5,7 @@ array(
 'undefined_limittype'=>'Undefined limittype.',
 'norecordfound'=>'Nothing/No Record Found.',
 'recordcount'=>'Record Count: ',
-'areyousuretodelete'=>'Are you sure to delete ? <br>',
+'areyousuretodelete'=>'Are you sure you want to delete?<br>',
 'error_occured'=>'Error Occured ',
 'write_yourmessage_here'=>'Write Your Messsage Here',
 'name_surname'=>'Name Surname',
