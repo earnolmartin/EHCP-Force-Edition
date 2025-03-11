@@ -8588,6 +8588,8 @@ email2@domain2.com:password2<br>
 
 			return True;
 		}
+		
+		$ftpInfo = $this->getField('ftpaccounts', 'ftpusername', "panelusername='" . $domainpaneluser . "' and type='default'");
 
 		if (!$confirm) {
 			if ($panelusercount > 0) {
@@ -8595,20 +8597,20 @@ email2@domain2.com:password2<br>
 				$panelusercount--;
 			}
 			$filter = "domainname='$domainname'";
-			$this->output .= $this->sayinmylang("areyousuretodelete") . $domainname . " Email/ftp users: <br> ";
+			$this->output .= $this->sayinmylang("areyousuretodelete") . $domainname . " <br><br>Email/ftp users: <br> ";
 			#$this->output.="$domainname domain ftp user List: ".$this->tablolistele3_5_4($this->conf['ftpuserstable']['tablename'],$baslik,array("ftpusername","domainname"),$filter,$sirala,$linkimages,$linkfiles,$linkfield,$listrowstart,$listrowcount,false);
 			$domaininfo = $this->getDomainInfo($domainname);
-			$this->output .= "ftp username:" . $this->multiserver_get_domain_ftpusername($domaininfo) . "<br>";
+			$this->output .= "ftp username: " . $this->multiserver_get_domain_ftpusername($domaininfo) . "<br>";
 
 			$this->output .= "<br> $domainname domain email user List: " . $this->tablolistele3_5_4($this->conf['emailuserstable']['tablename'], $baslik, $this->conf['emailuserstable']['listfields'], $filter, $sirala, $linkimages, $linkfiles, $linkfield, $listrowstart, $listrowcount, false);
-			$this->output .= "<br>Domain File Count:" . executeprog("ls -l " . $this->conf['vhosts'] . "/$domainname/httpdocs | wc -l");
+			$this->output .= "<br>Domain File Count: " . executeprog("ls -l " . $this->conf['vhosts'] . "/" . $ftpInfo . "/$domainname/httpdocs | wc -l");
 
-			$this->listTable("<br><br>Subdomains related to this domain:", 'subdomainstable', "domainname='$domainname'");
+			$this->listTable("<br><br>Subdomains related to this domain: ", 'subdomainstable', "domainname='$domainname'", true);
 
 			if ($panelusercount == 0)
-				$this->output .= "<br>Panel user to be deleted:" . $domainpaneluser;
-			$this->output .= "<br><br>Databases related to this domain:" . $this->tablolistele3_5_4($this->conf['mysqldbstable']['tablename'], $baslik, array("dbname"), $filter, $sirala, $linkimages, $linkfiles, $linkfield, $listrowstart, $listrowcount, false);
-			$this->output .= "<br> Email Forwardings:" . $this->tablolistele3_5_4($this->conf['emailforwardingstable']['tablename'], $baslik, $this->conf['emailforwardingstable']['listfields'], $filter, $sirala, $linkimages, $linkfiles, $linkfield, $listrowstart, $listrowcount, false);
+				$this->output .= "<br>Panel user to be deleted: " . $domainpaneluser;
+			$this->output .= "<br><br>Databases related to this domain: " . $this->tablolistele3_5_4($this->conf['mysqldbstable']['tablename'], $baslik, array("dbname"), $filter, $sirala, $linkimages, $linkfiles, $linkfield, $listrowstart, $listrowcount, false);
+			$this->output .= "<br>Email Forwardings: " . $this->tablolistele3_5_4($this->conf['emailforwardingstable']['tablename'], $baslik, $this->conf['emailforwardingstable']['listfields'], $filter, $sirala, $linkimages, $linkfiles, $linkfield, $listrowstart, $listrowcount, false);
 
 			$inputparams = array(
 				array('domainname', 'hidden', 'default' => $domainname),
@@ -17007,15 +17009,21 @@ sudo service ehcp start <br>
 		return true;
 	}
 
-	function listTable($baslik1, $conf_tabloadi, $filtre = "")
+	function listTable($baslik1, $conf_tabloadi, $filtre = "", $skipLinkFilesAndFields = false)
 	{
 
 		$tablo = $this->conf[$conf_tabloadi];
 		$this->output .= "$baslik1<br>";
 
-		$linkimages = $tablo['linkimages'];
-		$linkfiles = $tablo['linkfiles'];
-		$linkfield = $tablo['linkfield'];
+		if(!$skipLinkFilesAndFields){
+			$linkimages = $tablo['linkimages'];
+			$linkfiles = $tablo['linkfiles'];
+			$linkfield = $tablo['linkfield'];
+		}else{
+			$linkimages = array();
+			$linkfiles = array();
+			$linkfield = array();
+		}
 		$sirala = $tablo['orderby'];
 
 		$this->output .= $this->tablolistele3_5_4($tablo['tablename'], $baslik, $tablo['listfields'], $filtre, $sirala, $linkimages, $linkfiles, $linkfield, $listrowstart, $listrowcount) . '<br>';
@@ -17239,6 +17247,16 @@ sudo service ehcp start <br>
 			$customListLabels = $table['listlabels'];
 			if ($this->hasValueOrZero($customListLabels) || is_array($customListLabels)) {
 				$baslik = $customListLabels;
+			}
+			
+			// Get the number of link fields it should have
+			$numLinks = count($table['linkimages']);
+			$linksReceivedCount = count($linkyazi);
+			if($linksReceivedCount != $numLinks){
+				$diff = $numLinks - $linksReceivedCount;
+				if($diff > 0){
+					array_splice($baslik, (-1 * $diff));
+				}
 			}
 
 			if ($kayitsayisi > 0 and $baslikgoster)

@@ -5,7 +5,7 @@ array(
 	
 'undefined_limittype '=>' undefined limittype.',
 'norecordfound' => 'keine daten gefunden. ',
-'recordcount' => 'record count:',
+'recordcount' => 'record count: ',
 'areyousuretodelete' => 'sind sie sicher, dass zu löschen? <br> ',
 'error_occured' => 'fehler aufgetreten',
 'write_yourmessage_here' => 'schreiben sie ihre messsage hier',

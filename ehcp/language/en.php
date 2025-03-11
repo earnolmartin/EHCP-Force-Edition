@@ -4,7 +4,7 @@ $this->lang['en']=
 array(
 'undefined_limittype'=>'Undefined limittype.',
 'norecordfound'=>'Nothing/No Record Found.',
-'recordcount'=>'Record Count:',
+'recordcount'=>'Record Count: ',
 'areyousuretodelete'=>'Are you sure to delete ? <br>',
 'error_occured'=>'Error Occured ',
 'write_yourmessage_here'=>'Write Your Messsage Here',
