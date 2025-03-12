@@ -17244,13 +17244,15 @@ sudo service ehcp start <br>
 			$result2 .= "\n<table id='table$tablo' class='list'>";
 
 			// Get custom th headers
-			$customListLabels = $table['listlabels'];
-			if ($this->hasValueOrZero($customListLabels) || is_array($customListLabels)) {
-				$baslik = $customListLabels;
+			if(!empty($table) && is_array($table)){
+				$customListLabels = $table['listlabels'];
+				if ($this->hasValueOrZero($customListLabels) || is_array($customListLabels)) {
+					$baslik = $customListLabels;
+				}
 			}
 			
 			// Get the number of link fields it should have
-			if(array_key_exists('linkimages', $table) && is_array($table['linkimages'])){
+			if(!empty($table) && is_array($table) && array_key_exists('linkimages', $table) && is_array($table['linkimages'])){
 				
 				$numLinks = count($table['linkimages']);
 				
