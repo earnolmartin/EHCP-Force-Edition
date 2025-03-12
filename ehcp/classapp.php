@@ -17022,7 +17022,7 @@ sudo service ehcp start <br>
 		}else{
 			$linkimages = array();
 			$linkfiles = array();
-			$linkfield = array();
+			$linkfield = '';
 		}
 		$sirala = $tablo['orderby'];
 
@@ -17226,7 +17226,7 @@ sudo service ehcp start <br>
 		}
 
 		$baslikalan = $selectalan;
-		if (!in_array($linkalan, $selectalan))
+		if (!in_array($linkalan, $selectalan) && !empty($linkalan))
 			array_push($selectalan, $linkalan); //linkalan yoksa, ekle
 		//$query=buildquery3("select ".selectstring($selectalan)." from $tablo",$filtre,$sirala,$baslangic,$satirsayisi1);
 		$query = buildquery2("select " . selectstring($selectalan) . " from $tablo", $filtre, $sirala);
