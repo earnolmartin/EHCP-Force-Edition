@@ -17250,12 +17250,21 @@ sudo service ehcp start <br>
 			}
 			
 			// Get the number of link fields it should have
-			$numLinks = count($table['linkimages']);
-			$linksReceivedCount = count($linkyazi);
-			if($linksReceivedCount != $numLinks){
-				$diff = $numLinks - $linksReceivedCount;
-				if($diff > 0){
-					array_splice($baslik, (-1 * $diff));
+			if(array_key_exists('linkimages', $table) && is_array($table['linkimages'])){
+				
+				$numLinks = count($table['linkimages']);
+				
+				if(!empty($linkyazi) && is_array($linkyazi)){
+					$linksReceivedCount = count($linkyazi);
+				}else{
+					$linksReceivedCount = 0;
+				}
+				
+				if($linksReceivedCount != $numLinks){
+					$diff = $numLinks - $linksReceivedCount;
+					if($diff > 0){
+						array_splice($baslik, (-1 * $diff));
+					}
 				}
 			}
 
