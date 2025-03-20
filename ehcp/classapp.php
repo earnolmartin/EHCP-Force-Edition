@@ -1391,7 +1391,7 @@ CREATE TABLE IF NOT EXISTS `cronjobs` (
 		$this->myversion = $ehcpversion;
 
 		if (isset($this->op) && !empty($this->op)) {
-			$this->op = removeInvalidChars($this->op, "lettersandnumbers");
+			$this->op = removeInvalidChars($this->op, "lettersandnumbershyphensunderscores");
 		}
 
 		$this->connectTodb();

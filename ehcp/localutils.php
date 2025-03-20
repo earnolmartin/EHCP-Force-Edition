@@ -1201,6 +1201,9 @@ function removeInvalidChars($string, $mode)
 		case "lettersandnumbers":
 			$pattern = "/[^A-Za-z0-9]/i";
 			break;
+		case "lettersandnumbershyphensunderscores":
+			$pattern = "/[^A-Za-z0-9_-]/i";
+			break;
 		case "domainname":
 			// Lowercase for domain names only!!!
 			$pattern = "/[^a-z0-9\-\.]/i";
