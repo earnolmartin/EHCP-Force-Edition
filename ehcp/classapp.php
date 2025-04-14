@@ -14880,7 +14880,7 @@ sudo service ehcp start <br>
 			$file = "$this->ehcpdir/serverfiles/$serverip/named/named_ehcp_produced_by_" . $this->miscconfig['dnsip'] . '.conf';
 
 		echo "\n\nwriting namedfile: $file \n\n";
-		$success = writeoutput2($file, $out, w);
+		$success = writeoutput2($file, $out, 'w');
 
 		// Fix perms on the bind file
 		$this->fixBindFilePerms($file);
