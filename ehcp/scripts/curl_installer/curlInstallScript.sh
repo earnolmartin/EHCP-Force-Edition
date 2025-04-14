@@ -388,6 +388,44 @@ function doJoomla5Install(){
 	cd "$CURDIR"
 }
 
+function doDrupal11Install(){	
+	# Set the correct permissions
+	changeOwner "$FULLPATH"
+	
+	CURDIR=$(pwd)
+	cd "$DLSFolder"
+	cp /var/www/new/ehcp/scripts/curl_installer/script_presets/drupal/drupal_11.sql ./
+	cp /var/www/new/ehcp/scripts/curl_installer/script_presets/drupal/settings_11.php ./
+	
+	# Replace stuff 
+	sed -i "s/{ADMIN_EMAIL}/$ADMINEMAIL/g" "drupal_11.sql"
+	sed -i "s/{DB_HOST}/$DBHOST/g" "settings_11.php"
+	sed -i "s/{DB_PASS}/$DBUSERPASS/g" "settings_11.php"
+	sed -i "s/{DB_USER}/$DBUSERNAME/g" "settings_11.php"
+	sed -i "s/{DB_NAME}/$DBNAME/g" "settings_11.php"
+	
+	# Move modified config to proper path
+	mv "settings_11.php" "$FULLPATH/sites/default/settings.php"
+	
+	# Import mysql database
+	mysql -h "$DBHOST" -u "$DBUSERNAME" -p"$DBUSERPASS" "$DBNAME" -f < "drupal_11.sql";
+	
+	rm "drupal_11.sql"
+	
+	# Set the correct permissions
+	changeOwner "$FULLPATH"
+	
+	# Remove install files
+	if [ -e "$FULLPATH/install.php" ]; then
+		if [ ! -z "$FULLPATH" ] && [ "$FULLPATH" != "/" ]; then
+			rm -Rf "$FULLPATH/install.php"
+		fi
+	fi
+	
+	# change back into original dir
+	cd "$CURDIR"
+}
+
 function createCurlLog(){
 	CURLLOG="/var/www/new/ehcp/scripts/curl_installer/curl_php_log.conf"
 	if [ ! -e "$CURLLOG" ]; then
@@ -440,6 +478,9 @@ case "$SCRIPTNAME" in
             ;;
         joomla5)
             doJoomla5Install
+            ;;
+        drupal11)
+            doDrupal11Install
             ;;
          
         *)
