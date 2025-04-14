@@ -349,16 +349,43 @@ function doJoomla5Install(){
 	# Set the correct permissions
 	changeOwner "$FULLPATH"
 	
-	# Curl install Joomla 5
-	"$PHPPath" "/var/www/new/ehcp/scripts/curl_installer/curl_call.php" "$serverMode$DOMAINNAME/$DIRECTORY/installation/index.php" "jform[site_name]=$TITLE" "jform[admin_user]=$$DEFAULTLOGIN" "jform[admin_username]=$$DEFAULTLOGIN" "jform[admin_password]=$DEFAULTPASS" "jform[admin_email]=$ADMINEMAIL" "jform[db_type]=mysqli" "jform[db_host]=$DBHOST" "jform[db_user]=$DBUSERNAME" "jform[db_pass]=$DBUSERPASS" "jform[db_name]=$DBNAME" "jform[db_prefix]=joom_" "jform[db_encryption]=0" "jform[db_sslkey]=" "jform[db_sslcert]=" "jform[db_sslverifyservercert]=0" "jform[db_sslca]=" "jform[db_sslcipher]=" "jform[db_old]=backup" "admin_password2=$DEFAULTPASS"
+	CURDIR=$(pwd)
+	cd "$DLSFolder"
+	cp /var/www/new/ehcp/scripts/curl_installer/script_presets/joomla/j5.sql ./
+	cp /var/www/new/ehcp/scripts/curl_installer/script_presets/joomla/configuration_j5.php ./
+	
+	# Replace stuff 
+	sed -i "s/{SITE_NAME}/$TITLE/g" "configuration_j5.php"
+	sed -i "s#{SITE_DESC}#$DEFAULTDESC#g" "configuration_j5.php"
+	sed -i "s/noreply@ehcpforce.tk/$ADMINEMAIL/g" "configuration_j5.php"
+	sed -i "s/noreply@ehcpforce.tk/$ADMINEMAIL/g" "j5.sql"
+	sed -i "s/\$host = 'localhost';/\$host = '$DBHOST';/g" "configuration_j5.php"
+	sed -i "s/\$user = 'j5';/\$user = '$DBUSERNAME';/g" "configuration_j5.php"
+	sed -i "s/\$password = 'j5';/\$password = '$DBUSERPASS';/g" "configuration_j5.php"
+	sed -i "s/\$db = 'j5';/\$db = '$DBNAME';/g" "configuration_j5.php"
+	sed -i "s#\$log_path = '/var/www/vhosts/test/x-null.net/httpdocs/joomla/administrator/logs';#\$log_path = '$FULLPATH/administrator/logs';#g" "configuration_j5.php"
+	sed -i "s#\$tmp_path = '/var/www/vhosts/test/x-null.net/httpdocs/joomla/tmp';#\$tmp_path = '$FULLPATH/tmp';#g" "configuration_j5.php"
+	
+	# Move modified config to proper path
+	mv "configuration_j5.php" "$FULLPATH/configuration.php"
+	
+	# Import mysql database
+	mysql -h "$DBHOST" -u "$DBUSERNAME" -p"$DBUSERPASS" "$DBNAME" -f < "j5.sql";
+	
+	rm "j5.sql"
 	
 	# Set the correct permissions
 	changeOwner "$FULLPATH"
 	
 	# Remove install files
-	if [ -e "$FULLPATH/install" ]; then
-		rm -R "$FULLPATH/install"
+	if [ -e "$FULLPATH/installation" ]; then
+		if [ ! -z "$FULLPATH" ] && [ "$FULLPATH" != "/" ]; then
+			rm -Rf "$FULLPATH/installation"
+		fi
 	fi
+	
+	# change back into original dir
+	cd "$CURDIR"
 }
 
 function createCurlLog(){
