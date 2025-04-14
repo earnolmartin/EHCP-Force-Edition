@@ -14662,7 +14662,7 @@ sudo service ehcp start <br>
 			$dnsserverip = $serverip;
 		}
 
-		if ($serverip == localhost)
+		if ($serverip == 'localhost')
 			$file = $this->conf['namedbase'] . "/named_ehcp.conf";
 		else
 			$file = "$this->ehcpdir/serverfiles/$serverip/named/named_ehcp_produced_by_" . $this->miscconfig['dnsip'] . '.conf';
@@ -14874,7 +14874,7 @@ sudo service ehcp start <br>
 
 		$out .= $this->putArrayToStr($arr2, $this->dnsnamedconftemplate);
 
-		if ($serverip == localhost)
+		if ($serverip == 'localhost')
 			$file = $this->conf['namedbase'] . "/named_ehcp.conf";
 		else
 			$file = "$this->ehcpdir/serverfiles/$serverip/named/named_ehcp_produced_by_" . $this->miscconfig['dnsip'] . '.conf';
