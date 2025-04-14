@@ -399,6 +399,10 @@ function doDrupal11Install(){
 	
 	# Replace stuff 
 	sed -i "s/{ADMIN_EMAIL}/$ADMINEMAIL/g" "drupal_11.sql"
+	sed -i "s#/var/www/vhosts/test/test.com/httpdocs/drupal#$FULLPATH#g" "drupal_11.sql"
+	sed -i "s#test.com/drupal#test.com/$DIRECTORY#g" "drupal_11.sql"
+	sed -i "s#test.com#$DOMAINNAME#g" "drupal_11.sql"
+	
 	sed -i "s/{DB_HOST}/$DBHOST/g" "settings_11.php"
 	sed -i "s/{DB_PASS}/$DBUSERPASS/g" "settings_11.php"
 	sed -i "s/{DB_USER}/$DBUSERNAME/g" "settings_11.php"

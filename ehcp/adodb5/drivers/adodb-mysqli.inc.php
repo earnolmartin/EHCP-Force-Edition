@@ -31,6 +31,7 @@ if (! defined("_ADODB_MYSQLI_LAYER")) {
 
  // disable adodb extension - currently incompatible.
  global $ADODB_EXTENSION; $ADODB_EXTENSION = false;
+ global $ADODB_FETCH_MODE;
 
 class ADODB_mysqli extends ADOConnection {
 	var $databaseType = 'mysqli';
@@ -62,6 +63,7 @@ class ADODB_mysqli extends ADOConnection {
 	var $optionFlags = array(array(MYSQLI_READ_DEFAULT_GROUP,0));
 	var $arrayClass = 'ADORecordSet_array_mysqli';
 	var $multiQuery = false;
+	var $adodbFetchMode = '';
 
 	function __construct()
 	{
