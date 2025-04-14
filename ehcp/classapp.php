@@ -9061,7 +9061,7 @@ email2@domain2.com:password2<br>
 		if ($success) {
 			$str = "Will copy/add script <b>[$scriptname]</b> to domain: <b>[$domainname]</b> directory: <b>[$directory]</b> <br><br>Click <big><a target=_blank href=http://www.$domainname/$directory>here</a></big> to see that dir after 30-60 seconds....<br>You may tail -f /var/log/ehcp.log for script operations...<br><br><p class='success'>Your login will be as follows:<br><br>Login:&nbsp; ";
 			if (strtolower($scriptname) != "phpcoin") {
-				$str .= "admin<br>Password: 12345678!";
+				$str .= "admin<br>Password: 12345678!!longeR";
 			} else {
 				$str .= "webmaster<br>Password: $dbuserpass";
 			}

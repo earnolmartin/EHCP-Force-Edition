@@ -25,7 +25,7 @@ fi
 
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games"
 PHPPath=$(which php)
-DEFAULTPASS="12345678!"
+DEFAULTPASS="12345678!!longeR"
 DEFAULTLOGIN="admin"
 ADMINEMAIL="noreply@ehcpforce.tk"
 DEFAULTDESC="ehcpforce.tk"
@@ -344,6 +344,23 @@ function doMYBBInstall(){
 	cd "$CURDIR"
 }
 
+function doJoomla5Install(){
+	
+	# Set the correct permissions
+	changeOwner "$FULLPATH"
+	
+	# Curl install Joomla 5
+	"$PHPPath" "/var/www/new/ehcp/scripts/curl_installer/curl_call.php" "$serverMode$DOMAINNAME/$DIRECTORY/installation/index.php" "jform[site_name]=$TITLE" "jform[admin_user]=$$DEFAULTLOGIN" "jform[admin_username]=$$DEFAULTLOGIN" "jform[admin_password]=$DEFAULTPASS" "jform[admin_email]=$ADMINEMAIL" "jform[db_type]=mysqli" "jform[db_host]=$DBHOST" "jform[db_user]=$DBUSERNAME" "jform[db_pass]=$DBUSERPASS" "jform[db_name]=$DBNAME" "jform[db_prefix]=joom_" "jform[db_encryption]=0" "jform[db_sslkey]=" "jform[db_sslcert]=" "jform[db_sslverifyservercert]=0" "jform[db_sslca]=" "jform[db_sslcipher]=" "jform[db_old]=backup" "admin_password2=$DEFAULTPASS"
+	
+	# Set the correct permissions
+	changeOwner "$FULLPATH"
+	
+	# Remove install files
+	if [ -e "$FULLPATH/install" ]; then
+		rm -R "$FULLPATH/install"
+	fi
+}
+
 function createCurlLog(){
 	CURLLOG="/var/www/new/ehcp/scripts/curl_installer/curl_php_log.conf"
 	if [ ! -e "$CURLLOG" ]; then
@@ -373,7 +390,7 @@ case "$SCRIPTNAME" in
         wordpress)
             doWordPressInstall
             ;;
-        joomla)
+        joomla3)
             doJoomlaInstall
             ;;
         smf2)
@@ -382,7 +399,7 @@ case "$SCRIPTNAME" in
         phpbb)
             doPHPBBInstall
             ;;
-        drupal)
+        drupal7)
             doDrupalInstall
             ;;
         phpcoin)
@@ -393,6 +410,9 @@ case "$SCRIPTNAME" in
             ;;
         mybb)
             doMYBBInstall
+            ;;
+        joomla5)
+            doJoomla5Install
             ;;
          
         *)

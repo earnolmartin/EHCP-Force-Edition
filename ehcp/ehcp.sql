@@ -12,14 +12,16 @@ CREATE TABLE IF NOT EXISTS `scripts` (
 )  DEFAULT CHARSET=utf8 COMMENT='ehcp db - stores scripts that can be installed in ehcp';
 
 INSERT INTO `scripts` (`id`, `scriptname`, `homepage`, `description`, `filetype`, `fileinfo`, `scriptdirtocopy`, `commandsaftercopy`, `customfileownerships`) VALUES
-(1, 'WordPress', NULL, NULL, 'directurl', 'https://wordpress.org/latest.zip', 'wordpress', '', NULL),
-(2, 'Joomla', NULL, NULL, 'directurl', 'https://ehcpforce.ezpz.cc/files/Joomla_3.4.0-Stable-Full_Package.zip', '', '', NULL),
-(3, 'SMF2', NULL, 'Simple Machine Forum Software Version 2.0.9', 'directurl', 'https://ehcpforce.ezpz.cc/files/smf_2-0-9_install.zip', '', '', NULL),
-(4, 'phpBB', NULL, 'phpBB Forum Software Version 3.1.3', 'directurl', 'https://ehcpforce.ezpz.cc/files/phpBB-3.1.3.zip', 'phpBB3', '', NULL),
-(5, 'Drupal', NULL, 'Drupal CMS Version 7.35', 'directurl', 'https://ehcpforce.ezpz.cc/files/drupal-7.35.zip', 'drupal-7.35', '', NULL),
-(6, 'phpCOIN', NULL, 'phpCOIN Billing Software Force Edition Latest from SVN', 'directurl', 'https://ehcpforce.ezpz.cc/files/phpcoin_force_edition_stable_snapshot.zip', 'phpCOIN', '', NULL),
-(7, 'SMF1', NULL, 'Simple Machine Forum Software Version 1.1.20', 'directurl', 'https://ehcpforce.ezpz.cc/files/smf_1-1-20_install.zip', '', '', NULL),
-(8, 'MyBB', NULL, 'MyBB Version 1.8.4', 'directurl', 'https://ehcpforce.ezpz.cc/files/mybb_install.zip', '', '', NULL);
+(1, 'WordPress', NULL, 'Newest Version', 'directurl', 'https://wordpress.org/latest.zip', 'wordpress', '', NULL),
+(2, 'Joomla5', NULL, 'Joomla 5.2.6', 'directurl', 'https://ehcpforce.ezpz.cc/files/Joomla_5.2.6-Stable-Full_Package.zip', '', '', NULL),
+(3, 'Drupal11', NULL, 'Drupal 11.1.1', 'directurl', 'https://ehcpforce.ezpz.cc/files/drupal-11.1.1.zip', 'drupal-11.1.1', '', NULL),
+(4, 'MyBB', NULL, 'MyBB Version 1.8.38', 'directurl', 'https://ehcpforce.ezpz.cc/files/mybb_1838_install.zip', '', '', NULL),
+(5, 'SMF2', NULL, 'Simple Machine Forum Software Version 2.1.4', 'directurl', 'https://ehcpforce.ezpz.cc/files/smf_2-1-4_install.zip', '', '', NULL),
+(6, 'SMF1', NULL, 'Simple Machine Forum Software Version 1.1.21', 'directurl', 'https://ehcpforce.ezpz.cc/files/smf_1-1-21_install.zip', '', '', NULL),
+(7, 'phpBB', NULL, 'phpBB Forum Software Version 3.1.3', 'directurl', 'https://ehcpforce.ezpz.cc/files/phpBB-3.1.3.zip', 'phpBB3', '', NULL),
+(8, 'phpCOIN', NULL, 'phpCOIN Billing Software Force Edition Latest from SVN', 'directurl', 'https://ehcpforce.ezpz.cc/files/phpcoin_force_edition_stable_snapshot.zip', 'phpCOIN', '', NULL),
+(9, 'Drupal7', NULL, 'Drupal CMS Version 7.35', 'directurl', 'https://ehcpforce.ezpz.cc/files/drupal-7.35.zip', 'drupal-7.35', '', NULL),
+(10, 'Joomla3', NULL, 'Joomla 3.4.0', 'directurl', 'https://ehcpforce.ezpz.cc/files/Joomla_3.4.0-Stable-Full_Package.zip', '', '', NULL);
 
 CREATE TABLE IF NOT EXISTS scripts_log (
   id tinyint(4) NOT NULL auto_increment,
