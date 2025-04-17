@@ -178,7 +178,7 @@ function doSMF2Install(){
 	# Curl install SMF version 2
 	"$PHPPath" "/var/www/new/ehcp/scripts/curl_installer/curl_call.php" "$serverMode$DOMAINNAME/$DIRECTORY/install.php?step=2" "db_name=$DBNAME" "db_user=$DBUSERNAME" "db_type=mysql" "db_passwd=$DBUSERPASS" "db_server=$DBHOST" "db_prefix=smf_" "contbutt=yes"
 	"$PHPPath" "/var/www/new/ehcp/scripts/curl_installer/curl_call.php" "$serverMode$DOMAINNAME/$DIRECTORY/install.php?step=3" "mbname=$TITLE" "boardurl=$serverMode$DOMAINNAME/$DIRECTORY" "compress=1" "dbsession=1" "contbutt=yes"
-	"$PHPPath" "/var/www/new/ehcp/scripts/curl_installer/curl_call.php" "$serverMode$DOMAINNAME/$DIRECTORY/install.php?step=5" "username=$DEFAULTLOGIN" "password1=$DEFAULTPASS" "password2=$DEFAULTPASS" "email=$ADMINEMAIL" "password3=$DBUSERPASS" "contbutt=yes"
+	"$PHPPath" "/var/www/new/ehcp/scripts/curl_installer/curl_call.php" "$serverMode$DOMAINNAME/$DIRECTORY/install.php?step=5" "username=$DEFAULTLOGIN" "password1=$DEFAULTPASS" "password2=$DEFAULTPASS" "email=$ADMINEMAIL" "server_email=$ADMINEMAIL" "password3=$DBUSERPASS" "contbutt=yes"
 	
 	# Set the correct permissions
 	changeOwner "$FULLPATH"
