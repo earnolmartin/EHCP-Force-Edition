@@ -13,13 +13,13 @@ CREATE TABLE IF NOT EXISTS `scripts` (
 
 INSERT INTO `scripts` (`id`, `scriptname`, `homepage`, `description`, `filetype`, `fileinfo`, `scriptdirtocopy`, `commandsaftercopy`, `customfileownerships`) VALUES
 (1, 'WordPress', NULL, 'Newest Version', 'directurl', 'https://wordpress.org/latest.zip', 'wordpress', '', NULL),
-(2, 'Joomla5', NULL, 'Joomla 5.2.6', 'directurl', 'https://ehcpforce.ezpz.cc/files/Joomla_5.2.6-Stable-Full_Package.zip', '', '', NULL),
-(3, 'Drupal11', NULL, 'Drupal 11.1.1', 'directurl', 'https://ehcpforce.ezpz.cc/files/drupal-11.1.1.zip', 'drupal-11.1.1', '', NULL),
+(2, 'Joomla5', NULL, 'Joomla 5.2.6 (PHP >= 8.1+)', 'directurl', 'https://ehcpforce.ezpz.cc/files/Joomla_5.2.6-Stable-Full_Package.zip', '', '', NULL),
+(3, 'Drupal11', NULL, 'Drupal 11.1.1 (PHP >= 8.3+)', 'directurl', 'https://ehcpforce.ezpz.cc/files/drupal-11.1.1.zip', 'drupal-11.1.1', '', NULL),
 (4, 'MyBB', NULL, 'MyBB Version 1.8.38', 'directurl', 'https://ehcpforce.ezpz.cc/files/mybb_1838_install.zip', '', '', NULL),
 (5, 'SMF2', NULL, 'Simple Machine Forum Software Version 2.1.4', 'directurl', 'https://ehcpforce.ezpz.cc/files/smf_2-1-4_install.zip', '', '', NULL),
-(6, 'SMF1', NULL, 'Simple Machine Forum Software Version 1.1.21', 'directurl', 'https://ehcpforce.ezpz.cc/files/smf_1-1-21_install.zip', '', '', NULL),
+(6, 'SMF1', NULL, 'Simple Machine Forum Software Version 1.1.21 (PHP < 8)', 'directurl', 'https://ehcpforce.ezpz.cc/files/smf_1-1-21_install.zip', '', '', NULL),
 (7, 'phpBB', NULL, 'phpBB Forum Software Version 3.1.3', 'directurl', 'https://ehcpforce.ezpz.cc/files/phpBB-3.1.3.zip', 'phpBB3', '', NULL),
-(8, 'phpCOIN', NULL, 'phpCOIN Billing Software Force Edition Latest from SVN', 'directurl', 'https://ehcpforce.ezpz.cc/files/phpcoin_force_edition_stable_snapshot.zip', 'phpCOIN', '', NULL),
+(8, 'phpCOIN', NULL, 'phpCOIN Billing Software Force Edition Latest from SVN (PHP < 7)', 'directurl', 'https://ehcpforce.ezpz.cc/files/phpcoin_force_edition_stable_snapshot.zip', 'phpCOIN', '', NULL),
 (9, 'Drupal7', NULL, 'Drupal CMS Version 7.35', 'directurl', 'https://ehcpforce.ezpz.cc/files/drupal-7.35.zip', 'drupal-7.35', '', NULL),
 (10, 'Joomla3', NULL, 'Joomla 3.4.0', 'directurl', 'https://ehcpforce.ezpz.cc/files/Joomla_3.4.0-Stable-Full_Package.zip', '', '', NULL);
 
