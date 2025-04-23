@@ -15195,6 +15195,8 @@ sudo service ehcp start <br>
 
 		foreach ($arr as $dom) { // setup necessry dirs/files if doesnt exist..
 			$this->initializeDomainFiles($dom, $domainname);
+	
+			$customTryFiles = '';
 
 			# add customhttp to array,
 			$customhttpvalue = '';
@@ -15376,6 +15378,26 @@ sudo service ehcp start <br>
 				$dom['ssl_cert_chain_setting_with_path'] = '';
 			}
 
+			if(!empty($customhttpvalue)){
+				$customVal = "";
+				$lines = explode("\n", $customhttpvalue);
+				foreach($lines as $line){
+					if(stripos(trim($line), "try_files_main") !== false){
+						$dom['customtryfiles'] = str_replace("try_files_main" , "try_files", $line);
+					}else{
+						$customVal .= $line . "\n";
+					}
+				}
+				
+				if(!empty($customVal)){
+					$customhttpvalue = $customVal;
+				}
+			}
+
+			$this->echoln2("Domain:" . $dom['domainname'] . " has custom http.");
+			
+			$this->echoln2($customhttpvalue);
+
 			$dom['customhttp'] = $customhttpvalue;
 
 			# add ServerAlias to begining of lines in aliases field
@@ -15449,6 +15471,8 @@ sudo service ehcp start <br>
 
 
 			foreach ($arr2 as $ar1) { // template e gore apache dosyasini olustur
+				$customTryFiles = "";
+				
 				$webserver_template = $ar1[$templatefield]; # get domain specific (custom) template
 				if ($webserver_template == '' and $ar1['apachetemplate'] <> '')
 					$webserver_template = $ar1['apachetemplate']; # be backward compatible, for older installs..
@@ -15484,7 +15508,41 @@ sudo service ehcp start <br>
 
 				# replace some fields that does not exist in domain array
 				$webserver_template = str_replace(array('{ehcpdir}', '{localip}', '{wildcarddomain}'), array($this->ehcpdir, $this->miscconfig['localip'], $wildcard), $webserver_template);
+				
+				if(array_key_exists("customtryfiles", $ar1)){
+					$customTryFiles = $ar1["customtryfiles"];
+					unset($ar1["customtryfiles"]);
+				}
+				
 				$webserver_config = str_replace($replacealanlar, $ar1, $webserver_template);
+				
+				# Use custom try files if provided
+				if(!empty($customTryFiles)){
+					$this->echoln2("Custom try files detected!");
+					$this->echoln2($customTryFiles);
+					$lines = explode("\n", $webserver_config);
+					$finalConfig = "";
+					$lastLocation = "";
+					foreach($lines as $line){
+						if(stripos(trim($line), "location ") !== false){
+							$pieces = explode(" ", trim($line));
+							// $this->echoln2("Pieces are " . print_r($pieces, true));
+							$lastLocation = $pieces[1];
+						}
+						
+						if(stripos(trim($line), "try_files") !== false && $lastLocation == "/"){
+							// $this->echoln2("Try files and last location of / found!");
+							$finalConfig .= $customTryFiles . "\n";
+						}else{
+							$finalConfig .= $line . "\n";
+						}
+					}
+					
+					if(!empty($finalConfig)){
+						$webserver_config = $finalConfig;
+					}
+				}
+				
 				$fileout .= $this->adjustWebTemplateConfIfNeededForLineBreaks($webserver_config);
 			}
 		}
