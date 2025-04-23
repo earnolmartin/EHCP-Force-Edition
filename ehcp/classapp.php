@@ -3983,8 +3983,9 @@ $gateway="206.51.230.1";
 				array('op', 'hidden', 'default' => __FUNCTION__)
 
 			);
-			$this->output .= "Adding custom HTTP for domain \"$domainname\" and your current webserver of (" . $this->miscconfig['webservertype'] . ")<br>(Note that this custom HTTP will be active whenever your current webserver type is active):<br>";
+			$this->output .= "Adding custom HTTP for domain \"$domainname\" and your current webserver of (" . $this->miscconfig['webservertype'] . ")<br>(Note that this custom HTTP will be active whenever your current webserver type is active):<br>" . '<div class="editTemplateArea">';
 			$this->output .= inputform5($inputparams);
+			$this->output .= '</div>';
 
 		} else {
 			$success = $success && $this->addCustomHttpDirect($domainname, $customhttp, $comment);
@@ -4063,8 +4064,8 @@ $gateway="206.51.230.1";
 			);
 
 			$this->output .= "Adding custom DNS for domain \"$domainname\":<br>Attention! Adding incorrect entries will cause DNS service errors!<br><br>Example:
-  		www2 &nbsp; &nbsp; &nbsp; IN &nbsp;&nbsp;&nbsp; A &nbsp;&nbsp;&nbsp;YOURIP "
-				. inputform5($inputparams);
+  		www2 &nbsp; &nbsp; &nbsp; IN &nbsp;&nbsp;&nbsp; A &nbsp;&nbsp;&nbsp;YOURIP<div class='editTemplateArea'>"
+				. inputform5($inputparams) . "</div>";
 
 			$this->output .= "Following dns records already added from template, you may modify template (dnszonetemplate file) in filesystem. <br><br><pre>" .
 				file_get_contents('dnszonetemplate') . "</pre>";
