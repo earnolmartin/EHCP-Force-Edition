@@ -17042,9 +17042,13 @@ sudo service ehcp start <br>
 						}
 					';
 					$comment = "Drupal NGINX Requirements";
-				
-					$success = $this->executeQuery("insert into " . $this->conf['customstable']['tablename'] . " (domainname,name,value,comment,webservertype) values ('$domainname','customhttp','$customhttp','$comment','" . $this->miscconfig['webservertype'] . "')", 'add custom http');
-					$success = $success && $this->addDaemonOp("syncdomains", 'xx', $domainname, '', 'sync domains');
+					
+					$SQL = "SELECT * FROM " . $this->conf['customstable']['tablename'] . " WHERE name = 'customhttp' and domainname = '" . $domainname . "' and comment = 'Drupal NGINX Requirements'";
+					$rs = $this->query($SQL);
+					if($rs === false || count($rs) == 0){ 
+						$success = $this->executeQuery("insert into " . $this->conf['customstable']['tablename'] . " (domainname,name,value,comment,webservertype) values ('$domainname','customhttp','$customhttp','$comment','" . $this->miscconfig['webservertype'] . "')", 'add custom http');
+						$success = $success && $this->addDaemonOp("syncdomains", 'xx', $domainname, '', 'sync domains');
+					}
 					break;
 				default:
 					
