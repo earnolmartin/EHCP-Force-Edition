@@ -17019,7 +17019,39 @@ sudo service ehcp start <br>
 			$targetdirectory = "$domainhome/$directory/";
 
 		$installedTheScriptFiles = $this->getAndInstallFile($bilgi, $domainname, $directory);
-		$ranInstallerUsingSteps = $this->runCurlToCompleteInstall(strtolower($scriptname), $domainname, $directory, $targetdirectory, $dbName, $dbUserName, $dbPass, $mysql_host, $titleForScript, $adminEmailForScript);
+		$lowerScript = strtolower($scriptname);
+		
+		if ($this->miscconfig['webservertype'] == "nginx") {
+			switch($lowerScript){
+				case "drupal11":
+					$customhttp = 'try_files_main $uri $uri/ /index.php?$query_string;
+
+						location @rewrite {
+							rewrite ^/(.*)$ /index.php?q=$1;
+						}
+				
+						location ~ ^/sites/.*/files/styles/ { # For Drpal >= 7
+							try_files $uri @rewrite;
+						}
+						
+						location ~* \.(js|css|png|jpg|jpeg|gif|ico)$ {
+							try_files $uri /index.php?$query_string;
+							expires 1y;
+							log_not_found off;
+							add_header Cache-Control "private,must-revalidate";
+						}
+					';
+					$comment = "Drupal NGINX Requirements";
+				
+					$success = $success && $this->executeQuery("insert into " . $this->conf['customstable']['tablename'] . " (domainname,name,value,comment,webservertype) values ('$domainname','customhttp','$customhttp','$comment','" . $this->miscconfig['webservertype'] . "')", 'add custom http');
+					$success = $success && $this->addDaemonOp("syncdomains", 'xx', $domainname, '', 'sync domains');
+					break;
+				default:
+					
+			}
+		}
+		
+		$ranInstallerUsingSteps = $this->runCurlToCompleteInstall($lowerScript, $domainname, $directory, $targetdirectory, $dbName, $dbUserName, $dbPass, $mysql_host, $titleForScript, $adminEmailForScript);
 
 		return $installedTheScriptFiles & $ranInstallerUsingSteps;
 	}
