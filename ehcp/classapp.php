@@ -15514,6 +15514,17 @@ sudo service ehcp start <br>
 					unset($ar1["customtryfiles"]);
 				}
 				
+				$key = array_search("{customtryfiles}", $replacealanlar);
+				if ($key !== false) {
+					unset($replacealanlar[$key]);
+				}
+				
+				if(array_key_exists("customtryfiles", $replacealanlar)){
+					unset($replacealanlar["customtryfiles"]);
+				}
+				
+				# $this->echoln2("Replace keys are: " . print_r($replacealanlar, true) . " and ar1 is " . print_r($ar1, true) . "!");
+				
 				$webserver_config = str_replace($replacealanlar, $ar1, $webserver_template);
 				
 				# Use custom try files if provided
