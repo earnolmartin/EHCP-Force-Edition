@@ -17028,34 +17028,77 @@ sudo service ehcp start <br>
 		$installedTheScriptFiles = $this->getAndInstallFile($bilgi, $domainname, $directory);
 		$lowerScript = strtolower($scriptname);
 		
-		if ($this->miscconfig['webservertype'] == "nginx") {
+		if ($this->miscconfig['webservertype'] == "nginx" && $this->domainIsUsingDefaultWebTemplate($domainname)) {
+			
+			if ($directory != ''){
+				$customHttpDir = '/' . $directory;
+			}else{
+				$customHttpDir = "";
+			}
+			
 			switch($lowerScript){
 				case "drupal11":
-					$customhttp = 'try_files_main $uri $uri/ /index.php?$query_string;
+				
+					if ($directory == ''){
+						$customhttp = 'try_files_main $uri $uri/ /index.php$is_args$args;';
+					}
+					
+					$SQL = "SELECT * FROM " . $this->conf['customstable']['tablename'] . " WHERE name = 'customhttp' ORDER BY id DESC LIMIT 1;";
+					$rs = $this->query($SQL);
+					if($rs === false || count($rs) == 0){
+						$index = 1;
+					}else{
+						$index = $rs[0]["id"] + 1;
+					}
+					
+					
+					$customHttpTwo = "";
+					if ($directory == ''){
+						$index = "";
+					}else{
+						$customHttpTwo .= '
+							location ' . $customHttpDir . '/ {
+								try_files $uri $uri/ ' . $customHttpDir . '/index.php$is_args$args;
+							}
+						';
+					}
+					
+					$customHttpTwo .= '
 
-						location @rewrite {
+						location @rewrite' . $index . ' {
 							rewrite ^/(.*)$ /index.php?q=$1;
 						}
-				
-						location ~ ^/sites/.*/files/styles/ { # For Drpal >= 7
-							try_files $uri @rewrite;
+									
+						location ~ ^' . $customHttpDir . '/sites/.*/files/styles/ { # For Drpal >= 7
+							try_files $uri @rewrite' . $index . ';
 						}
 						
-						location ~* \.(js|css|png|jpg|jpeg|gif|ico)$ {
-							try_files $uri /index.php?$query_string;
+						location ~* ^' . $customHttpDir . '/.*/\.(js|css|png|jpg|jpeg|gif|ico)$ {
+							try_files $uri ' . $customHttpDir . '/index.php?$query_string;
 							expires 1y;
 							log_not_found off;
 							add_header Cache-Control "private,must-revalidate";
 						}
 					';
-					$comment = "Drupal NGINX Requirements";
 					
-					$SQL = "SELECT * FROM " . $this->conf['customstable']['tablename'] . " WHERE name = 'customhttp' and domainname = '" . $domainname . "' and comment = 'Drupal NGINX Requirements'";
+					if(isset($customhttp) && !empty($customhttp)){
+						$comment = "Drupal NGINX Requirements";
+						
+						$SQL = "SELECT * FROM " . $this->conf['customstable']['tablename'] . " WHERE name = 'customhttp' and domainname = '" . $domainname . "' and comment = '" . $comment . "'";
+						$rs = $this->query($SQL);
+						if($rs === false || count($rs) == 0){ 
+							$success = $this->executeQuery("insert into " . $this->conf['customstable']['tablename'] . " (domainname,name,value,comment,webservertype) values ('$domainname','customhttp','" . $this->escape($customhttp) . "','$comment','" . $this->miscconfig['webservertype'] . "')", 'add custom http');
+						}
+					}
+					
+					$comment = "Drupal NGINX for Dir " . $customHttpDir;
+					$SQL = "SELECT * FROM " . $this->conf['customstable']['tablename'] . " WHERE name = 'customhttp' and domainname = '" . $domainname . "' and comment = '" . $comment . "'";
 					$rs = $this->query($SQL);
 					if($rs === false || count($rs) == 0){ 
-						$success = $this->executeQuery("insert into " . $this->conf['customstable']['tablename'] . " (domainname,name,value,comment,webservertype) values ('$domainname','customhttp','$customhttp','$comment','" . $this->miscconfig['webservertype'] . "')", 'add custom http');
-						$success = $success && $this->addDaemonOp("syncdomains", 'xx', $domainname, '', 'sync domains');
+						$success = $this->executeQuery("insert into " . $this->conf['customstable']['tablename'] . " (domainname,name,value,comment,webservertype) values ('$domainname','customhttp','" . $this->escape($customHttpTwo) . "','$comment','" . $this->miscconfig['webservertype'] . "')", 'add custom http');
 					}
+					$success = $success && $this->addDaemonOp("syncdomains", 'xx', $domainname, '', 'sync domains');
+					
 					break;
 				default:
 					
@@ -17659,6 +17702,19 @@ sudo service ehcp start <br>
 		}
 
 		return false;
+	}
+	
+	function domainIsUsingDefaultWebTemplate($domainname){
+		$domaininfo = $this->domaininfo = $this->getDomainInfo($domainname);
+		$templatefield = $this->miscconfig['webservertype'] . 'template';
+		
+		$usingDefault = false;
+		$template = $domaininfo[$templatefield];
+		if (trim($template) == '') {
+			$usingDefault = true;
+		}
+		
+		return $usingDefault;
 	}
 
 } // end class
