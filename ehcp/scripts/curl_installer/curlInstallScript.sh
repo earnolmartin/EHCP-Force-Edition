@@ -388,6 +388,50 @@ function doJoomla5Install(){
 	cd "$CURDIR"
 }
 
+function doPHPBB33Install(){
+	
+	# Set the correct permissions
+	changeOwner "$FULLPATH"
+	
+	CURDIR=$(pwd)
+	cd "$DLSFolder"
+	cp /var/www/new/ehcp/scripts/curl_installer/script_presets/phpbb3/phpbb.sql ./
+	cp /var/www/new/ehcp/scripts/curl_installer/script_presets/phpbb3/config_phpbb.php ./
+	
+	# Replace stuff 
+	sed -i "s/{DOMAIN_NAME}/$DOMAINNAME/g" "phpbb.sql"
+	sed -i "s/{ADMIN_EMAIL}/$ADMINEMAIL/g" "phpbb.sql"
+	sed -i "s/{DIRECTORY}/$DIRECTORY/g" "phpbb.sql"
+	sed -i "s/{TITLE}/$TITLE/g" "phpbb.sql"
+	sed -i "s/{SITE_DESC}/$DEFAULTDESC/g" "phpbb.sql"
+	
+	sed -i "s/{HOST}/$DBHOST/g" "config_phpbb.php"
+	sed -i "s/{DB_NAME}/$DBNAME/g" "config_phpbb.php"
+	sed -i "s/{DB_USER}/$DBUSERNAME/g" "config_phpbb.php"
+	sed -i "s/{DB_PASS}/$DBUSERPASS/g" "config_phpbb.php"
+	
+	# Move modified config to proper path
+	mv "config_phpbb.php" "$FULLPATH/config.php"
+	
+	# Import mysql database
+	mysql -h "$DBHOST" -u "$DBUSERNAME" -p"$DBUSERPASS" "$DBNAME" -f < "phpbb.sql";
+	
+	rm "phpbb.sql"
+	
+	# Set the correct permissions
+	changeOwner "$FULLPATH"
+	
+	# Remove install files
+	if [ -e "$FULLPATH/install" ]; then
+		if [ ! -z "$FULLPATH" ] && [ "$FULLPATH" != "/" ]; then
+			rm -Rf "$FULLPATH/install"
+		fi
+	fi
+	
+	# change back into original dir
+	cd "$CURDIR"
+}
+
 function doDrupal11Install(){	
 	# Set the correct permissions
 	changeOwner "$FULLPATH"
@@ -485,6 +529,9 @@ case "$SCRIPTNAME" in
             ;;
         drupal11)
             doDrupal11Install
+            ;;
+        phpbb33)
+            doPHPBB33Install
             ;;
          
         *)

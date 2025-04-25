@@ -17036,21 +17036,20 @@ sudo service ehcp start <br>
 				$customHttpDir = "";
 			}
 			
+			$SQL = "SELECT * FROM " . $this->conf['customstable']['tablename'] . " WHERE name = 'customhttp' ORDER BY id DESC LIMIT 1;";
+			$rs = $this->query($SQL);
+			if($rs === false || count($rs) == 0){
+				$index = 1;
+			}else{
+				$index = $rs[0]["id"] + 1;
+			}
+			
 			switch($lowerScript){
 				case "drupal11":
 				
 					if ($directory == ''){
 						$customhttp = 'try_files_main $uri $uri/ /index.php$is_args$args;';
-					}
-					
-					$SQL = "SELECT * FROM " . $this->conf['customstable']['tablename'] . " WHERE name = 'customhttp' ORDER BY id DESC LIMIT 1;";
-					$rs = $this->query($SQL);
-					if($rs === false || count($rs) == 0){
-						$index = 1;
-					}else{
-						$index = $rs[0]["id"] + 1;
-					}
-					
+					}					
 					
 					$customHttpTwo = "";
 					if ($directory == ''){
@@ -17100,6 +17099,47 @@ sudo service ehcp start <br>
 					$success = $success && $this->addDaemonOp("syncdomains", 'xx', $domainname, '', 'sync domains');
 					
 					break;
+					
+				case "phpbb33":
+					if ($directory == ''){
+						$customhttp = 'try_files_main $uri $uri/ /app.php$is_args$args;';
+					}					
+					
+					$customHttpTwo = "";
+					if ($directory == ''){
+						$index = "";
+					}else{
+						$customHttpTwo .= '
+							location ' . $customHttpDir . '/ {
+								try_files $uri $uri/ ' . $customHttpDir . '/app.php$is_args$args;
+							}
+						';
+					}
+					
+					
+					if(isset($customhttp) && !empty($customhttp)){
+						$comment = "PHPBB3.3.X NGINX Requirements";
+						
+						$SQL = "SELECT * FROM " . $this->conf['customstable']['tablename'] . " WHERE name = 'customhttp' and domainname = '" . $domainname . "' and comment = '" . $comment . "'";
+						$rs = $this->query($SQL);
+						if($rs === false || count($rs) == 0){ 
+							$success = $this->executeQuery("insert into " . $this->conf['customstable']['tablename'] . " (domainname,name,value,comment,webservertype) values ('$domainname','customhttp','" . $this->escape($customhttp) . "','$comment','" . $this->miscconfig['webservertype'] . "')", 'add custom http');
+						}
+					}
+					
+					if(isset($customHttpTwo) && !empty($customHttpTwo)){
+					
+						$comment = "PHPBB3.3.X NGINX for Dir " . $customHttpDir;
+						$SQL = "SELECT * FROM " . $this->conf['customstable']['tablename'] . " WHERE name = 'customhttp' and domainname = '" . $domainname . "' and comment = '" . $comment . "'";
+						$rs = $this->query($SQL);
+						if($rs === false || count($rs) == 0){ 
+							$success = $this->executeQuery("insert into " . $this->conf['customstable']['tablename'] . " (domainname,name,value,comment,webservertype) values ('$domainname','customhttp','" . $this->escape($customHttpTwo) . "','$comment','" . $this->miscconfig['webservertype'] . "')", 'add custom http');
+						}
+						$success = $success && $this->addDaemonOp("syncdomains", 'xx', $domainname, '', 'sync domains');
+					}
+					
+					break;
+										
 				default:
 					
 			}
