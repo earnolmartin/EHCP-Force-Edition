@@ -16683,6 +16683,14 @@ sudo service ehcp start <br>
 
 
 		foreach ($arr as $ar1) { // template e gore apacehe dosyasn olustur
+			
+			// Check to see if we should skip adding the dns named conf zone template for the domain if it is handled outside of EHCP processes
+			// Advanced admin override
+			$skipFile = __DIR__ . "/skip_named_conf_" . $ar1["domainname"];
+			if(file_exists($skipFile)){
+				continue;
+			}
+			
 			// Check which template to really use for DNS
 			if ($ar1["dnsmaster"] <> '') {
 				// Use slave template
