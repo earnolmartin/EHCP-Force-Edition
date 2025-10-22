@@ -95,7 +95,7 @@
 	CustomLog  /var/log/apache2/access_log_multi.log vhost_combined_host
 
 	ProxyPassMatch ^(.*\.php)$ fcgi://127.0.0.1:9000{homedir}/httpdocs/$1
-	ProxyFCGISetEnvIf "true" PHP_ADMIN_VALUE "open_basedir={homedir}:/usr/share/php:/usr/share/pear; \n upload_tmp_dir={homedir}/phptmpdir; \n session.save_path={homedir}/phptmpdir;"
+	ProxyFCGISetEnvIf "true" PHP_ADMIN_VALUE "open_basedir={homedir}:/usr/share/php:/usr/share/pear; \n upload_tmp_dir={homedir}/phptmpdir; \n session.save_path={homedir}/phptmpdir; \n sys_temp_dir={homedir}/phptmpdir;"
 
 	AccessFileName .htaccess
 
@@ -216,7 +216,7 @@
 	CustomLog  /var/log/apache2/access_log_multi.log vhost_combined_host
 	
 	ProxyPassMatch ^(.*\.php)$ fcgi://127.0.0.1:9000{homedir}/httpdocs/$1
-	ProxyFCGISetEnvIf "true" PHP_ADMIN_VALUE "open_basedir={homedir}:/usr/share/php:/usr/share/pear; \n upload_tmp_dir={homedir}/phptmpdir; \n session.save_path={homedir}/phptmpdir;"
+	ProxyFCGISetEnvIf "true" PHP_ADMIN_VALUE "open_basedir={homedir}:/usr/share/php:/usr/share/pear; \n upload_tmp_dir={homedir}/phptmpdir; \n session.save_path={homedir}/phptmpdir; \n sys_temp_dir={homedir}/phptmpdir;"
 	
 	AccessFileName .htaccess
 	SSLEngine on

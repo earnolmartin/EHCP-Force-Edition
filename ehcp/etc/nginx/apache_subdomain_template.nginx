@@ -26,7 +26,7 @@ server {
 		fastcgi_pass   127.0.0.1:9000;
 		fastcgi_index  index.php;
 		fastcgi_param  SCRIPT_FILENAME  {homedir}$fastcgi_script_name;
-		fastcgi_param  PHP_ADMIN_VALUE "open_basedir={homedir}:/usr/share/php:/usr/share/pear \n upload_tmp_dir={homedir}/phptmpdir \n session.save_path={homedir}/phptmpdir";
+		fastcgi_param  PHP_ADMIN_VALUE "open_basedir={homedir}:/usr/share/php:/usr/share/pear \n upload_tmp_dir={homedir}/phptmpdir \n session.save_path={homedir}/phptmpdir \n sys_temp_dir={homedir}/phptmpdir";
 		include fastcgi_params;
 		limit_req zone=one burst=5;
 	}
