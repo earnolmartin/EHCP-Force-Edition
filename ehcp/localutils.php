@@ -1033,19 +1033,19 @@ function determinePHPFPMName()
 	// Below command takes too long
 	// $serviceExists = shell_exec('service --status-all 2>&1 | grep -F -- "-fpm" | awk \'{print $4}\' | grep "php" | tr -d \'\n\'');
 
-	$serviceExists = shell_exec('ls /etc/init.d 2>/dev/null | grep -F -- "-fpm" | head -n 1');
+	$serviceExists = shell_exec('ls /etc/init.d 2>/dev/null | grep -F -- "-fpm" | sort -r | head -n 1');
 
 	if (isset($serviceExists) && !empty($serviceExists) && stripos($serviceExists, 'php') !== false) {
 		return $serviceExists;
 	}
 
-	$serviceExists = shell_exec('find /lib/systemd/system -name "*-fpm*" -exec basename {} .service \; 2>/dev/null | head -n 1');
+	$serviceExists = shell_exec('find /lib/systemd/system -name "*-fpm*" -exec basename {} .service \; 2>/dev/null | sort -r | head -n 1');
 
 	if (isset($serviceExists) && !empty($serviceExists) && stripos($serviceExists, 'php') !== false) {
 		return $serviceExists;
 	}
 
-	$serviceExists = shell_exec('find /etc/systemd/system -name "*-fpm*" -exec basename {} .service \; 2>/dev/null | head -n 1');
+	$serviceExists = shell_exec('find /etc/systemd/system -name "*-fpm*" -exec basename {} .service \; 2>/dev/null | sort -r | head -n 1');
 
 	if (isset($serviceExists) && !empty($serviceExists) && stripos($serviceExists, 'php') !== false) {
 		return $serviceExists;
