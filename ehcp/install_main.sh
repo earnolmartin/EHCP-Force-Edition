@@ -2639,6 +2639,7 @@ function managePHPFPMService(){
 		manageService "php7.3-fpm" "${fpmAction}"
 		manageService "php7.4-fpm" "${fpmAction}"
 		manageService "php8.1-fpm" "${fpmAction}"
+		manageService "php8.3-fpm" "${fpmAction}"
 	fi
 }
 
@@ -2668,6 +2669,8 @@ function enablePHPFPMService(){
 		update-rc.d "php7.4-fpm" defaults
 		update-rc.d "php8.1-fpm" enable
 		update-rc.d "php8.1-fpm" defaults
+		update-rc.d "php8.3-fpm" enable
+		update-rc.d "php8.3-fpm" defaults
 		
 		systemctl daemon-reload
 		systemctl enable php5-fpm.service
@@ -2678,6 +2681,7 @@ function enablePHPFPMService(){
 		systemctl enable php7.3-fpm.service
 		systemctl enable php7.4-fpm.service
 		systemctl enable php8.1-fpm.service
+		systemctl enable php8.3-fpm.service
 	fi
 }
 
