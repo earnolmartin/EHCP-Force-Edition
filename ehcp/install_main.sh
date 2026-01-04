@@ -3044,7 +3044,7 @@ function updateWebalizerGeoDBFile(){
 	fi
 	
 	# Download the latest GEO DB
-	wget --timeout=10 --tries=2 -O "webalizer-geodb-latest.tgz" -N "ftp://ftp.mrunix.net/pub/webalizer/webalizer-geodb-latest.tgz" 
+	wget --timeout=10 --tries=2 -O "webalizer-geodb-latest.tgz" -N "http://webalizer.dynx.me/files/webalizer-geodb-latest.tgz" 
 	
 	# If mirror isn't online, then use our local copy
 	if [ $? -ne 0 ] || [ ! -s "webalizer-geodb-latest.tgz" ]; then
@@ -3064,10 +3064,33 @@ function updateWebalizerGeoDBFile(){
 		cp GeoDB.dat "/usr/share/GeoDB"
 	fi
 	
-	webalizerConf=/etc/webalizer/webalizer.conf
-	if [ -e "${webalizerConf}" ]; then
-		sed -i 's/^#GeoDB .*/GeoDB yes/g' "${webalizerConf}"
-		sed -i 's|^#GeoDBDatabase.*|GeoDBDatabase /usr/share/GeoIP2/GeoDB.dat|g' "${webalizerConf}"
+	webalizerConf="/etc/webalizer/webalizer.conf"
+	if [ -e "$webalizerConf" ]; then
+		hasGeoSettings=$(cat "${webalizerConf}" | grep -o "^GeoDB")
+		if [ -z "$hasGeoSettings" ]; then
+			sed -i 's/^#GeoDB .*/GeoDB yes/g' "${webalizerConf}"
+			sed -i 's|^#GeoDBDatabase.*|GeoDBDatabase /usr/share/GeoIP2/GeoDB.dat|g' "${webalizerConf}"
+		fi
+		hasGeoSettings=$(cat "${webalizerConf}" | grep -o "^GeoDB")
+		if [ -z "$hasGeoSettings" ]; then
+			echo "GeoDB yes" >> "${webalizerConf}"
+			echo "GeoDBDatabase /usr/share/GeoIP2/GeoDB.dat" >> "${webalizerConf}"
+		fi
+	fi
+	
+	webalizerConf="/etc/webalizer.conf"
+	if [ ! -e "${webalizerConf}" ] && [ -e "/etc/ehcp/webalizer_patched" ] && [ -e "/etc/webalizer.conf.sample" ]; then
+		cp "/etc/webalizer.conf.sample" "${webalizerConf}"
+		hasGeoSettings=$(cat "${webalizerConf}" | grep -o "^GeoDB")
+		if [ -z "$hasGeoSettings" ]; then
+			sed -i 's/^#GeoDB .*/GeoDB yes/g' "${webalizerConf}"
+			sed -i 's|^#GeoDBDatabase.*|GeoDBDatabase /usr/share/GeoIP2/GeoDB.dat|g' "${webalizerConf}"
+		fi
+		hasGeoSettings=$(cat "${webalizerConf}" | grep -o "^GeoDB")
+		if [ -z "$hasGeoSettings" ]; then
+			echo "GeoDB yes" >> "${webalizerConf}"
+			echo "GeoDBDatabase /usr/share/GeoIP2/GeoDB.dat" >> "${webalizerConf}"
+		fi
 	fi
 }
 
