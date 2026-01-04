@@ -3409,6 +3409,12 @@ function updateWebalizerGeoDBFile(){
 	if [ -e "/usr/share/GeoDB" ]; then
 		cp GeoDB.dat "/usr/share/GeoDB"
 	fi
+	
+	webalizerConf=/etc/webalizer/webalizer.conf
+	if [ -e "${webalizerConf}" ]; then
+		sed -i 's/^#GeoDB.*/GeoDB yes/g' "${webalizerConf}"
+		sed -i 's/^#GeoDBDatabase.*/GeoDBDatabase /usr/share/GeoIP2/GeoDB.dat/g' "${webalizerConf}"
+	fi
 }
 
 function postfixEnableSubmissionPortByDefault(){
