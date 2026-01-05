@@ -3068,7 +3068,7 @@ function updateWebalizerGeoDBFile(){
 	if [ -e "$webalizerConf" ]; then
 		hasGeoSettings=$(cat "${webalizerConf}" | grep -o "^GeoDB")
 		if [ -z "$hasGeoSettings" ]; then
-			sed -i 's/^#GeoDB .*/GeoDB yes/g' "${webalizerConf}"
+			sed -i 's/^#GeoDB[[:blank:]].*/GeoDB yes/g' "${webalizerConf}"
 			sed -i 's|^#GeoDBDatabase.*|GeoDBDatabase /usr/share/GeoIP2/GeoDB.dat|g' "${webalizerConf}"
 		fi
 		hasGeoSettings=$(cat "${webalizerConf}" | grep -o "^GeoDB")
@@ -3083,7 +3083,7 @@ function updateWebalizerGeoDBFile(){
 		cp "/etc/webalizer.conf.sample" "${webalizerConf}"
 		hasGeoSettings=$(cat "${webalizerConf}" | grep -o "^GeoDB")
 		if [ -z "$hasGeoSettings" ]; then
-			sed -i 's/^#GeoDB .*/GeoDB yes/g' "${webalizerConf}"
+			sed -i 's/^#GeoDB[[:blank:]].*/GeoDB yes/g' "${webalizerConf}"
 			sed -i 's|^#GeoDBDatabase.*|GeoDBDatabase /usr/share/GeoIP2/GeoDB.dat|g' "${webalizerConf}"
 		fi
 		hasGeoSettings=$(cat "${webalizerConf}" | grep -o "^GeoDB")
