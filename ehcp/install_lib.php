@@ -2199,7 +2199,7 @@ function getPHPConfDir(){
 	if(!file_exists($dir)){
 		$possibleDir = "/etc/php";
 		if(file_exists($possibleDir)){
-			$dir=exec("ls \"/etc/php\" | head -n 1");
+			$dir=exec("ls -r \"/etc/php\" | head -n 1");
 			$dir = $possibleDir . "/" . $dir;
 		}
 	}

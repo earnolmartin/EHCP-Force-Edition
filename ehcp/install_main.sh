@@ -2376,7 +2376,7 @@ function getPHPConfigPath(){
 		PHPCONFDir="/etc/php5"
 	else
 		if [ -d "/etc/php" ]; then
-			PHPCONFDir=$(ls "/etc/php" | head -n 1)
+			PHPCONFDir=$(ls -r "/etc/php" | head -n 1)
 			PHPCONFDir="/etc/php/$PHPCONFDir"
 		fi
 	fi
