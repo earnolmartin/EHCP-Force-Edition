@@ -16010,6 +16010,8 @@ sudo service ehcp start <br>
 		echo "Restarting Courier IMAP and POP3 SSL services!\n";
 		manageService("courier-imap-ssl", "restart");
 		manageService("courier-pop-ssl", "restart");
+		manageService("courier-imap", "restart");
+		manageService("courier-pop", "restart");
 
 		return true;
 	}
@@ -16184,6 +16186,7 @@ sudo service ehcp start <br>
 				}
 				rename($imapdOrigPath, $imapdPath);
 				manageService("courier-imap-ssl", "restart");
+				manageService("courier-imap", "restart");
 			}
 
 			// Restore default cert if it exists
@@ -16194,6 +16197,7 @@ sudo service ehcp start <br>
 				}
 				rename($pop3dOrigPath, $pop3dPath);
 				manageService("courier-pop-ssl", "restart");
+				manageService("courier-pop", "restart");
 			}
 		}
 
