@@ -3355,6 +3355,7 @@ installNeededDependencies
 
 # Build deb packages for Courier if Ubuntu 24.04
 if [[ "$distro" == "ubuntu" && "$yrelease" -eq "24" ]]; then
+	logToInstallLogFile "Compiling courier packages manually for Ubuntu 24.04..."
 	CURDIR=$(pwd)
 	bash "${installerDir}/scripts/build_and_install_courier_imap_deb_packages.sh"
 	cd "$CURDIR"
