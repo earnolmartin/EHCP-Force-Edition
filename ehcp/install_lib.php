@@ -1512,7 +1512,7 @@ local_root=".$app->conf['vhosts']."/\$USER
 user_sub_token=\$USER
 virtual_use_local_privs=YES
 user_config_dir=/etc/vsftpd_user_conf
-local_max_rate=2000000 # bytes per sec, 2Mbytes per sec
+local_max_rate=5000000 # bytes per sec, 5MB per sec
 max_clients=50 # to avoid DOS attack, if you have a huge server, increase this..
 ftpd_banner=Welcome to vsFTPd Server, managed by EHCP Force Edition (Easy Hosting Control Panel, https://ehcpforce.ezpz.cc )
 ";
