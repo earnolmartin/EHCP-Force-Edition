@@ -4362,19 +4362,19 @@ $gateway="206.51.230.1";
 				$dbuserpass = $user['password'];
 
 				// Put grant usage permissions into the file
-				$sql = "GRANT USAGE ON *.* TO '$dbusername'@'localhost' IDENTIFIED BY '$dbuserpass';";
+				$sql = "CREATE USER IF NOT EXISTS '$dbusername'@'localhost' IDENTIFIED BY '$dbuserpass';";
 				$sql .= "\n" . "GRANT ALL PRIVILEGES ON `" . $dbname . "`.* TO '$dbusername'@'localhost';";
 
-				// Check for remote access permissions
-				$q = " SET PASSWORD FOR '$dbusername'@'%' = PASSWORD('$dbuserpass')";
-				$result = $this->mysqlRootQuery($q, true);
-				if ($result !== false) {
+				// Check for remote access permissions		
+				$checkForRemoteSQL = "SELECT * FROM mysql.user WHERE User = '$dbusername' AND Host = '%';";
+				$result = $this->mysqlRootQueryArray($checkForRemoteSQL, true);
+				if ($result !== false && is_array($result) && count($result) > 0) {
 					// Put grant usage permissions into the file
-					$sql .= "\nGRANT USAGE ON *.* TO '$dbusername'@'%' IDENTIFIED BY '$dbuserpass';";
+					$sql .= "\n" . "CREATE USER IF NOT EXISTS '$dbusername'@'%' IDENTIFIED BY '$dbuserpass';";
 					$sql .= "\n" . "GRANT ALL PRIVILEGES ON `" . $dbname . "`.* TO '$dbusername'@'%';";
 				}
 
-				writeoutput2($file, $sql, "a");
+				writeoutput2($file, $sql . "\n", "a");
 			}
 		}
 
@@ -13788,6 +13788,24 @@ sudo service ehcp start <br>
 			}
 		} else
 			return True;
+	}
+	
+	function mysqlRootQueryArray($q, $quiet = false)
+	{
+		if (!$link = mysqli_connect("localhost", $this->conf['mysqlrootuser'], $this->conf['mysqlrootpass'])) {
+			return $this->errorText("Could not connect as root. Please check your MySQL root password.");
+		}
+
+		$this->output .= "<br>Connected as root : " . $this->conf['mysqlrootuser'] . "<br>";
+		$s = $this->executeQuery($q, 'execute root query', '', $link, false, true);
+		if ($s === false) {
+			if (!$quiet) {
+				return $this->errorText("Error: MySQL root query cannot be executed: $q");
+			} else {
+				return false;
+			}
+		} else
+			return $s;
 	}
 
 	function arrayToFile($file, $lines)
