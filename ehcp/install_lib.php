@@ -185,7 +185,7 @@ function arraytofile($file,$lines) {
 	$new_content = join('',$lines);
 	$fp = fopen($file,'w');
 	$write = fwrite($fp, $new_content);
-	fclose($fp);
+	isset($fp) && is_resource($fp) && fclose($fp);
 }
 }
 
@@ -198,7 +198,7 @@ function addifnotexists($what,$where) {
 	if(!$filearr) {
 		echo "cannot open file, trying to setup: ($where)\n";
 		$fp = fopen($where,'w');
-		fclose($fp);
+		isset($fp) && is_resource($fp) && fclose($fp);
 		$filearr=file($where);
 
 	} //else print_r($file);
@@ -573,11 +573,11 @@ function writeoutput($file, $string, $mode="w",$log=true) {
 			return false;
 	}
 	if (!fputs($fp, $string . "\n")) {
-			fclose($fp);
+			isset($fp) && is_resource($fp) && fclose($fp);
 			echo "hata: dosyaya yazilamadi: $file (writeoutput) !";
 			return false;
 	}
-	fclose($fp);
+	isset($fp) && is_resource($fp) && fclose($fp);
 	if($log) echo "\n(".__FILE__.") file written successfully: $file, mode:$mode \n";
 	return true;
 }
@@ -1190,7 +1190,7 @@ function installmailserver(){
 		case 'normal': installRoundCube();installPHPMYAdmin();
 		case 'light': 
 			aptget(array('postfix','postfix-mysql','libsasl2-2','libsasl2','libsasl2-modules','libsasl2-modules-sql','sasl2-bin','libpam-mysql','openssl','pop-before-smtp')); # changed libsasl2-2 to libsasl2 **
-			if((getIsUbuntu() && getUbuntuReleaseYear() < "24") || (getIsDebian() && getUbuntuReleaseYear() < "13")){
+			if((getIsUbuntu() && getUbuntuReleaseYear() < "24") || (getIsUbuntu() && getUbuntuReleaseYear() >= "26") || getIsDebian()){
 				aptget(array('courier-authdaemon','courier-authmysql','courier-authlib-mysql','courier-pop','courier-pop-ssl','courier-imap','courier-imap-ssl'));
 			}
 			break;

@@ -3309,7 +3309,10 @@ $gateway="206.51.230.1";
 			fwrite($stream, $date . " - ");
 			fwrite($stream, $message . "\n");
 		}
-		fclose($stream);
+		
+		if (isset($stream) && is_resource($stream)) {
+			fclose($stream);
+		}
 	}
 
 	function useNginxTemplates()
@@ -11650,7 +11653,7 @@ email2@domain2.com:password2<br>
 		// Get contents of Authentication Log and add a new entry
 		$fp = @fopen($logFile, 'a');
 		@fwrite($fp, $logstr);
-		@fclose($fp);
+		isset($fp) && is_resource($fp) && @fclose($fp);
 	}
 
 	function dologin3($tablo, $username, $password, $usernamefield, $passwordfield, $md5 = '')
@@ -13811,7 +13814,7 @@ sudo service ehcp start <br>
 		$new_content = join('', $lines);
 		$fp = fopen($file, 'w');
 		$write = fwrite($fp, $new_content);
-		fclose($fp);
+		isset($fp) && is_resource($fp) && fclose($fp);
 	}
 
 
@@ -13822,7 +13825,7 @@ sudo service ehcp start <br>
 		if (!$filearr) {
 			echo "\ncannot open file, trying to setup new file: ($where)\n";
 			$fp = fopen($where, 'w');
-			fclose($fp);
+			isset($fp) && is_resource($fp) && fclose($fp);
 			$filearr = file($where);
 
 		} //else print_r($file);
@@ -15896,7 +15899,7 @@ sudo service ehcp start <br>
 		// Write all commands to a file
 		$stream = fopen("/var/www/new/ehcp/scripts/lets_enc.conf", "a+");
 		fwrite($stream, $finalCommand);
-		fclose($stream);
+		isset($stream) && is_resource($stream) && fclose($stream);
 
 		return true;
 	}

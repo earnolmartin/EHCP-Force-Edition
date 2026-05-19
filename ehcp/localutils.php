@@ -120,14 +120,12 @@ if (!function_exists("writeoutput")) {
 			return false;
 		}
 		if (!fputs($fp, $string . "\n")) {
-			fclose($fp);
+			isset($fp) && is_resource($fp) && fclose($fp);
 			echo "hata: dosyaya yazilamadi: $file (writeoutput) !";
 			return false;
 		}
 
-
-
-		fclose($fp);
+		isset($fp) && is_resource($fp) && fclose($fp);
 		if ($log)
 			echo "\n" . basename(__FILE__) . ": file written successfully: $file, mode:$mode \n";
 		return true;
@@ -150,11 +148,11 @@ if (!function_exists("writeoutput2")) {
 			return false;
 		}
 		if (!fputs($fp, $string . "\n")) {
-			fclose($fp);
+			isset($fp) && is_resource($fp) && fclose($fp);
 			echo "hata: dosyaya yazilamadi: $file (writeoutput) !";
 			return false;
 		}
-		fclose($fp);
+		isset($fp) && is_resource($fp) && fclose($fp);
 		return true;
 	}
 }
@@ -296,7 +294,9 @@ if (!function_exists("addifnotexists")) {
 		if (!$filearr) {
 			echo "cannot open file, trying to setup: ($where)\n";
 			$fp = fopen($where, 'w');
-			fclose($fp);
+			if (isset($fp) && is_resource($fp)) {
+				fclose($fp);
+			}
 			$filearr = file($where);
 
 		} //else print_r($file);
@@ -324,7 +324,7 @@ if (!function_exists("removeifexists")) {
 		if (!$filearr) {
 			echo "cannot open file, trying to setup: ($where)\n";
 			$fp = fopen($where, 'w');
-			fclose($fp);
+			isset($fp) && is_resource($fp) && fclose($fp);
 			$filearr = file($where);
 
 		}
@@ -378,7 +378,7 @@ if (!function_exists("arraytofile")) {
 		$new_content = join('', $lines);
 		$fp = fopen($file, 'w');
 		$write = fwrite($fp, $new_content);
-		fclose($fp);
+		isset($fp) && is_resource($fp) && fclose($fp);
 	}
 }
 
@@ -1643,7 +1643,7 @@ if (!function_exists('add_line_if_not_exists')) {
 						break;
 					}
 				}
-				fclose($handle);
+				isset($handle) && is_resource($handle) && fclose($handle);
 			}
 
 			if (!$lineExists) {
