@@ -13797,7 +13797,7 @@ sudo service ehcp start <br>
 		}
 
 		$this->output .= "<br>Connected as root : " . $this->conf['mysqlrootuser'] . "<br>";
-		$s = $this->executeQuery($q, 'execute root query', '', $link, false, true);
+		$s = $this->query3($q, 'execute root query', '', $link, false, true);
 		if ($s === false) {
 			if (!$quiet) {
 				return $this->errorText("Error: MySQL root query cannot be executed: $q");
