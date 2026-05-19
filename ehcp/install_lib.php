@@ -625,6 +625,7 @@ function dovecot_install_configuration($params){
 }
 
 function copyPostFixConfig(){
+	global $app;
 	if(!file_exists('/etc/postfix/main.cf')) passthru2("cp ".$app->ehcpdir."/etc/postfix/main.cf.sample /etc/postfix/main.cf"); # on some systems, this is deleted somehow.
 }
 
@@ -756,7 +757,7 @@ ehcp_autoreply unix - n n - - pipe
 
 	# classapp'da checktable yapılacak yenile..
 	# end autoreply configuration
-	copyPostFixConfig();
+	// copyPostFixConfig();
 
 	replacelineinfile("bind-address","bind-address=0.0.0.0",'/etc/mysql/my.cnf', false);
 	replacelineinfile("bind-address","bind-address=0.0.0.0",'/etc/mysql/mariadb.conf.d/50-server.cnf', false);
@@ -1174,8 +1175,11 @@ function installmailserver(){
 	# See here:
 	# http://www.whatastruggle.com/postfix-non-interactive-install
 	# Added by Eric Arnol-Martin <earnolmartin@gmail.com>
+	#
+	# Update 5/19/26
+	# copyPostFixConfig no longer seems relevant or needed
 	if($unattended){
-		 copyPostFixConfig();
+		 // copyPostFixConfig();
 		 passthru3("echo 'postfix postfix/main_mailer_type select Internet Site' | debconf-set-selections");
 		 passthru3("echo 'postfix postfix/mailname string $(hostname)' | debconf-set-selections");
 	}
