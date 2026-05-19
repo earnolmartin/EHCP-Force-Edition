@@ -21,58 +21,59 @@ include_once(dirname(__FILE__) . '/config/randomstring.php');
 
 class Application
 {
-	var $appname = '', $sitename = 'ehcp', $headers = "From: info@ehcpforce.ezpz.cc";
-	var $output = '', $requirePassword = True, $checkinstall = True, $miscconfig = null;
-	var $queries = array(), $selecteddomain = '', $isreseller = false;
+	public $appname = '', $sitename = 'ehcp', $headers = "From: info@ehcpforce.ezpz.cc";
+	public $output = '', $requirePassword = True, $checkinstall = True, $miscconfig = null;
+	public $queries = array(), $selecteddomain = '', $isreseller = false;
 
-	var $wwwuser = "ftp"; # these vars should be used are "user related" places, to unify all user settings..  #equivalent: var $wwwowner="vsftpd:www-data";
-	var $ftpuser = "ftp"; # equivalent: var $ftpowner="vsftpd:www-data";
+	public $wwwuser = "ftp"; # these vars should be used are "user related" places, to unify all user settings..  #equivalent: var $wwwowner="vsftpd:www-data";
+	public $ftpuser = "ftp"; # equivalent: var $ftpowner="vsftpd:www-data";
 
-	var $wwwgroup = "www-data";
-	var $ftpgroup = "www-data"; # with this config, ftp user is able to see/delete files written by webserver. 
+	public $mydir, $vhostsdir, $remoteBackupMethod, $remoteBackupTime, $remoteDayOfWeek, $wwwowner, $ftpowner;
+	public $wwwgroup = "www-data";
+	public $ftpgroup = "www-data"; # with this config, ftp user is able to see/delete files written by webserver. 
 
-	var $webstats_auth_file = "webstats_auth_file";
-	var $csvCCTLD = array();
+	public $webstats_auth_file = "webstats_auth_file";
+	public $csvCCTLD = array();
 
-	var $binduser = "bind"; # we need to know which user bind runs under
+	public $binduser = "bind"; # we need to know which user bind runs under
 
 	# debuglevel: 4: shows some functions, 3: shows queries
-	var $debuglevel = 0;
+	public $debuglevel = 0;
 
 
-	var $myversion = '';
-	var $dbhost;
-	var $dbname;
-	var $dbusername;
-	var $dbpass;
-	var $conn;
-	var $link;
+	public $myversion = '';
+	public $dbhost;
+	public $dbname;
+	public $dbusername;
+	public $dbpass;
+	public $conn;
+	public $link;
 
 	// Status messages
-	var $errorMessage;
-	var $successMessage;
+	public $errorMessage;
+	public $successMessage;
 
-	var $defaultlanguage = "en", $clientip, $referer;
-	var $currentlanguage = 'en';
+	public $defaultlanguage = "en", $clientip, $referer;
+	public $currentlanguage = 'en';
 
-	var $status_active = "active", $status_passive = "passive", $statusActivePassive, $passivefilt, $activefilt, $isDemo = false;
-	var $emailfrom = 'info@ehcpforce.ezpz.cc';
+	public $status_active = "active", $status_passive = "passive", $statusActivePassive, $passivefilt, $activefilt, $isDemo = false;
+	public $emailfrom = 'info@ehcpforce.ezpz.cc';
 	# language strings will be defined in $lang['en']['error1']   in language/en.php or so on...
 
-	var $usertable, $dnsemail, $template, $templatefile, $op, $userinfo;
-	var $dnszonetemplate = "dnszonetemplate";
-	var $dnsnamedconftemplate = "dnsnamedconftemplate"; # aynen apache gibi oluturulacak...
-	var $dnsnamedconftemplate_slave = "dnsnamedconftemplate_slave"; # for slave DNS replication
+	public $usertable, $dnsemail, $template, $templatefile, $op, $userinfo;
+	public $dnszonetemplate = "dnszonetemplate";
+	public $dnsnamedconftemplate = "dnsnamedconftemplate"; # aynen apache gibi oluturulacak...
+	public $dnsnamedconftemplate_slave = "dnsnamedconftemplate_slave"; # for slave DNS replication
 
-	var $activeuser, $isloggedin, $globalfilter, $commandline = false, $erroroccured = false;
-	var $connected_mysql_servers = array();
-	var $ehcpdir = '';
-	var $tr = "<tr class='list'>", $td = "<td class='list'>", $th = "<th class='list'>";
-	var $ehcpForceSplitString = "{EHCP_EAM_FORCE_SPLIT_STRING2015}";
-	var $ehcpInstallPath = "/var/www/new/ehcp/";
-	var $ehcpDownloadPath = "/var/www/new/ehcp/downloads";
+	public $activeuser, $isloggedin, $globalfilter, $commandline = false, $erroroccured = false;
+	public $connected_mysql_servers = array();
+	public $ehcpdir = '';
+	public $tr = "<tr class='list'>", $td = "<td class='list'>", $th = "<th class='list'>";
+	public $ehcpForceSplitString = "{EHCP_EAM_FORCE_SPLIT_STRING2015}";
+	public $ehcpInstallPath = "/var/www/new/ehcp/";
+	public $ehcpDownloadPath = "/var/www/new/ehcp/downloads";
 
-	var $conf = array(
+	public $conf = array(
 		# config section
 		# yavas yavas conf sistemine gecmek lazim. aslinda kod icinde sabit bilgi kullanmamak lazim. string bile... ama nerdee...
 		# this is like configuration of many system settings, tablenames etc. by this, changing something is easier, without need to change code..
@@ -562,9 +563,6 @@ CREATE TABLE IF NOT EXISTS `cronjobs` (
 		$this->dbname = $dbname;
 		$this->conf['mysqlrootpass'] = $dbrootpass;
 		$this->defaultlanguage = $defaultlanguage;
-		$this->isDemo = $isdemo;
-		if (!(isset($this->isDemo)))
-			$this->isDemo = False;
 		$this->statusActivePassive = array("active" => "active", "passive" => "passive");
 
 		/* Remote Backup Select List Vars */
