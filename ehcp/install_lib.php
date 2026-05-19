@@ -869,7 +869,7 @@ allow_plaintext: true";
 	echo "Configuring Courier\n";
 	echo "Now configuring to tell Courier that it should authenticate against our MySQL database.";
 	
-	if((getIsUbuntu() && getUbuntuReleaseYear() >= "24") || (getIsDebian() && getUbuntuReleaseYear() >= "13")){
+	if(getIsUbuntu() && getUbuntuReleaseYear() == "24"){
 		addifnotexists("authmodulelist=\"authmysql\"","/etc/authlib/authdaemonrc");
 	}else{
 		addifnotexists("authmodulelist=\"authmysql\"","/etc/courier/authdaemonrc");
@@ -957,7 +957,7 @@ function configureauthmysql($params){
 			# must be present at the end of this file.";
 	}
 	
-	if((getIsUbuntu() && getUbuntuReleaseYear() >= "24") || (getIsDebian() && getUbuntuReleaseYear() >= "13")){
+	if(getIsUbuntu() && getUbuntuReleaseYear() == "24"){
 		writeoutput("/etc/authlib/authmysqlrc",$filecontent,"w");
 	}else{
 		writeoutput("/etc/courier/authmysqlrc",$filecontent,"w");

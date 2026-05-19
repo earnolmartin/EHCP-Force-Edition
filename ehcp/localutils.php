@@ -301,7 +301,7 @@ if (!function_exists("addifnotexists")) {
 
 		} //else print_r($file);
 
-		if (array_search($what, $filearr) === false) {
+		if (is_array($filearr) && array_search($what, $filearr) === false) {
 			echo "dosyada bulamadı ekliyor: $where -> $what \n";
 			$filearr[] = $what;
 			arraytofile($where, $filearr);

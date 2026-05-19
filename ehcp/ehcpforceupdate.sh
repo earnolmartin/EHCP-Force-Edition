@@ -3003,7 +3003,7 @@ function adjustOperationMode(){
 }
 
 function fixCourierMYSQLAuthFile(){
-	if [[ "$distro" == "ubuntu" && "$yrelease" -ge "24" ]] || [[ "$distro" == "debian" && "$yrelease" -ge "13" ]]; then  # Only applies to Ubuntu 24.04+ / applies to Debian 13+
+	if [[ "$distro" == "ubuntu" && "$yrelease" -eq "24" ]]; then  # Only applies to Ubuntu 24.04
 		authmysqlrc="/etc/authlib/authmysqlrc"
 	else
 		authmysqlrc="/etc/courier/authmysqlrc"
