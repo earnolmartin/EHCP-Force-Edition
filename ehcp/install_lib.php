@@ -30,20 +30,20 @@ $header="From: info@ehcpforce.ezpz.cc";
 if($installmode=='') $installmode='normal';
 
 if(!function_exists("debugecho")){
-function debugecho($str,$level=0) {
-	$currentlevel=4;
-	if($level>=$currentlevel) echo $str;
+	function debugecho($str,$level=0) {
+		$currentlevel=4;
+		if($level>=$currentlevel) echo $str;
 
-}
+	}
 }
 
 if(!function_exists("securefilename")){
-function securefilename($fn){
-	$ret=trim($fn);
-	$ret=str_replace(array('..','%','&'),array('','',''),$fn);
-	#$ret=escapeshellarg($ret);
-	return $ret;
-}
+	function securefilename($fn){
+		$ret=trim($fn);
+		$ret=str_replace(array('..','%','&'),array('','',''),$fn);
+		#$ret=escapeshellarg($ret);
+		return $ret;
+	}
 }
 
 
@@ -181,41 +181,41 @@ function getInput($prompt='',$default='',$allowempty=False) {
 }
 
 if(!function_exists("arraytofile")){
-function arraytofile($file,$lines) {
-	$new_content = join('',$lines);
-	$fp = fopen($file,'w');
-	$write = fwrite($fp, $new_content);
-	isset($fp) && is_resource($fp) && fclose($fp);
-}
+	function arraytofile($file,$lines) {
+		$new_content = join('',$lines);
+		$fp = fopen($file,'w');
+		$write = fwrite($fp, $new_content);
+		isset($fp) && is_resource($fp) && fclose($fp);
+	}
 }
 
 if(!function_exists("addifnotexists")){
-function addifnotexists($what,$where) {
-	debugecho("\naddifnotexists: ($what) -> ($where) \n ",4);
-	#bekle(__FUNCTION__." basliyor..");
-	$what.="\n";
-	$filearr=@file($where);
-	if(!$filearr) {
-		echo "cannot open file, trying to setup: ($where)\n";
-		$fp = fopen($where,'w');
-		isset($fp) && is_resource($fp) && fclose($fp);
-		$filearr=file($where);
+	function addifnotexists($what,$where) {
+		debugecho("\naddifnotexists: ($what) -> ($where) \n ",4);
+		#bekle(__FUNCTION__." basliyor..");
+		$what.="\n";
+		$filearr=@file($where);
+		if(!$filearr) {
+			echo "cannot open file, trying to setup: ($where)\n";
+			$fp = fopen($where,'w');
+			isset($fp) && is_resource($fp) && fclose($fp);
+			$filearr=file($where);
 
-	} //else print_r($file);
+		} //else print_r($file);
 
-	if(array_search($what,$filearr)===false) {
-		echo "dosyada bulamadı ekliyor: ($what) -> ($where)\n";
-		$filearr[]=$what;
-		arraytofile($where,$filearr);
+		if(array_search($what,$filearr)===false) {
+			echo "dosyada bulamadı ekliyor: ($what) -> ($where)\n";
+			$filearr[]=$what;
+			arraytofile($where,$filearr);
 
-	} else {
-		//echo "buldu... sorun yok. \n";
-		// already found, so, do not add
+		} else {
+			//echo "buldu... sorun yok. \n";
+			// already found, so, do not add
+		}
+		
+		#bekle(__FUNCTION__." bitti...");
+
 	}
-	
-	#bekle(__FUNCTION__." bitti...");
-
-}
 }
 
 function add_if_not_exists2($what,$where,$addfile_if_not_exists=False) {
@@ -492,112 +492,112 @@ function replace_in_file($find,$replace,$sourcefile,$targetfile){
 
 
 if(!function_exists('replacelineinfile')){
-function replacelineinfile($find,$replace,$where,$addifnotexists=false) {
-	global $debugMode;
-	
-	// edit a line starting with $find, to edit especially conf files..
+	function replacelineinfile($find,$replace,$where,$addifnotexists=false) {
+		global $debugMode;
+		
+		// edit a line starting with $find, to edit especially conf files..
 
-	debugecho("\nreplaceline: ($find -> $replace) in ($where) \n ");
-	if($debugMode){
-		log_to_file("\nreplaceline: ($find -> $replace) in ($where) \n ");
-	}
-
-	$filearr=@file($where);
-	//if($find=='$dbrootpass=') print_r($filearr);
-
-	if(!$filearr) {
-		echo "cannot open file $where... returning...\n";
+		debugecho("\nreplaceline: ($find -> $replace) in ($where) \n ");
 		if($debugMode){
-			log_to_file("cannot open file $where... returning...\n");
+			log_to_file("\nreplaceline: ($find -> $replace) in ($where) \n ");
 		}
-		return false;
-	} //else print_r($file);
 
-	$len=strlen($find);
-	$newfile=array();
-	$found = false;
+		$filearr=@file($where);
+		//if($find=='$dbrootpass=') print_r($filearr);
 
-	foreach($filearr as $line){
-		$line=trim($line)."\n";
-		$sub=substr($line,0,$len);
-		if($sub==$find){
-			$found = true;
-			$line=$replace."\n";
+		if(!$filearr) {
+			echo "cannot open file $where... returning...\n";
+			if($debugMode){
+				log_to_file("cannot open file $where... returning...\n");
+			}
+			return false;
+		} //else print_r($file);
+
+		$len=strlen($find);
+		$newfile=array();
+		$found = false;
+
+		foreach($filearr as $line){
+			$line=trim($line)."\n";
+			$sub=substr($line,0,$len);
+			if($sub==$find){
+				$found = true;
+				$line=$replace."\n";
+			}
+			$newfile[]=$line;
 		}
-		$newfile[]=$line;
-	}
-	
-	if($addifnotexists && !$found){
-		echo "Line not found, adding at end: ($replace)\n";
-		if($debugMode){
-			log_to_file("Line not found, adding at end: ($replace)\n");
+		
+		if($addifnotexists && !$found){
+			echo "Line not found, adding at end: ($replace)\n";
+			if($debugMode){
+				log_to_file("Line not found, adding at end: ($replace)\n");
+			}
+			$newfile[]=$replace;
 		}
-		$newfile[]=$replace;
+		
+		arraytofile($where,$newfile);
+		
 	}
-	
-	arraytofile($where,$newfile);
-	
-}
 }
 
 
 if(!function_exists("editlineinfile")){
-function editlineinfile($find,$replace,$where) {
-	// edit a line containing  $find, replace it... to edit especially /etc/apt/sour/sources.list file
+	function editlineinfile($find,$replace,$where) {
+		// edit a line containing  $find, replace it... to edit especially /etc/apt/sour/sources.list file
 
-	debugecho("\n replaceline: ($find -> $replace) in ($where) \n ");
-	$filearr=@file($where);
+		debugecho("\n replaceline: ($find -> $replace) in ($where) \n ");
+		$filearr=@file($where);
 
 
-	if(!$filearr) {
-		echo "cannot open file... returning...\n";
-		return false;
-	} //else print_r($file);
+		if(!$filearr) {
+			echo "cannot open file... returning...\n";
+			return false;
+		} //else print_r($file);
 
-	$newfile=array();
+		$newfile=array();
 
-	foreach($filearr as $line){
-		$line=trim($line)."\n";
-		$line=str_replace($find,$replace,$line);
-		$newfile[]=$line;
+		foreach($filearr as $line){
+			$line=trim($line)."\n";
+			$line=str_replace($find,$replace,$line);
+			$newfile[]=$line;
+		}
+		arraytofile($where,$newfile);
 	}
-	arraytofile($where,$newfile);
-}
 }
 
 
 if(!function_exists("writeoutput")){
-function writeoutput($file, $string, $mode="w",$log=true) {
-	if (!($fp = fopen($file, $mode))) {
-			echo "hata: dosya acilamadi: $file (writeoutput) !";
-			return false;
+	function writeoutput($file, $string, $mode="w",$log=true) {
+		if (!($fp = fopen($file, $mode))) {
+				echo "hata: dosya acilamadi: $file (writeoutput) !";
+				return false;
+		}
+		if (!fputs($fp, $string . "\n")) {
+				echo "hata: dosyaya yazilamadi: $file (writeoutput) !";
+				isset($fp) && is_resource($fp) && fclose($fp);
+				return false;
+		}
+		isset($fp) && is_resource($fp) && fclose($fp);
+		if($log) echo "\n(".__FILE__.") file written successfully: $file, mode:$mode \n";
+		return true;
 	}
-	if (!fputs($fp, $string . "\n")) {
-			isset($fp) && is_resource($fp) && fclose($fp);
-			echo "hata: dosyaya yazilamadi: $file (writeoutput) !";
-			return false;
-	}
-	isset($fp) && is_resource($fp) && fclose($fp);
-	if($log) echo "\n(".__FILE__.") file written successfully: $file, mode:$mode \n";
-	return true;
-}
 }
 
 if(!function_exists('getlocalip')){
-function getlocalip($interface='eth0') {
-	global $localip;
-	
-	$ipline=exec("ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | head -1");
-	
-	if(!isset($ipline) || empty($ipline)){
-		$ipline = "127.0.0.1";
+	function getlocalip($interface='eth0') {
+		global $localip;
+		
+		$ipline=exec("ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | head -1");
+		
+		if(!isset($ipline) || empty($ipline)){
+			$ipline = "127.0.0.1";
+		}
+		
+		$localip=$ipline;
+		
+		return $ipline;	
+		
 	}
-	
-	$localip=$ipline;
-	
-	return $ipline;	
-	
-}
 }
 
 
