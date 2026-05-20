@@ -1604,6 +1604,10 @@ function installsql($webServerToInstall) {
 
 	// Import timezone info into MySQL
 	$mysqlTimezoneImportSuccess = exec("(mariadb-tzinfo-to-sql /usr/share/zoneinfo 2>/dev/null || mysql_tzinfo_to_sql /usr/share/zoneinfo) | mysql -u root --password=$tmprootpass mysql 2>&1", $outputLines);
+	if($debugMode){
+		log_to_file("\nResults of timezone sql import: " . print_r($outputLines, true));
+		unset($outputLines);
+	}
 
 	// Import ehcp1.sql
 	echo "importing ehcp1 sql: \n";
