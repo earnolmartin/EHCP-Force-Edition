@@ -1250,6 +1250,11 @@ function installPythonPamMysql(){
 		passthru2("cp -vf $ehcpinstalldir/etc/pam/pam_dbauth_smtp_ubuntu_20_plus.py /etc/security/pam_dbauth_smtp.py");
 	}
 	
+	if((getIsUbuntu() && getUbuntuReleaseYear() >= "26") || (getIsDebian() && getUbuntuReleaseYear() >= "14")){
+		aptget(array('python3-legacycrypt'));
+		passthru2("cp -vf $ehcpinstalldir/etc/pam/pam_dbauth_smtp_python3_ubuntu_26_plus.py /etc/security/pam_dbauth_smtp.py");		
+	}
+	
 	if((getIsUbuntu() && getUbuntuReleaseYear() >= "16") || (getIsDebian() && getUbuntuReleaseYear() >= "9")){
 		if(file_exists("/usr/lib/python2.7/lib-dynload/_hashlib.x86_64-linux-gnu.so")){
 			unlink("/usr/lib/python2.7/lib-dynload/_hashlib.x86_64-linux-gnu.so");

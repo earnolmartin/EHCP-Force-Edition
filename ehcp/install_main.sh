@@ -2474,6 +2474,32 @@ function makeRoundCubeDefaultMailClient(){
 			mv "/var/www/new/ehcp/webmail_roundcube" "/var/www/new/ehcp/webmail"
 		fi
 	fi
+	
+	# Fixes for Ubuntu 26+ and Debian 14+
+	if [[ "$distro" == "ubuntu" && "$yrelease" -gt "24" ]] || [[ "$distro" == "debian" && "$yrelease" -gt "13" ]]; then
+		TARGET_FILE="/usr/share/roundcube/program/lib/Roundcube/bootstrap.php"
+
+		if [ -e "$TARGET_FILE" ]; then
+
+			# 1. Fix array_last (only if not already wrapped)
+			if ! grep -q "function_exists('array_last')" "$TARGET_FILE"; then
+				sed -i "/function array_last/,/^}/ {
+					/function array_last/i if (!function_exists('array_last')) {
+					/^}/a }
+				}" "$TARGET_FILE"
+			fi
+
+			# 2. Fix array_first (only if not already wrapped)
+			if ! grep -q "function_exists('array_first')" "$TARGET_FILE"; then
+				sed -i "/function array_first/,/^}/ {
+					/function array_first/i if (!function_exists('array_first')) {
+					/^}/a }
+				}" "$TARGET_FILE"
+			fi
+
+		fi
+	fi
+	
 }
 
 function writeOutVersionInfo(){

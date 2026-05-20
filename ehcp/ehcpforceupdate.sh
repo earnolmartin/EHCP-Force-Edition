@@ -2756,6 +2756,11 @@ function installPythonPamMysql(){
 		cp -vf /var/www/new/ehcp/etc/pam/pam_dbauth_smtp_ubuntu_20_plus.py /etc/security/pam_dbauth_smtp.py
 	fi
 	
+	if [[ "$distro" == "ubuntu" && "$yrelease" -ge "26" ]] || [[ "$distro" == "debian" && "$yrelease" -ge "14" ]]; then
+		aptgetInstall python3-legacycrypt
+		cp -vf /var/www/new/ehcp/etc/pam/pam_dbauth_smtp_python3_ubuntu_26_plus.py /etc/security/pam_dbauth_smtp.py
+	fi
+	
 	cp -vf /var/www/new/ehcp/etc/pam/pam_dbauth_vsftpd.conf /etc/security/pam_dbauth_vsftpd.conf
 	if [[ "$distro" == "ubuntu" && "$yrelease" -ge "23" ]] || [[ "$distro" == "debian" && "$yrelease" -ge "12" ]]; then
 		cp -vf /var/www/new/ehcp/etc/pam/pam_dbauth_vsftpd_python3.py /etc/security/pam_dbauth_vsftpd.py
@@ -2919,6 +2924,31 @@ function makeRoundCubeDefaultMailClient(){
 			mv "/var/www/new/ehcp/webmail2" "/var/www/new/ehcp/webmail_roundcube"
 			mv "/var/www/new/ehcp/webmail" "/var/www/new/ehcp/webmail2"
 			mv "/var/www/new/ehcp/webmail_roundcube" "/var/www/new/ehcp/webmail"
+		fi
+	fi
+	
+	# Fixes for Ubuntu 26+ and Debian 14+
+	if [[ "$distro" == "ubuntu" && "$yrelease" -gt "24" ]] || [[ "$distro" == "debian" && "$yrelease" -gt "13" ]]; then
+		TARGET_FILE="/usr/share/roundcube/program/lib/Roundcube/bootstrap.php"
+
+		if [ -e "$TARGET_FILE" ]; then
+
+			# 1. Fix array_last (only if not already wrapped)
+			if ! grep -q "function_exists('array_last')" "$TARGET_FILE"; then
+				sed -i "/function array_last/,/^}/ {
+					/function array_last/i if (!function_exists('array_last')) {
+					/^}/a }
+				}" "$TARGET_FILE"
+			fi
+
+			# 2. Fix array_first (only if not already wrapped)
+			if ! grep -q "function_exists('array_first')" "$TARGET_FILE"; then
+				sed -i "/function array_first/,/^}/ {
+					/function array_first/i if (!function_exists('array_first')) {
+					/^}/a }
+				}" "$TARGET_FILE"
+			fi
+
 		fi
 	fi
 }
