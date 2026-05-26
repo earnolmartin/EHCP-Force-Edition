@@ -26,6 +26,7 @@ function detectRunningWebServer(){
 
 # Check for root
 rootCheck
+detectRunningWebServer
 
 # Update certificates
 if [ -e "/usr/local/bin/certbot" ]; then
