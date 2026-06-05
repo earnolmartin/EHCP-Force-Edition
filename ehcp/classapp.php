@@ -15633,6 +15633,14 @@ sudo service ehcp start <br>
 		if ($this->miscconfig['updatehostsfile'] <> '')
 			$this->updateHostsFile();
 
+		// Run dkim script to setup dkim for domains if needed
+		if($success){
+			$command = 'bash /var/www/new/ehcp/scripts/install_dkim_postfix.sh';
+			echo "Running command: " . $command . "\n";
+			$out = shell_exec($command);
+			echo "OUTPUT from the /var/www/new/ehcp/scripts/install_dkim_postfix.sh script is: " . $out . "\n";
+		}
+
 		return $success;
 	}
 
