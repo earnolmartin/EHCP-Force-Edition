@@ -7,6 +7,11 @@
 # Includes RFC 1035 255-character TXT string splitting for old BIND compilers.
 # Includes robust MySQL-native tracking to force database upgrades.
 # Fixes Bash subshell variable loss using parent process herestring redirection.
+# Automatically provisions native Systemd service overrides for Ubuntu 16.04 - 26.04+.
+# Explicitly strips out distribution-default conflicting Socket/PidFile definitions.
+# Sanitizes corrupt canonicalization parameters and resolves systemd handshake stalls.
+# Resolves Postfix socket access blocks via bi-directional group permission syncs.
+# AUTOMATION FIX: Detects and strips milters from the Amavis port 10025 loopback to prevent duplicate emails.
 #
 # Original base components by Eric Arnol-Martin <earnolmartin@gmail.com>
 
@@ -89,15 +94,56 @@ aptgetInstall "opendkim opendkim-tools"
 
 # Ensure directories and group assignments exist with strict permissions
 mkdir -p "$KEY_DIR"
-mkdir -p /var/spool/postfix/opendkim
+SPOOL_DIR="/var/spool/postfix/opendkim"
+mkdir -p "$SPOOL_DIR"
 
-if [ "$(stat -c '%U:%G' /var/spool/postfix/opendkim)" != "opendkim:postfix" ]; then
-    chown opendkim:postfix /var/spool/postfix/opendkim
-    chmod 750 /var/spool/postfix/opendkim
+# Ensure the socket directory is owned by opendkim so the daemon can write to it,
+# and sets group permissions so Postfix can step inside and access the unix socket.
+if [ "$(stat -c '%U:%G' "$SPOOL_DIR")" != "opendkim:opendkim" ]; then
+    chown opendkim:opendkim "$SPOOL_DIR"
+    chmod 750 "$SPOOL_DIR"
 fi
 
+# CROSS-GROUP ASSIGNMENT SYSTEM:
+# 1. Allow OpenDKIM to interact inside Postfix spools
 if ! groups opendkim | grep -q '\bpostfix\b'; then
     usermod -aG postfix opendkim
+fi
+
+# 2. CRITICAL FIX: Allow Postfix to step inside the OpenDKIM unix socket spool folder
+if ! groups postfix | grep -q '\bopendkim\b'; then
+    usermod -aG opendkim postfix
+fi
+
+# ---------------------------------------------------------------------
+# RUNTIME ENVIRONMENT & SYSTEMD OVERRIDE INJECTION BLOCK
+# ---------------------------------------------------------------------
+FORCE_SYSTEMD_RELOAD=0
+
+if [ -x "/bin/systemctl" ] || [ -x "/usr/bin/systemctl" ]; then
+    SYSTEMD_OVERRIDE_DIR="/etc/systemd/system/opendkim.service.d"
+    mkdir -p "$SYSTEMD_OVERRIDE_DIR"
+    
+    OVERRIDE_CONF="$SYSTEMD_OVERRIDE_DIR/override.conf"
+    
+    # Check if we need to write or replace the systemd sandbox execution paths.
+    # We dynamically provision a dual RuntimeDirectory workspace to support BOTH 
+    # the /run/opendkim/ standard pid folder and the postfix milter socket spool.
+    if [ ! -f "$OVERRIDE_CONF" ] || ! grep -q "postfix/opendkim" "$OVERRIDE_CONF"; then
+        cat << 'EOF' > "$OVERRIDE_CONF"
+[Service]
+# Clear out distribution-default startup bounds safely
+ExecStart=
+# Force execution using pure config file parameters to avoid command line parsing bugs
+ExecStart=/usr/sbin/opendkim -x /etc/opendkim.conf
+RuntimeDirectory=opendkim postfix/opendkim
+RuntimeDirectoryMode=0750
+User=opendkim
+Group=opendkim
+EOF
+        chmod 644 "$OVERRIDE_CONF"
+        FORCE_SYSTEMD_RELOAD=1
+    fi
 fi
 
 # ---------------------------------------------------------------------
@@ -105,10 +151,14 @@ fi
 # ---------------------------------------------------------------------
 OPENDKIM_DEFAULT="/etc/default/opendkim"
 if [ -f "$OPENDKIM_DEFAULT" ]; then
-    # Purge old inet port definitions from default file to allow clean UNIX socket binding
-    if grep -q "inet:12301@localhost" "$OPENDKIM_DEFAULT"; then
+    # Maintain inline fallback parameter safety metrics for old Ubuntu 14.04 engines
+    if ! grep -q "local:/var/spool/postfix/opendkim/opendkim.sock" "$OPENDKIM_DEFAULT"; then
         sed -i '/inet:12301@localhost/d' "$OPENDKIM_DEFAULT"
-        sed -i 's/^SOCKET=.*/SOCKET="local:\/var\/spool\/postfix\/opendkim\/opendkim.sock"/g' "$OPENDKIM_DEFAULT"
+        if grep -q "^SOCKET=" "$OPENDKIM_DEFAULT"; then
+            sed -i 's|^SOCKET=.*|SOCKET="local:/var/spool/postfix/opendkim/opendkim.sock"|g' "$OPENDKIM_DEFAULT"
+        else
+            echo 'SOCKET="local:/var/spool/postfix/opendkim/opendkim.sock"' >> "$OPENDKIM_DEFAULT"
+        fi
     fi
 fi
 
@@ -116,16 +166,37 @@ OPENDKIM_CONF="/etc/opendkim.conf"
 FORCE_OPENDKIM_RESTART=0
 
 if [ -f "$OPENDKIM_CONF" ]; then
+    # CRITICAL FIX: Strip out DOS/Windows carriage returns entirely to prevent compilation crashes
+    sed -i 's/\r//g' "$OPENDKIM_CONF"
+
+    # CRITICAL FIX: Overwrite corrupted, blank, or malformed canonicalization strings with a valid pair
+    if grep -E -q "^Canonicalization\s*.*" "$OPENDKIM_CONF"; then
+        sed -i -E 's|^Canonicalization.*|Canonicalization        relaxed/simple|g' "$OPENDKIM_CONF"
+    else
+        echo "Canonicalization        relaxed/simple" >> "$OPENDKIM_CONF"
+    fi
+
     # Strip explicit old raw port attributes if present inside key structures
     if grep -q "inet:12301@localhost" "$OPENDKIM_CONF"; then
         sed -i '/Socket.*inet:12301/d' "$OPENDKIM_CONF"
         FORCE_OPENDKIM_RESTART=1
     fi
 
-    # Inject core global parameters if missing
-    for PARAM in "KeyTable" "SigningTable" "Socket" "InternalHosts" "ExternalIgnoreList"; do
+    # Comment out stock configuration parameters that conflict with our centralized settings
+    if grep -q "^Socket\s\+local:/run/opendkim/opendkim.sock" "$OPENDKIM_CONF"; then
+        sed -i 's|^Socket\s\+local:/run/opendkim/opendkim.sock|#Socket  local:/run/opendkim/opendkim.sock|g' "$OPENDKIM_CONF"
+        FORCE_OPENDKIM_RESTART=1
+    fi
+    if grep -q "^PidFile\s" "$OPENDKIM_CONF"; then
+        sed -i 's|^PidFile\s|#PidFile |g' "$OPENDKIM_CONF"
+        FORCE_OPENDKIM_RESTART=1
+    fi
+
+    # Inject core global parameters if missing or replaced
+    for PARAM in "PidFile" "KeyTable" "SigningTable" "Socket" "InternalHosts" "ExternalIgnoreList"; do
         if ! grep -q "^${PARAM}" "$OPENDKIM_CONF"; then
             case $PARAM in
+                PidFile)            echo "PidFile                 /run/opendkim/opendkim.pid" >> "$OPENDKIM_CONF" ;;
                 KeyTable)           echo "KeyTable                refile:$DKIM_BASE/key_table" >> "$OPENDKIM_CONF" ;;
                 SigningTable)       echo "SigningTable            refile:$DKIM_BASE/signing_table" >> "$OPENDKIM_CONF" ;;
                 Socket)             echo "Socket                  local:/var/spool/postfix/opendkim/opendkim.sock" >> "$OPENDKIM_CONF" ;;
@@ -155,9 +226,9 @@ fi
 
 # Enforce Postfix milter settings in main.cf if missing or migration needed
 POSTFIX_MAIN="/etc/postfix/main.cf"
+NEED_POSTFIX_RESTART=0
+
 if [ -f "$POSTFIX_MAIN" ]; then
-    NEED_POSTFIX_RESTART=0
-    
     # Strip legacy inet definitions out of postfix configuration maps safely
     if grep -q "inet:localhost:12301" "$POSTFIX_MAIN"; then
         sed -i '/milter_protocol/d' "$POSTFIX_MAIN"
@@ -193,10 +264,101 @@ if [ -f "$POSTFIX_MAIN" ]; then
         fi
         NEED_POSTFIX_RESTART=1
     fi
+fi
 
-    if [ "$NEED_POSTFIX_RESTART" -eq 1 ]; then
-        manageService "postfix" "restart"
+# ---------------------------------------------------------------------
+# MASTER.CF AUTOMATION FIX BLOCK (Prevents Amavis Double-Signing Loop)
+# ---------------------------------------------------------------------
+POSTFIX_MASTER="/etc/postfix/master.cf"
+if [ -f "$POSTFIX_MASTER" ]; then
+    # Check if the 127.0.0.1:10025 listener exists
+    if grep -q "^127.0.0.1:10025" "$POSTFIX_MASTER"; then
+        
+		# Use awk to extract the block: matches the starting line 
+		# and continues until it hits a line starting with a non-whitespace character
+		AMAVIS_BLOCK=$(awk '
+			/^127.0.0.1:10025/ {print; f=1; next}
+			f && /^[ \t]/ {print; next}
+			f && /^[a-zA-Z0-9]/ {f=0; exit}
+			' "$POSTFIX_MASTER")
+        
+        # Rigorous Verification: Check if it lacks milters OR if no_address_mappings is missing from ANY receive_override_options line
+        # This regex verifies if receive_override_options explicitly contains no_address_mappings anywhere inside the stanza block
+        if ! echo "$AMAVIS_BLOCK" | grep -q 'smtpd_milters=' || ! echo "$AMAVIS_BLOCK" | grep -E -q 'receive_override_options=[^[:space:]]*no_address_mappings'; then
+            
+            # Create a point-in-time recovery backup of master.cf
+            cp "$POSTFIX_MASTER" "/etc/postfix/master.cf_before_milter_fix_${CurDate}"
+            
+            # Safely crawl all rows inside the block to find and aggregate ALL existing flags across any duplicate lines
+            EXISTING_FLAGS=""
+            while IFS= read -r line; do
+                if [[ "$line" =~ receive_override_options= ]]; then
+                    flags=$(echo "$line" | sed -E 's/.*receive_override_options=\s*(.*)/\1/')
+                    if [ -z "$EXISTING_FLAGS" ]; then EXISTING_FLAGS="$flags"; else EXISTING_FLAGS="${EXISTING_FLAGS},${flags}"; fi
+                fi
+            done <<< "$AMAVIS_BLOCK"
+            
+            # Cleanly reconstruct flags: strip out duplicates and old configurations
+            CLEAN_FLAGS=""
+            IFS=',' read -ra ADDR_ARR <<< "$EXISTING_FLAGS"
+            for flag in "${ADDR_ARR[@]}"; do
+                flag=$(echo "$flag" | xargs) # trim whitespace
+                if [ "$flag" != "no_address_mappings" ] && [ -n "$flag" ]; then
+                    if [ -z "$CLEAN_FLAGS" ]; then CLEAN_FLAGS="$flag"; else CLEAN_FLAGS="$CLEAN_FLAGS,$flag"; fi
+                fi
+            done
+            
+            # Enforce clean inclusion of our necessary flag
+            if [ -z "$CLEAN_FLAGS" ]; then
+                FINAL_OVERRIDE_STR="no_address_mappings"
+            else
+                FINAL_OVERRIDE_STR="${CLEAN_FLAGS},no_address_mappings"
+            fi
+            
+            # Step-by-Step Block Reconstruction: Build a fresh, clean paragraph structure
+            NEW_BLOCK="127.0.0.1:10025 inet    n       -       -       -       -       smtpd"
+            NEW_BLOCK="${NEW_BLOCK}"$'\n'"                -o smtpd_milters="
+            NEW_BLOCK="${NEW_BLOCK}"$'\n'"                -o non_smtpd_milters="
+            
+            while IFS= read -r line; do
+                [[ "$line" =~ ^127.0.0.1:10025 ]] && continue
+                [[ "$line" =~ smtpd_milters= ]] && continue
+                [[ "$line" =~ non_smtpd_milters= ]] && continue
+                [[ "$line" =~ receive_override_options= ]] && continue
+                
+                # Maintain all other configurations intact (e.g., content_filter, restrictions, limits)
+                if [ -n "$line" ]; then
+                    NEW_BLOCK="${NEW_BLOCK}"$'\n'"$line"
+                fi
+            done <<< "$AMAVIS_BLOCK"
+            
+            # Append the single, perfectly combined override target right at the end of the entry block
+            NEW_BLOCK="${NEW_BLOCK}"$'\n'"                -o receive_override_options=${FINAL_OVERRIDE_STR}"
+            
+            # Escape strings safely so awk can perform literal textual substitutions
+            ESCAPED_NEW_BLOCK=$(echo "$NEW_BLOCK" | sed 's/\\/\\\\/g; s/&/\\&/g; s/$/\\n/' | tr -d '\n' | sed 's/\\n$/ /')
+            
+            # Execute absolute paragraph block-swap within master.cf safely
+            awk -v oldBlock="$AMAVIS_BLOCK" -v newBlock="$ESCAPED_NEW_BLOCK" '
+            BEGIN { RS="^$"; FS="\n" }
+            {
+                idx = index($0, oldBlock)
+                if (idx > 0) {
+                    print substr($0, 1, idx-1) newBlock substr($0, idx + length(oldBlock))
+                } else {
+                    print $0
+                }
+            }' "$POSTFIX_MASTER" > "$POSTFIX_MASTER.tmp" && mv "$POSTFIX_MASTER.tmp" "$POSTFIX_MASTER"
+            
+            chmod 644 "$POSTFIX_MASTER"
+            NEED_POSTFIX_RESTART=1
+        fi
     fi
+fi
+
+# Force a restart on Postfix if configurations changed or groups were updated
+if [ "$NEED_POSTFIX_RESTART" -eq 1 ] || ! groups postfix | grep -q '\bopendkim\b'; then
+    manageService "postfix" "restart"
 fi
 
 # =====================================================================
@@ -299,16 +461,53 @@ while IFS=$'\t' read -r DOMAIN FTPUSER PANELUSER; do
     fi
 done <<< "$DOMAINS_DATA"
 
+#################################################
+# Sign all emails using the default myhostname #
+#################################################
+# Determine the 'target' domain to sign as (the fallback logic)
+PRIMARY_DOMAIN=$(postconf -h myhostname 2>/dev/null | head -n 1)
+if [[ "$PRIMARY_DOMAIN" != *"."* ]]; then
+    PRIMARY_DOMAIN=$(echo "$DOMAINS_DATA" | head -n 1 | cut -f1)
+fi
+[ -z "$PRIMARY_DOMAIN" ] && PRIMARY_DOMAIN="localhost"
+
+# Identify the specific aliases that might send mail
+POSTFIX_NAME=$(postconf -h myhostname 2>/dev/null | head -n 1)
+SYSTEM_FQDN=$(hostname -f 2>/dev/null)
+
+# Inject the mappings into the signing table
+# Ensure we sign for the Postfix myhostname identity
+[ ! -z "$POSTFIX_NAME" ] && echo "*@$POSTFIX_NAME $PRIMARY_DOMAIN" >> "$DKIM_BASE/signing_table.tmp"
+
+# Ensure we sign for the System FQDN if it differs from the Postfix name
+if [ ! -z "$SYSTEM_FQDN" ] && [ "$SYSTEM_FQDN" != "$POSTFIX_NAME" ]; then
+    echo "*@$SYSTEM_FQDN $PRIMARY_DOMAIN" >> "$DKIM_BASE/signing_table.tmp"
+fi
+
 # 6. Atomically swap map tables to prevent race conditions
 mv "$DKIM_BASE/key_table.tmp" "$DKIM_BASE/key_table"
-mv "$DKIM_BASE/signing_table.tmp" "$DKIM_BASE/signing_table"
+
+sort -u "$DKIM_BASE/signing_table.tmp" > "$DKIM_BASE/signing_table.tmp.sorted"
+mv "$DKIM_BASE/signing_table.tmp.sorted" "$DKIM_BASE/signing_table"
+
+# Clean up the original temporary file
+rm -f "$DKIM_BASE/signing_table.tmp"
 
 chown opendkim:opendkim "$DKIM_BASE/key_table" "$DKIM_BASE/signing_table"
 chmod 644 "$DKIM_BASE/key_table" "$DKIM_BASE/signing_table"
 
 # 7. Reload OpenDKIM safely if tables changed or files were modified
-if [ "$NEW_RECORDS_ADDED" -gt 0 ] || [ "$FORCE_OPENDKIM_RESTART" -eq 1 ]; then
-    reloadInitDaemon
+if [ "$NEW_RECORDS_ADDED" -gt 0 ] || [ "$FORCE_OPENDKIM_RESTART" -eq 1 ] || [ "$FORCE_SYSTEMD_RELOAD" -eq 1 ]; then
+    if [ "$FORCE_SYSTEMD_RELOAD" -eq 1 ]; then
+        # Force terminate any stalled background child components from previous failed configurations
+        manageService "opendkim" "stop"
+        
+        # SAFETY: Remove stale socket file if it exists
+        [ -S "/var/spool/postfix/opendkim/opendkim.sock" ] && rm -f "/var/spool/postfix/opendkim/opendkim.sock"
+        
+        reloadInitDaemon
+        systemctl reset-failed opendkim.service >/dev/null 2>&1
+    fi
     manageService "opendkim" "restart"
 fi
 
