@@ -15733,6 +15733,11 @@ sudo service ehcp start <br>
 				// Gotta use the subdomain here
 				$httpOnlyRedirect = str_replace("{domainname}", "{subdomain}.{domainname}", $httpOnlyRedirect);
 				$ar1['domainname_redirect'] = $ar1["subdomain"];
+				
+				// Fix root directory as well
+				$httpOnlyRedirect = str_replace('root {homedir}/httpdocs;', 'root {homedir};', $httpOnlyRedirect);
+				$httpOnlyRedirect = str_replace('DocumentRoot {homedir}/httpdocs', 'DocumentRoot {homedir}', $httpOnlyRedirect);
+				
 			}
 
 			if ($this->miscconfig['webservertype'] == "nginx") {
