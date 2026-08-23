@@ -17191,7 +17191,9 @@ sudo service ehcp start <br>
 						$SQL = "SELECT * FROM " . $this->conf['customstable']['tablename'] . " WHERE name = 'customhttp' and domainname = '" . $domainname . "' and comment = '" . $comment . "'";
 						$rs = $this->query($SQL);
 						if($rs === false || count($rs) == 0){ 
-							$success = $this->executeQuery("insert into " . $this->conf['customstable']['tablename'] . " (domainname,name,value,comment,webservertype) values ('$domainname','customhttp','" . $this->escape($customHttpTwo) . "','$comment','" . $this->miscconfig['webservertype'] . "')", 'add custom http');
+							$sql = "insert into " . $this->conf['customstable']['tablename'] . " (domainname,name,value,comment,webservertype) values ('$domainname','customhttp','" . $this->escape($customHttpTwo) . "','$comment','" . $this->miscconfig['webservertype'] . "')";
+							// echo "\nSQL is $sql \n";
+							$success = $this->executeQuery($sql, 'add custom http');
 						}
 
 					}
@@ -17202,7 +17204,9 @@ sudo service ehcp start <br>
 						$SQL = "SELECT * FROM " . $this->conf['customstable']['tablename'] . " WHERE name = 'customhttp' and domainname = '" . $domainname . "' and comment = '" . $comment . "'";
 						$rs = $this->query($SQL);
 						if($rs === false || count($rs) == 0){ 
-							$success = $this->executeQuery("insert into " . $this->conf['customstable']['tablename'] . " (domainname,name,value,comment,webservertype) values ('$domainname','customhttp','" . $this->escape($customHttpThree) . "','$comment','" . $this->miscconfig['webservertype'] . "')", 'add custom http');
+							$sql = "insert into " . $this->conf['customstable']['tablename'] . " (domainname,name,value,comment,webservertype) values ('$domainname','customhttp','" . $this->escape($customHttpThree) . "','$comment','" . $this->miscconfig['webservertype'] . "')";
+							// echo "\nSQL is $sql \n";
+							$success = $this->executeQuery($sql, 'add custom http');
 						}
 					}
 					
