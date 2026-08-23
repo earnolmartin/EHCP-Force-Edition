@@ -17137,7 +17137,7 @@ sudo service ehcp start <br>
 						}
 					}
 					
-					$comment = "Drupal NGINX for Dir " . $customHttpDir;
+					$comment = "Drupal NGINX for Dir " . (empty($customHttpDir) ? '/' : $customHttpDir);
 					$SQL = "SELECT * FROM " . $this->conf['customstable']['tablename'] . " WHERE name = 'customhttp' and domainname = '" . $domainname . "' and comment = '" . $comment . "'";
 					$rs = $this->query($SQL);
 					if($rs === false || count($rs) == 0){ 
