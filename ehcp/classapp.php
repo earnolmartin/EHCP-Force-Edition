@@ -17064,6 +17064,9 @@ sudo service ehcp start <br>
 
 		$domainhome = $this->getField($this->conf['domainstable']['tablename'], "homedir", "domainname='$domainname'") . "/httpdocs";
 		$directory = trim($directory);
+		$directory = ltrim($directory, '/');
+		$directory = rtrim($directory, '/');
+		
 		if ($directory == '')
 			$targetdirectory = $domainhome;
 		else
@@ -17145,11 +17148,12 @@ sudo service ehcp start <br>
 					break;
 					
 				case "phpbb33":
-					$custtomHttpThree = '';
+					$success = true;
+					$customHttpThree = '';
 				
 					if ($directory == ''){
 						$customhttp = 'try_files_main $uri $uri/ /app.php$is_args$args;';
-						$custtomHttpThree = '
+						$customHttpThree = '
 							location /install/ { 
 								try_files $uri $uri/ /install/app.php$is_args$args; 
 							}';
@@ -17164,7 +17168,7 @@ sudo service ehcp start <br>
 								try_files $uri $uri/ ' . $customHttpDir . '/app.php$is_args$args;
 							}
 						';
-						$custtomHttpThree = '
+						$customHttpThree .= '
 							location ' . $customHttpDir . '/install/ { 
 								try_files $uri $uri/ ' . $customHttpDir . '/install/app.php$is_args$args; 
 							}';
@@ -17183,25 +17187,26 @@ sudo service ehcp start <br>
 					
 					if(isset($customHttpTwo) && !empty($customHttpTwo)){
 					
-						$comment = "PHPBB3.3.X NGINX for Dir " . $customHttpDir;
+						$comment = "PHPBB3 NGINX for Dir " . (empty($customHttpDir) ? '/' : $customHttpDir);
 						$SQL = "SELECT * FROM " . $this->conf['customstable']['tablename'] . " WHERE name = 'customhttp' and domainname = '" . $domainname . "' and comment = '" . $comment . "'";
 						$rs = $this->query($SQL);
 						if($rs === false || count($rs) == 0){ 
 							$success = $this->executeQuery("insert into " . $this->conf['customstable']['tablename'] . " (domainname,name,value,comment,webservertype) values ('$domainname','customhttp','" . $this->escape($customHttpTwo) . "','$comment','" . $this->miscconfig['webservertype'] . "')", 'add custom http');
 						}
-						$success = $success && $this->addDaemonOp("syncdomains", 'xx', $domainname, '', 'sync domains');
+
 					}
 					
-					if(isset($custtomHttpThree) && !empty($custtomHttpThree)){
+					if(isset($customHttpThree) && !empty($customHttpThree)){
 					
-						$comment = "PHPBB3.3.X Install Dir NGINX";
+						$comment = "PHPBB3 Install Dir " . (empty($customHttpDir) ? '/' : $customHttpDir);
 						$SQL = "SELECT * FROM " . $this->conf['customstable']['tablename'] . " WHERE name = 'customhttp' and domainname = '" . $domainname . "' and comment = '" . $comment . "'";
 						$rs = $this->query($SQL);
 						if($rs === false || count($rs) == 0){ 
-							$success = $this->executeQuery("insert into " . $this->conf['customstable']['tablename'] . " (domainname,name,value,comment,webservertype) values ('$domainname','customhttp','" . $this->escape($custtomHttpThree) . "','$comment','" . $this->miscconfig['webservertype'] . "')", 'add custom http');
+							$success = $this->executeQuery("insert into " . $this->conf['customstable']['tablename'] . " (domainname,name,value,comment,webservertype) values ('$domainname','customhttp','" . $this->escape($customHttpThree) . "','$comment','" . $this->miscconfig['webservertype'] . "')", 'add custom http');
 						}
-						$success = $success && $this->addDaemonOp("syncdomains", 'xx', $domainname, '', 'sync domains');
 					}
+					
+					$success = $success && $this->addDaemonOp("syncdomains", 'xx', $domainname, '', 'sync domains');
 					
 					break;
 										
