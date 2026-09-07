@@ -27,8 +27,8 @@ export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/g
 PHPPath=$(which php)
 DEFAULTPASS="12345678!!longeR"
 DEFAULTLOGIN="admin"
-ADMINEMAIL="noreply@ehcpforce.tk"
-DEFAULTDESC="ehcpforce.tk"
+ADMINEMAIL="noreply@ehcpforce.ezpz.cc"
+DEFAULTDESC="ehcpforce.ezpz.cc"
 
 if [ "$#" -ne 13 ]; then
     echo "Illegal number of parameters received: $#"
@@ -138,8 +138,8 @@ function doJoomlaInstall(){
 	# Replace stuff 
 	sed -i "s/{SITE_NAME}/$TITLE/g" "configuration.php"
 	sed -i "s#{SITE_DESC}#$DEFAULTDESC#g" "configuration.php"
-	sed -i "s/noreply@ehcpforce.tk/$ADMINEMAIL/g" "configuration.php"
-	sed -i "s/noreply@ehcpforce.tk/$ADMINEMAIL/g" "j3.sql"
+	sed -i "s/noreply@ehcpforce.ezpz.cc/$ADMINEMAIL/g" "configuration.php"
+	sed -i "s/noreply@ehcpforce.ezpz.cc/$ADMINEMAIL/g" "j3.sql"
 	sed -i "s/\$host = 'localhost';/\$host = '$DBHOST';/g" "configuration.php"
 	sed -i "s/\$user = 'j3';/\$user = '$DBUSERNAME';/g" "configuration.php"
 	sed -i "s/\$password = 'j3';/\$password = '$DBUSERPASS';/g" "configuration.php"
@@ -357,8 +357,8 @@ function doJoomla5Install(){
 	# Replace stuff 
 	sed -i "s/{SITE_NAME}/$TITLE/g" "configuration_j5.php"
 	sed -i "s#{SITE_DESC}#$DEFAULTDESC#g" "configuration_j5.php"
-	sed -i "s/noreply@ehcpforce.tk/$ADMINEMAIL/g" "configuration_j5.php"
-	sed -i "s/noreply@ehcpforce.tk/$ADMINEMAIL/g" "j5.sql"
+	sed -i "s/noreply@ehcpforce.ezpz.cc/$ADMINEMAIL/g" "configuration_j5.php"
+	sed -i "s/noreply@ehcpforce.ezpz.cc/$ADMINEMAIL/g" "j5.sql"
 	sed -i "s/\$host = 'localhost';/\$host = '$DBHOST';/g" "configuration_j5.php"
 	sed -i "s/\$user = 'j5';/\$user = '$DBUSERNAME';/g" "configuration_j5.php"
 	sed -i "s/\$password = 'j5';/\$password = '$DBUSERPASS';/g" "configuration_j5.php"

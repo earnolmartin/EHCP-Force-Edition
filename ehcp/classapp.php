@@ -12706,8 +12706,8 @@ email2@domain2.com:password2<br>
 	{
 		$i = 0;
 		$ip = "";
-		$sitesToCheck = array('http://grabip.tk', 'http://www.ipchicken.com/', 'http://www.tracemyip.org/', 'http://what-is-my-ip.net/?text');
-		while (empty($ip) && $i < count($sitesToCheck)) {
+		$sitesToCheck = array('http://ipv4.dynx.me', 'http://ipv4bg.dynx.me', 'http://grabip.ezpz.cc', 'http://www.ipchicken.com/', 'http://www.tracemyip.org/', 'https://www.whatsmyip.org/');
+		while ((empty($ip) || !isValidIPAddress($ip)) && $i < count($sitesToCheck)) {
 			$ip = $this->getRemoteIPAddressFromSite($sitesToCheck[$i]);
 			$i++;
 		}

@@ -1905,7 +1905,7 @@ CREATE TABLE IF NOT EXISTS `jml_users` (
 --
 
 INSERT INTO `jml_users` (`id`, `name`, `username`, `email`, `password`, `block`, `sendEmail`, `registerDate`, `lastvisitDate`, `activation`, `params`, `lastResetTime`, `resetCount`, `otpKey`, `otep`, `requireReset`) VALUES
-(340, 'Super User', 'admin', 'noreply@ehcpforce.tk', '$2y$10$ljxYrho7ZN7oBc6p4.6BIuEsKGJaWXwKxng4V43SInmpVYL5bltTC', 0, 1, '2015-03-10 04:55:47', '0000-00-00 00:00:00', '0', '', '0000-00-00 00:00:00', 0, '', '', 0);
+(340, 'Super User', 'admin', 'noreply@ehcpforce.ezpz.cc', '$2y$10$ljxYrho7ZN7oBc6p4.6BIuEsKGJaWXwKxng4V43SInmpVYL5bltTC', 0, 1, '2015-03-10 04:55:47', '0000-00-00 00:00:00', '0', '', '0000-00-00 00:00:00', 0, '', '', 0);
 
 -- --------------------------------------------------------
 

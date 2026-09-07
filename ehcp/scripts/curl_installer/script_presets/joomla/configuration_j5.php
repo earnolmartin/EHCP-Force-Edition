@@ -34,7 +34,7 @@ class JConfig {
 	public $offset = 'UTC';
 	public $mailonline = true;
 	public $mailer = 'mail';
-	public $mailfrom = 'noreplay@ehcpforce.tk';
+	public $mailfrom = 'noreplay@ehcpforce.ezpz.cc';
 	public $fromname = 'site';
 	public $sendmail = '/usr/sbin/sendmail';
 	public $smtpauth = false;

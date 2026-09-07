@@ -1,5 +1,5 @@
 #!/bin/bash
-#@author:  Eric Arnol-Martin (earnolmartin@gmail.com) http://eamster.tk
+#@author:  Eric Arnol-Martin (earnolmartin@gmail.com) http://eamster.ezpz.cc
 #Desc:  Bash script that cleans up old PHP session files based on the settings used for EHCP Force Edition (https://ehcpforce.ezpz.cc)
 
 ####################

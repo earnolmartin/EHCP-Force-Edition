@@ -2408,7 +2408,7 @@ CREATE TABLE `jg258_users` (
 --
 
 INSERT INTO `jg258_users` (`id`, `name`, `username`, `email`, `password`, `block`, `sendEmail`, `registerDate`, `lastvisitDate`, `activation`, `params`, `lastResetTime`, `resetCount`, `otpKey`, `otep`, `requireReset`, `authProvider`) VALUES
-(328, 'admin', 'admin', 'noreply@ehcpforce.tk', '$2y$10$GPg.prIzcCi.ALuECrE23eFK/7OVfP5pac611HnscRzEkT3P.7gg2', 0, 1, '2025-04-14 19:50:33', NULL, '0', '', NULL, 0, '', '', 0, '');
+(328, 'admin', 'admin', 'noreply@ehcpforce.ezpz.cc', '$2y$10$GPg.prIzcCi.ALuECrE23eFK/7OVfP5pac611HnscRzEkT3P.7gg2', 0, 1, '2025-04-14 19:50:33', NULL, '0', '', NULL, 0, '', '', 0, '');
 
 -- --------------------------------------------------------
 
