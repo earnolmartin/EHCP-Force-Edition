@@ -3926,20 +3926,28 @@ convertToMariaDBFromMYSQLPrompt
 
 if [ ! -e "${ehcpConfigDir}/skip_spamhaus_spamcop_postfix" ]; then
 
-	echo -n "Integrate Spamhaus and Spamcop into Postfix restrictions (may block valid mail if relaying via a residential IP)? [y/n]: "
-	read addpfixSpamHaus
-	addpfixSpamHaus=$(echo "$addpfixSpamHaus" | awk '{print tolower($0)}')
-	if [ "$addpfixSpamHaus" != "n" ]; then
-		# Add blacklist email lookup to block incoming spam
-		echo -e "Adding email blacklist lookup for incoming emails.\n"
-		addToPostFixRecipientRestrictions
-	else
-		echo -n "Prompt on future run to integrate Spamhaus and Spamcop into Postfix restrictions? [y/n]: "
-		read insMode
-		insMode=$(echo "$insMode" | awk '{print tolower($0)}')
-		if [ "$insMode" == "n" ]; then
-			> "${ehcpConfigDir}/skip_spamhaus_spamcop_postfix"
+	CurRecipRestrictions=$(cat "/etc/postfix/main.cf" | grep -o "smtpd_recipient_restrictions\( \)*=.*" | grep -o "=.*" | grep -o "[^=\( \)*].*")
+	hasSpamhaus=$(echo "$CurRecipRestrictions" | grep -o "zen.spamhaus.org")
+	hasSpamCop=$(echo "$CurRecipRestrictions" | grep -o "bl.spamcop.net")
+
+	if [ -z "${hasSpamhaus}" ] || [ -z "${hasSpamCop}" ]; then
+
+		echo -n "Integrate Spamhaus and Spamcop into Postfix restrictions (may block valid mail if relaying via a residential IP)? [y/n]: "
+		read addpfixSpamHaus
+		addpfixSpamHaus=$(echo "$addpfixSpamHaus" | awk '{print tolower($0)}')
+		if [ "$addpfixSpamHaus" != "n" ]; then
+			# Add blacklist email lookup to block incoming spam
+			echo -e "Adding email blacklist lookup for incoming emails.\n"
+			addToPostFixRecipientRestrictions
+		else
+			echo -n "Prompt on future run to integrate Spamhaus and Spamcop into Postfix restrictions? [y/n]: "
+			read insMode
+			insMode=$(echo "$insMode" | awk '{print tolower($0)}')
+			if [ "$insMode" == "n" ]; then
+				> "${ehcpConfigDir}/skip_spamhaus_spamcop_postfix"
+			fi
 		fi
+		
 	fi
 fi
 
