@@ -3510,8 +3510,13 @@ if [ -z "$SessionTimeoutSetting" ]; then
 	addSystemCronJob "0 2 */5 * *" "/var/www/new/ehcp/scripts/cleanup/remove_old_php_tmp_session_files.sh"
 fi
 
-# Add blacklist email lookup to block incoming spam
-addToPostFixRecipientRestrictions
+echo -n "Integrate Spamhaus and Spamcop into Postfix restrictions (may block valid mail if relaying via a residential IP)? [y/n]: "
+read addpfixSpamHaus
+addpfixSpamHaus=$(echo "$addpfixSpamHaus" | awk '{print tolower($0)}')
+if [ "$addpfixSpamHaus" != "n" ]; then
+	# Add blacklist email lookup to block incoming spam
+	addToPostFixRecipientRestrictions
+fi
 
 # Upgrade webalizer if needed
 updateWebalizerIfNeeded
